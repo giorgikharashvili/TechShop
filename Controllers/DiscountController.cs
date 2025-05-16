@@ -63,7 +63,7 @@ namespace TechShop.Controllers
         /// <returns>No content if successful</returns>
         // PUT: api/discount/{id}
         [HttpPut("{id}")]
-        public ActionResult<Discount> UpdateDiscount(int id, Discount discount)
+        public ActionResult<Discount> UpdateDiscount(int id,[FromBody] Discount discount)
         {
             var existingDiscount = Discounts.FirstOrDefault(d => d.Id == id);
             if (discount == null) return NotFound();

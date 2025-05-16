@@ -64,7 +64,7 @@ namespace TechShop.Controllers
         /// <returns>No content if successful</returns>
         // PUT: api/order/{id}
         [HttpPut("{id}")]
-        public ActionResult<Order> UpdateOrder(int id, Order order)
+        public ActionResult<Order> UpdateOrder(int id,[FromBody] Order order)
         {
             var existingOrder = Orders.FirstOrDefault(o => o.Id == id);
             if (existingOrder == null) return NotFound();

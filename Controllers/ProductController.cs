@@ -66,7 +66,7 @@ namespace TechShop.Controllers
         /// <returns>No Content if successful</returns>
         // PUT: api/product/{id}
         [HttpPut("{id}")]
-        public ActionResult<Product> UpdateProduct(int id, Product product)
+        public ActionResult<Product> UpdateProduct(int id,[FromBody] Product product)
         {
             var existingProduct = Products.FirstOrDefault(p => p.Id == id);
             if (existingProduct == null) return NotFound();

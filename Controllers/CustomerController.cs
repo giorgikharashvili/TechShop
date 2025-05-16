@@ -65,7 +65,7 @@ namespace TechShop.Controllers
         /// <returns>No content if successful</returns>
         // PUT: api/customer/{id}
         [HttpPut("{id}")]
-        public ActionResult<Customer> UpdateCustomer(int id, Customer customer)
+        public ActionResult<Customer> UpdateCustomer(int id,[FromBody] Customer customer)
         {
             var existingCustomer = Customers.FirstOrDefault(c => c.Id == id);
             if (existingCustomer == null) return NotFound();
