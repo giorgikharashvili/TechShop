@@ -9,9 +9,24 @@ namespace TechShop.Controllers
     {
         private static List<Category> Categories = new List<Category>
         {
-            new Category {Id = 1, Name = "Personal Computers (PC)", Description = "Gaming and Office Personal Computers"},
-            new Category {Id = 2, Name = "Mouses", Description = "Gaming and office Mouses"},
-            new Category {Id = 3, Name = "Mechanical Keyboards", Description = "Gaming and office Keyboards"},
+            new Category 
+            {
+                Id = 1,
+                Name = "Personal Computers (PC)",
+                Description = "Gaming and Office Personal Computers"
+            },
+            new Category
+            {
+                Id = 2,
+                Name = "Mouses",
+                Description = "Gaming and office Mouses"
+            },
+            new Category
+            {
+                Id = 3,
+                Name = "Mechanical Keyboards",
+                Description = "Gaming and office Keyboards"
+            },
         };
         /// <summary>
         /// Returns all categories

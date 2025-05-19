@@ -10,7 +10,14 @@ namespace TechShop.Controllers
     {
         private static List<Order> Orders = new List<Order>
         {
-            new Order {Id = 1 , CustomerId = 1, OrderDate = DateTime.Now, Status = OrderStatus.Delivered, TotalAmount = 5500 }
+            new Order
+            {
+                Id = 1 ,
+                CustomerId = 1,
+                OrderDate = DateTime.Now,
+                Status = OrderStatus.Delivered,
+                TotalAmount = 5500
+            }
             
         };
 
