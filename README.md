@@ -43,7 +43,6 @@ TechShop Web API is a backend service built with ASP.NET Core Web API. It provid
    ```Package Manager Console
    add-migration Init
    update-database
-  
 4. **Run the API**
 
 
