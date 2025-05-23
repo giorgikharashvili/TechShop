@@ -49,7 +49,7 @@ TechShop Web API is a backend service built with ASP.NET Core Web API. It provid
 📚 API Documentation
 
 Use Swagger to explore and test the API:
-Navigate to https://localhost:5001/swagger in your browser once the app is running.
+Navigate to https://localhost:7182/swagger in your browser once the app is running.
 
 ❓ Where to Get Help
 
