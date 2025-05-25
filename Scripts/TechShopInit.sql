@@ -1,4 +1,3 @@
--- Drop tables with schema prefix
 DROP TABLE IF EXISTS orders.Payments;
 DROP TABLE IF EXISTS orders.OrderItem;
 DROP TABLE IF EXISTS orders.OrderDetails;
@@ -136,3 +135,63 @@ CREATE TABLE orders.Payments (
   ModifiedAt DATETIME,
   ModifiedBy NVARCHAR(255)
 );
+
+
+-- auth.Users table
+CREATE INDEX IdxUsersCreatedAt ON auth.Users(CreatedAt);
+CREATE INDEX IdxUsersModifiedAt ON auth.Users(ModifiedAt);
+CREATE INDEX IdxUsersCreatedBy ON auth.Users(CreatedBy);
+CREATE INDEX IdxUsersModifiedBy ON auth.Users(ModifiedBy);
+
+-- auth.Addresses table
+CREATE INDEX IdxAddressesCity ON auth.Addresses(City);
+CREATE INDEX IdxAddressesPostalCode ON auth.Addresses(PostalCode);
+
+-- catalog.Categories table
+CREATE INDEX IdxCategoriesName ON catalog.Categories(Name);
+
+-- catalog.Products table
+CREATE INDEX IdxProductsCategoryId ON catalog.Products(CategoryId);
+CREATE INDEX IdxProductsCreatedAt ON catalog.Products(CreatedAt);
+CREATE INDEX IdxProductsCreatedBy ON catalog.Products(CreatedBy);
+CREATE INDEX IdxProductsModifiedAt ON catalog.Products(ModifiedAt);
+CREATE INDEX IdxProductsModifiedBy ON catalog.Products(ModifiedBy);
+
+-- catalog.ProductsSkus table
+CREATE INDEX IdxProductsSkusProductId ON catalog.ProductsSkus(ProductId);
+CREATE INDEX IdxProductsSkusSku ON catalog.ProductsSkus(Sku);
+
+-- catalog.ProductSkuAttributes table
+CREATE INDEX IdxProductSkuAttributesType ON catalog.ProductSkuAttributes(Type);
+
+-- cart.Wishlist table
+CREATE INDEX IdxWishlistProductId ON cart.Wishlist(ProductId);
+CREATE INDEX IdxWishlistUserId ON cart.Wishlist(UserId);
+CREATE INDEX IdxWishlistCreatedAt ON cart.Wishlist(CreatedAt);
+CREATE INDEX IdxWishlistCreatedBy ON cart.Wishlist(CreatedBy);
+CREATE INDEX IdxWishlistModifiedAt ON cart.Wishlist(ModifiedAt);
+CREATE INDEX IdxWishlistModifiedBy ON cart.Wishlist(ModifiedBy);
+
+-- cart.CartItem table
+CREATE INDEX IdxCartItemCartId ON cart.CartItem(CartId);
+CREATE INDEX IdxCartItemProductId ON cart.CartItem(ProductId);
+CREATE INDEX IdxCartItemProductSkuId ON cart.CartItem(ProductSkuId);
+
+-- orders.OrderDetails table
+CREATE INDEX IdxOrderDetailsCreatedAt ON orders.OrderDetails(CreatedAt);
+CREATE INDEX IdxOrderDetailsCreatedBy ON orders.OrderDetails(CreatedBy);
+CREATE INDEX IdxOrderDetailsModifiedAt ON orders.OrderDetails(ModifiedAt);
+CREATE INDEX IdxOrderDetailsModifiedBy ON orders.OrderDetails(ModifiedBy);
+
+-- orders.OrderItem table
+CREATE INDEX IdxOrderItemOrderId ON orders.OrderItem(OrderId);
+CREATE INDEX IdxOrderItemProductId ON orders.OrderItem(ProductId);
+CREATE INDEX IdxOrderItemProductsSkuId ON orders.OrderItem(ProductsSkuId);
+
+-- orders.Payments table
+CREATE INDEX IdxPaymentsOrderId ON orders.Payments(OrderId);
+CREATE INDEX IdxPaymentsStatus ON orders.Payments(Status);
+CREATE INDEX IdxPaymentsCreatedAt ON orders.Payments(CreatedAt);
+CREATE INDEX IdxPaymentsCreatedBy ON orders.Payments(CreatedBy);
+CREATE INDEX IdxPaymentsModifiedAt ON orders.Payments(ModifiedAt);
+CREATE INDEX IdxPaymentsModifiedBy ON orders.Payments(ModifiedBy);
