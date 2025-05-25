@@ -1,5 +1,6 @@
 using System.Reflection;
 using TechShop.Application.Services;
+using TechShop.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,41 @@ builder.Services.AddSwaggerGen(options =>
     if (File.Exists(xmlPath)) options.IncludeXmlComments(xmlPath);
 });
 
-builder.Services.AddScoped<IProductService, ProductService>();
+// Temporary database
+
+builder.Services.AddSingleton<shopDatabase>();
+
+
+
+// Repositories
+
+builder.Services.AddScoped<AddressesRepository>();
+builder.Services.AddScoped<CartRepository>();
+builder.Services.AddScoped<CartItemRepository>();
+builder.Services.AddScoped<CategoriesRepository>();
+builder.Services.AddScoped<OrderDetailsRepository>();
+builder.Services.AddScoped<OrderItemRepository>();
+builder.Services.AddScoped<PaymentsRepository>();
+builder.Services.AddScoped<ProductSkuAttributesRepository>();
+builder.Services.AddScoped<ProductsRepository>();
+builder.Services.AddScoped<ProductsSkusRepository>();
+builder.Services.AddScoped<UsersRepository>();
+builder.Services.AddScoped<WishlistRepository>();
+
+// Services
+
+builder.Services.AddScoped<AddressesService>();
+builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<CartItemService>();
+builder.Services.AddScoped<CategoriesService>();
+builder.Services.AddScoped<OrderDetailsService>();
+builder.Services.AddScoped<OrderItemService>();
+builder.Services.AddScoped<PaymentsService>();
+builder.Services.AddScoped<ProductSkuAttributesService>();
+builder.Services.AddScoped<ProductsService>();
+builder.Services.AddScoped<ProductsSkusService>();
+builder.Services.AddScoped<UsersService>();
+builder.Services.AddScoped<WishlistService>();
 
 var app = builder.Build();
 

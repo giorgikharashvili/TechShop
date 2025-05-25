@@ -2,19 +2,6 @@
   "version": 3,
   "targets": {
     "net9.0": {
-      "TechShop.Application/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v9.0",
-        "dependencies": {
-          "TechShop.Domain": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/TechShop.Application.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/TechShop.Application.dll": {}
-        }
-      },
       "TechShop.Domain/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v9.0",
@@ -28,11 +15,6 @@
     }
   },
   "libraries": {
-    "TechShop.Application/1.0.0": {
-      "type": "project",
-      "path": "../TechShop.Application/TechShop.Application.csproj",
-      "msbuildProject": "../TechShop.Application/TechShop.Application.csproj"
-    },
     "TechShop.Domain/1.0.0": {
       "type": "project",
       "path": "../TechShop.Domain/TechShop.Domain.csproj",
@@ -41,7 +23,6 @@
   },
   "projectFileDependencyGroups": {
     "net9.0": [
-      "TechShop.Application >= 1.0.0",
       "TechShop.Domain >= 1.0.0"
     ]
   },
@@ -52,11 +33,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\VSC REPOS\\TechShop\\TechShop.Infrastructure\\TechShop.Infrastructure.csproj",
+      "projectUniqueName": "D:\\VSC REPOS\\TechShop\\TechShop\\TechShop.Infrastructure\\TechShop.Infrastructure.csproj",
       "projectName": "TechShop.Infrastructure",
-      "projectPath": "D:\\VSC REPOS\\TechShop\\TechShop.Infrastructure\\TechShop.Infrastructure.csproj",
+      "projectPath": "D:\\VSC REPOS\\TechShop\\TechShop\\TechShop.Infrastructure\\TechShop.Infrastructure.csproj",
       "packagesPath": "C:\\Users\\Teqs\\.nuget\\packages\\",
-      "outputPath": "D:\\VSC REPOS\\TechShop\\TechShop.Infrastructure\\obj\\",
+      "outputPath": "D:\\VSC REPOS\\TechShop\\TechShop\\TechShop.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -77,11 +58,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "D:\\VSC REPOS\\TechShop\\TechShop.Application\\TechShop.Application.csproj": {
-              "projectPath": "D:\\VSC REPOS\\TechShop\\TechShop.Application\\TechShop.Application.csproj"
-            },
-            "D:\\VSC REPOS\\TechShop\\TechShop.Domain\\TechShop.Domain.csproj": {
-              "projectPath": "D:\\VSC REPOS\\TechShop\\TechShop.Domain\\TechShop.Domain.csproj"
+            "D:\\VSC REPOS\\TechShop\\TechShop\\TechShop.Domain\\TechShop.Domain.csproj": {
+              "projectPath": "D:\\VSC REPOS\\TechShop\\TechShop\\TechShop.Domain\\TechShop.Domain.csproj"
             }
           }
         }

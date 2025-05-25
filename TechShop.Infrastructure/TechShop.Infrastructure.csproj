@@ -8,7 +8,6 @@
 
  
   <ItemGroup>
-    <ProjectReference Include="..\TechShop.Application\TechShop.Application.csproj" />
     <ProjectReference Include="..\TechShop.Domain\TechShop.Domain.csproj" />
   </ItemGroup>
 
