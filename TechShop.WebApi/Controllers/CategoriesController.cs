@@ -63,9 +63,7 @@ namespace TechShop.WebApi.Controllers
         {
             var exists = await _categoryService.GetByIdAsync(id);
             if (exists == null) return NotFound();
-
-            var success = await _categoryService.UpdateAsync(id, dto);
-            if (!success) return BadRequest();
+            await _categoryService.UpdateAsync(id, dto);
 
             return NoContent();
         }
@@ -80,9 +78,8 @@ namespace TechShop.WebApi.Controllers
         {
             var exists = await _categoryService.GetByIdAsync(id);
             if (exists == null) return NotFound();
-
-            var success = await _categoryService.DeleteAsync(id);
-            if (!success) return BadRequest();
+            await _categoryService.DeleteAsync(id);
+            
 
             return NoContent();
         }
