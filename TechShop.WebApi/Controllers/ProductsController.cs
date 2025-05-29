@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TechShop.Application.Services;
 using TechShop.Domain.DTOs.Products;
 
@@ -20,6 +21,7 @@ namespace TechShop.Controllers
         /// </summary>
         /// <returns>List of all products.</returns>
         [HttpGet]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<ProductsDto>>> GetAll()
         {
             var result = await _productsService.GetAllAsync();
@@ -32,6 +34,7 @@ namespace TechShop.Controllers
         /// <param name="id">The ID of the product to retrieve.</param>
         /// <returns>Product with specified ID.</returns>
         [HttpGet("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<ProductsDto>> GetById(int id)
         {
             var product = await _productsService.GetByIdAsync(id);
@@ -45,6 +48,7 @@ namespace TechShop.Controllers
         /// <param name="dto">The product to create.</param>
         /// <returns>The newly created product.</returns>
         [HttpPost]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<ProductsDto>> Create([FromBody] CreateProductDto dto)
         {
             var created = await _productsService.CreateAsync(dto);
@@ -58,6 +62,7 @@ namespace TechShop.Controllers
         /// <param name="dto">The updated product details.</param>
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateProductDto dto)
         {
             var exists = await _productsService.GetByIdAsync(id);
@@ -73,6 +78,7 @@ namespace TechShop.Controllers
         /// <param name="id">ID of the product to delete.</param>
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
             var exists = await _productsService.GetByIdAsync(id);

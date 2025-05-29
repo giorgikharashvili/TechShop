@@ -6,14 +6,15 @@ using TechShop.Application.Services.Interfaces;
 using TechShop.Domain.DTOs.Wishlist;
 using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories;
+using TechShop.Infrastructure.Repositories.Interfaces;
 
 namespace TechShop.Application.Services
 {
     public class WishlistService : IEntityService<WishlistDto, CreateWishlistDto, UpdateWishlistDto>
     {
-        private readonly WishlistRepository _wishlistRepository;
+        private readonly IRepository<Wishlist> _wishlistRepository;
 
-        public WishlistService(WishlistRepository wishlistRepository)
+        public WishlistService(IRepository<Wishlist> wishlistRepository)
         {
             _wishlistRepository = wishlistRepository;
         }

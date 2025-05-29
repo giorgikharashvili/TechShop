@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TechShop.Application.Services;
 using TechShop.Domain.DTOs.Users;
 
@@ -20,6 +21,7 @@ namespace TechShop.Controllers
         /// </summary>
         /// <returns>List of all users.</returns>
         [HttpGet]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAll()
         {
             var result = await _usersService.GetAllAsync();
@@ -32,6 +34,7 @@ namespace TechShop.Controllers
         /// <param name="id">The ID of the user to retrieve.</param>
         /// <returns>User with specified ID.</returns>
         [HttpGet("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<UserDto>> GetById(int id)
         {
             var user = await _usersService.GetByIdAsync(id);
@@ -45,6 +48,7 @@ namespace TechShop.Controllers
         /// <param name="dto">The user to create.</param>
         /// <returns>The newly created user.</returns>
         [HttpPost]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<UserDto>> Create([FromBody] CreateUserDto dto)
         {
             var created = await _usersService.CreateAsync(dto);
@@ -58,6 +62,7 @@ namespace TechShop.Controllers
         /// <param name="dto">The updated user details.</param>
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
         {
             var exists = await _usersService.GetByIdAsync(id);
@@ -73,6 +78,7 @@ namespace TechShop.Controllers
         /// <param name="id">ID of the user to delete.</param>
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
             var exists = await _usersService.GetByIdAsync(id);

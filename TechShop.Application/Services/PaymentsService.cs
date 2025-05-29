@@ -6,14 +6,15 @@ using TechShop.Application.Services.Interfaces;
 using TechShop.Domain.DTOs.Payments;
 using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories;
+using TechShop.Infrastructure.Repositories.Interfaces;
 
 namespace TechShop.Application.Services
 {
     public class PaymentsService : IEntityService<PaymentsDto, CreatePaymentDto, UpdatePaymentStatusDto>
     {
-        private readonly PaymentsRepository _paymentsRepository;
+        private readonly IRepository<Payments> _paymentsRepository;
 
-        public PaymentsService(PaymentsRepository paymentsRepository)
+        public PaymentsService(IRepository<Payments> paymentsRepository)
         {
             _paymentsRepository = paymentsRepository;
         }

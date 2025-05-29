@@ -7,16 +7,17 @@ using TechShop.Application.Services.Interfaces;
 using TechShop.Domain.DTOs.Addresses;
 using TechShop.Domain.DTOs.CartItem;
 using TechShop.Domain.Entities;
-using TechShop.Infrastructure.Repositories;
+using TechShop.Infrastructure;
+using TechShop.Infrastructure.Repositories.Interfaces;
 using TechShop.TechShop.Domain.Entities;
 
 namespace TechShop.Application.Services
 {
     public class CartItemService : IEntityService<CartItemDto, CreateCartItemDto, UpdateCartItemDto>
     {
-        private readonly CartItemRepository _cartItemRepository;
-
-        public CartItemService(CartItemRepository cartItemRepository)
+        private readonly IRepository<CartItem> _cartItemRepository;
+        
+        public CartItemService(IRepository<CartItem> cartItemRepository)
         {
             _cartItemRepository = cartItemRepository;
         }

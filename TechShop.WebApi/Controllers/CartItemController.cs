@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TechShop.Application.Services;
 using TechShop.Domain.DTOs.CartItem;
 
@@ -21,6 +22,7 @@ namespace TechShop.WebApi.Controllers
         /// </summary>
         /// <returns>List of all cart items.</returns>
         [HttpGet]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<CartItemDto>>> GetAll()
         {
             var result = await _cartItemsService.GetAllAsync();
@@ -33,6 +35,7 @@ namespace TechShop.WebApi.Controllers
         /// <param name="id">The ID of the cart item to retrieve.</param>
         /// <returns>Cart item with specified ID.</returns>
         [HttpGet("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<CartItemDto>> GetById(int id)
         {
             var cartItem = await _cartItemsService.GetByIdAsync(id);
@@ -46,6 +49,7 @@ namespace TechShop.WebApi.Controllers
         /// <param name="dto">The cart item to create.</param>
         /// <returns>The newly created cart item.</returns>
         [HttpPost]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<CartItemDto>> Create([FromBody] CreateCartItemDto dto)
         {
             var created = await _cartItemsService.CreateAsync(dto);
@@ -59,6 +63,7 @@ namespace TechShop.WebApi.Controllers
         /// <param name="dto">The updated cart item details.</param>
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCartItemDto dto)
         {
             var exists = await _cartItemsService.GetByIdAsync(id);
@@ -76,6 +81,7 @@ namespace TechShop.WebApi.Controllers
         /// <param name="id">ID of the cart item to delete.</param>
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
             var exists = await _cartItemsService.GetByIdAsync(id);
@@ -86,3 +92,4 @@ namespace TechShop.WebApi.Controllers
         }
     }
 }
+

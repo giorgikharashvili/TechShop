@@ -6,14 +6,15 @@ using TechShop.Domain.DTOs.Categories;
 using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories;
 using TechShop.Application.Services.Interfaces;
+using TechShop.Infrastructure.Repositories.Interfaces;
 
 namespace TechShop.Application.Services
 {
     public class CategoriesService : IEntityService<CategoriesDto, CreateCategoriesDto, UpdateCategoriesDto>
     {
-        private readonly CategoriesRepository _categoriesRepository;
+        private readonly IRepository<Categories> _categoriesRepository;
 
-        public CategoriesService(CategoriesRepository categoriesRepository)
+        public CategoriesService(IRepository<Categories> categoriesRepository)
         {
             _categoriesRepository = categoriesRepository;
         }

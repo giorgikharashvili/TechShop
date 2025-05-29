@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TechShop.Application.Services;
 using TechShop.Domain.DTOs.Cart;
 
@@ -20,6 +21,7 @@ namespace TechShop.WebApi.Controllers
         /// </summary>
         /// <returns>List of all cart entries.</returns>
         [HttpGet]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<CartDto>>> GetAll()
         {
             var result = await _cartService.GetAllAsync();
@@ -32,6 +34,7 @@ namespace TechShop.WebApi.Controllers
         /// <param name="id">The ID of the cart to retrieve.</param>
         /// <returns>Cart with specified ID.</returns>
         [HttpGet("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<CartDto>> GetById(int id)
         {
             var cart = await _cartService.GetByIdAsync(id);
@@ -45,6 +48,7 @@ namespace TechShop.WebApi.Controllers
         /// <param name="dto">The cart to create.</param>
         /// <returns>The newly created cart.</returns>
         [HttpPost]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<CartDto>> Create([FromBody] CreateCartDto dto)
         {
             var created = await _cartService.CreateAsync(dto);
@@ -58,6 +62,7 @@ namespace TechShop.WebApi.Controllers
         /// <param name="dto">The updated cart details.</param>
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCartDto dto)
         {
             var exists = await _cartService.GetByIdAsync(id);
@@ -73,6 +78,7 @@ namespace TechShop.WebApi.Controllers
         /// <param name="id">ID of the cart to delete.</param>
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
             var exists = await _cartService.GetByIdAsync(id);

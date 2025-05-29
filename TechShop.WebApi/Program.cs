@@ -1,6 +1,10 @@
 using System.Reflection;
+using System.Threading.RateLimiting;
 using TechShop.Application.Services;
+using TechShop.Infrastructure;
 using TechShop.Infrastructure.Repositories;
+using Dapper;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,29 +21,32 @@ builder.Services.AddSwaggerGen(options =>
     if (File.Exists(xmlPath)) options.IncludeXmlComments(xmlPath);
 });
 
-// Temporary database
-
-builder.Services.AddSingleton<shopDatabase>();
+builder.Services.AddInfrastructure();
 
 
+// Rate Limiter
 
-// Repositories
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
-builder.Services.AddScoped<AddressesRepository>();
-builder.Services.AddScoped<CartRepository>();
-builder.Services.AddScoped<CartItemRepository>();
-builder.Services.AddScoped<CategoriesRepository>();
-builder.Services.AddScoped<OrderDetailsRepository>();
-builder.Services.AddScoped<OrderItemRepository>();
-builder.Services.AddScoped<PaymentsRepository>();
-builder.Services.AddScoped<ProductSkuAttributesRepository>();
-builder.Services.AddScoped<ProductsRepository>();
-builder.Services.AddScoped<ProductsSkusRepository>();
-builder.Services.AddScoped<UsersRepository>();
-builder.Services.AddScoped<WishlistRepository>();
+    options.AddPolicy("RequestsLimiter", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
+        factory: partition => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 10,
+            Window = TimeSpan.FromSeconds(10)
+        }));
+});
 
-// Services
 
+
+
+
+
+
+
+#region Services
 builder.Services.AddScoped<AddressesService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<CartItemService>();
@@ -52,6 +59,7 @@ builder.Services.AddScoped<ProductsService>();
 builder.Services.AddScoped<ProductsSkusService>();
 builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<WishlistService>();
+#endregion
 
 var app = builder.Build();
 
