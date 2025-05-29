@@ -19,7 +19,7 @@ namespace TechShop.TechShop.Domain.Entities
         public string Country { get; set; }
         public string City { get; set; }
         public int PostalCode { get; set; }
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
         public string ModifiedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }

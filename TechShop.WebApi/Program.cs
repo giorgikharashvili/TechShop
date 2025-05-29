@@ -4,6 +4,10 @@ using TechShop.Application.Services;
 using TechShop.Infrastructure;
 using TechShop.Infrastructure.Repositories;
 using Dapper;
+using System.Data;
+using Microsoft.Data.SqlClient;
+using TechShop.Infrastructure.Repositories.Interfaces;
+using TechShop.WebAPI.Config;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,10 +25,11 @@ builder.Services.AddSwaggerGen(options =>
     if (File.Exists(xmlPath)) options.IncludeXmlComments(xmlPath);
 });
 
-builder.Services.AddInfrastructure();
 
 
 // Rate Limiter
+
+var rateLimitingSettings = builder.Configuration.GetSection("RateLimiter").Get<RateLimiterSettings>();
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -34,19 +39,28 @@ builder.Services.AddRateLimiter(options =>
         RateLimitPartition.GetFixedWindowLimiter(partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
         factory: partition => new FixedWindowRateLimiterOptions
         {
-            PermitLimit = 10,
-            Window = TimeSpan.FromSeconds(10)
+            PermitLimit = rateLimitingSettings.MaxRequests,
+            Window = TimeSpan.FromSeconds(rateLimitingSettings.WindowSeconds)
         }));
 });
 
 
 
 
+builder.Services.AddScoped(provider =>
+{
+    var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION");
+    return new SqlConnection(connectionString);
+});
 
-
+builder.Services.AddSingleton<IDbConnection>(db =>
+{
+    return new SqlConnection(Environment.GetEnvironmentVariable("DB_CONNECTION"));
+});
 
 
 #region Services
+builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<AddressesService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<CartItemService>();
@@ -72,6 +86,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRateLimiter();
 
 app.UseAuthorization();
 
