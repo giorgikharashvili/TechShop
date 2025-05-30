@@ -46,14 +46,7 @@ builder.Services.AddRateLimiter(options =>
 
 
 
-
-builder.Services.AddScoped(provider =>
-{
-    var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION");
-    return new SqlConnection(connectionString);
-});
-
-builder.Services.AddSingleton<IDbConnection>(db =>
+builder.Services.AddScoped<IDbConnection>(db =>
 {
     return new SqlConnection(Environment.GetEnvironmentVariable("DB_CONNECTION"));
 });
