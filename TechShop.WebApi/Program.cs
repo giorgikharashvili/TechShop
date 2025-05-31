@@ -8,6 +8,7 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using TechShop.Infrastructure.Repositories.Interfaces;
 using TechShop.WebAPI.Config;
+using TechShop.Application;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,10 +26,9 @@ builder.Services.AddSwaggerGen(options =>
     if (File.Exists(xmlPath)) options.IncludeXmlComments(xmlPath);
 });
 
-
-
 // Rate Limiter
 
+#region RateLimiter
 var rateLimitingSettings = builder.Configuration.GetSection("RateLimiter").Get<RateLimiterSettings>();
 
 builder.Services.AddRateLimiter(options =>
@@ -43,18 +43,20 @@ builder.Services.AddRateLimiter(options =>
             Window = TimeSpan.FromSeconds(rateLimitingSettings.WindowSeconds)
         }));
 });
-
-
+#endregion
 
 builder.Services.AddScoped<IDbConnection>(db =>
 {
     return new SqlConnection(Environment.GetEnvironmentVariable("DB_CONNECTION"));
 });
 
+// TechShop.Application Services
+
+builder.Services.AddApplicationServices();
+
 
 #region Services
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
-builder.Services.AddScoped<AddressesService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<CartItemService>();
 builder.Services.AddScoped<CategoriesService>();

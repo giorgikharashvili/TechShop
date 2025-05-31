@@ -1,5 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using TechShop.Application.Features.Address.CreateAddresses;
+using TechShop.Application.Features.Address.DeleteAddresses;
+using TechShop.Application.Features.Address.GetAddressesById;
+using TechShop.Application.Features.Address.GetAllAddresses;
+using TechShop.Application.Features.Address.UpdateAddresses;
 using TechShop.Application.Services;
 using TechShop.Domain.DTOs.Addresses;
 
@@ -9,11 +15,11 @@ namespace TechShop.Controllers
     [Route("api/[controller]")]
     public class AddressesController : ControllerBase
     {
-        private readonly AddressesService _addressService;
+        private readonly IMediator _mediator;
 
-        public AddressesController(AddressesService addressService)
+        public AddressesController(IMediator mediator)
         {
-            _addressService = addressService;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -24,7 +30,7 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<AddressesDto>>> GetAll()
         {
-            var result = await _addressService.GetAllAsync();
+            var result = await _mediator.Send(new GetAllAddressesQuery());
             return Ok(result);
         }
 
@@ -37,7 +43,7 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<AddressesDto>> GetById(int id)
         {
-            var address = await _addressService.GetByIdAsync(id);
+            var address = await _mediator.Send(new GetAddressesByIdQuery(id));
             if (address == null) return NotFound();
             return Ok(address);
         }
@@ -49,10 +55,12 @@ namespace TechShop.Controllers
         /// <returns>The newly created address.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<ActionResult<AddressesDto>> Create([FromBody] CreateAddressesDto dto)
+        public async Task<ActionResult<AddressesDto>> Create([FromBody] CreateAddressesCommand command)
         {
-            var created = await _addressService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var createdId = await _mediator.Send(command);
+
+            var createdAddress = await _mediator.Send(new GetAddressesByIdQuery(createdId));
+            return CreatedAtAction(nameof(GetById), new { id = createdId }, createdAddress);
         }
 
         /// <summary>
@@ -63,13 +71,11 @@ namespace TechShop.Controllers
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateAddressesDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateAddressesCommand command)
         {
-            var exists = await _addressService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-
-            await _addressService.UpdateAsync(id, dto);
-
+            if (id != command.id) return BadRequest();
+            var success = await _mediator.Send(command);
+            if (!success) return NotFound();
             return NoContent();
         }
 
@@ -82,12 +88,8 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _addressService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-
-            await _addressService.DeleteAsync(id);
-            
-
+            var success = await _mediator.Send(new DeleteAddressCommand(id));
+            if (!success) return NotFound();
             return NoContent();
         }
     }
