@@ -5,18 +5,18 @@ using TechShop.TechShop.Domain.Entities;
 
 namespace TechShop.Application.Features.Address.UpdateAddresses
 {
-    public class UpdateAddressesCommandHandler : IRequestHandler<UpdateAddressesCommand, bool>
+    public class UpdateCartCommandHandler : IRequestHandler<UpdateCartCommand, bool>
     {
         private readonly IRepository<Addresses> _repository;
         private readonly IMapper _mapper;
 
-        public UpdateAddressesCommandHandler(IRepository<Addresses> repository, IMapper mapper)
+        public UpdateCartCommandHandler(IRepository<Addresses> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<bool> Handle(UpdateAddressesCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(UpdateCartCommand request, CancellationToken cancellationToken)
         {
             var address = await _repository.GetByIdAsync(request.id);
             if (address == null) return false;

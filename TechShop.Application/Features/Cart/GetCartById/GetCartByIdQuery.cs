@@ -5,9 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 using TechShop.Domain.DTOs.Addresses;
+using TechShop.Domain.DTOs.Cart;
 using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.GetAddressesById
+namespace TechShop.Application.Features.Address.GetCartById
 {
-    public record GetAddressesByIdQuery(int id) : IRequest<AddressesDto?>;
+    public record GetCartByIdQuery(int id) : IRequest<CartDto?>;
 }

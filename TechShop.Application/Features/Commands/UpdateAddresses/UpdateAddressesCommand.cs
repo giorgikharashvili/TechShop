@@ -11,7 +11,7 @@ namespace TechShop.Application.Features.Address.UpdateAddresses
 {
     
 
-    public record UpdateAddressesCommand(
+    public record UpdateCartCommand(
         int id,
         string AddressLine1, 
         string AddressLine2, 

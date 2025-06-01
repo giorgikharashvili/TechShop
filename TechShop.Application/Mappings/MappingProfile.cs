@@ -22,7 +22,7 @@ namespace TechShop.Application.Mappings
     {
         public MappingProfile()
         {
-            CreateMap<UpdateAddressesCommand, Addresses>()
+            CreateMap<UpdateCartCommand, Addresses>()
              .ForMember(dest => dest.Id, opt => opt.Ignore()) 
              .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
              .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());

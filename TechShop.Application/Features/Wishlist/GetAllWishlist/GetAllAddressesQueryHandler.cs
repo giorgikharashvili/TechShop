@@ -11,7 +11,7 @@ using TechShop.TechShop.Domain.Entities;
 
 namespace TechShop.Application.Features.Address.GetAllAddresses
 {
-    public class GetAllCartQueryHandler : IRequestHandler<GetAllAddressesQuery, IEnumerable<AddressesDto>>
+    public class GetAllCartQueryHandler : IRequestHandler<GetAllCartItemQuery, IEnumerable<AddressesDto>>
     {
         private readonly IRepository<Addresses> _repository;
         private readonly IMapper _mapper;
@@ -22,7 +22,7 @@ namespace TechShop.Application.Features.Address.GetAllAddresses
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<AddressesDto>> Handle(GetAllAddressesQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<AddressesDto>> Handle(GetAllCartItemQuery request, CancellationToken cancellationToken)
         {
             var addresses = await _repository.GetAllAsync();
             return _mapper.Map<IEnumerable<AddressesDto>>(addresses);

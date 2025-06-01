@@ -30,7 +30,7 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<AddressesDto>>> GetAll()
         {
-            var result = await _mediator.Send(new GetAllAddressesQuery());
+            var result = await _mediator.Send(new GetAllCartItemQuery());
             return Ok(result);
         }
 
@@ -55,7 +55,7 @@ namespace TechShop.Controllers
         /// <returns>The newly created address.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<ActionResult<AddressesDto>> Create([FromBody] CreateAddressesCommand command)
+        public async Task<ActionResult<AddressesDto>> Create([FromBody] CreateCartItemCommand command)
         {
             var createdId = await _mediator.Send(command);
 
@@ -71,7 +71,7 @@ namespace TechShop.Controllers
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateAddressesCommand command)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateCartCommand command)
         {
             if (id != command.id) return BadRequest();
             var success = await _mediator.Send(command);
@@ -88,7 +88,7 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _mediator.Send(new DeleteAddressCommand(id));
+            var success = await _mediator.Send(new DeleteCartItemCommand(id));
             if (!success) return NotFound();
             return NoContent();
         }

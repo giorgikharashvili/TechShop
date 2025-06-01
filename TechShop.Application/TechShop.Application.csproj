@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Commands\" />
-    <Folder Include="Features\Categories\" />
     <Folder Include="Features\Queries\" />
   </ItemGroup>
 

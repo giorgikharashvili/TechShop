@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TechShop.Application.Features.Address.CreateAddresses
 {
-    internal class UpdateAddressesCommandValidator
+    internal class UpdateCartCommandValidator
     {
     }
 }

@@ -7,7 +7,7 @@ using MediatR;
 
 namespace TechShop.Application.Features.Address.CreateAddresses
 {
-    public record CreateAddressesCommand(
+    public record CreateCartItemCommand(
         string AddressLine1,
         string AddressLine2,
         string Country,

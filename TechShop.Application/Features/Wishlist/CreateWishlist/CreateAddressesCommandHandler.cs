@@ -10,19 +10,19 @@ using TechShop.TechShop.Domain.Entities;
 
 namespace TechShop.Application.Features.Address.CreateAddresses
 {
-    public class CreateAddressesCommandHandler : IRequestHandler<CreateAddressesCommand, int>
+    public class CreateCartItemCommandHandler : IRequestHandler<CreateCartItemCommand, int>
     {
         private readonly IRepository<Addresses> _repository;
         private readonly IMapper _mapper;
         
-        public CreateAddressesCommandHandler(IRepository<Addresses> repository, IMapper mapper)
+        public CreateCartItemCommandHandler(IRepository<Addresses> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
 
-        public async Task<int> Handle(CreateAddressesCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(CreateCartItemCommand request, CancellationToken cancellationToken)
         {
             var entity = _mapper.Map<Addresses>(request);
             entity.CreatedAt = DateTime.UtcNow;

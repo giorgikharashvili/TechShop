@@ -8,9 +8,9 @@ using TechShop.Application.Features.Address.UpdateAddresses;
 
 namespace TechShop.Application.Features.Address.CreateAddresses
 {
-    public class UpdateAddressesCommandValidator : AbstractValidator<UpdateAddressesCommand>
+    public class UpdateCartCommandValidator : AbstractValidator<UpdateCartCommand>
     {
-        public UpdateAddressesCommandValidator()
+        public UpdateCartCommandValidator()
         {
             RuleFor(x => x.id).GreaterThan(0);
             RuleFor(x => x.AddressLine1).NotEmpty().MaximumLength(50);

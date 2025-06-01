@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace TechShop.Application.Features.Address.CreateAddresses
+namespace TechShop.Application.Features.Address.CreateCart
 {
     public record CreateCartCommand(
         string AddressLine1,

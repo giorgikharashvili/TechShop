@@ -24,8 +24,8 @@ namespace TechShop.Application.Features.Address.GetAllCart
 
         public async Task<IEnumerable<CartDto>> Handle(GetAllCartQuery request, CancellationToken cancellationToken)
         {
-            var Cart = await _repository.GetAllAsync();
-            return _mapper.Map<IEnumerable<CartDto>>(Cart);
+            var cart = await _repository.GetAllAsync();
+            return _mapper.Map<IEnumerable<CartDto>>(cart);
         }
     }
 }

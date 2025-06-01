@@ -9,7 +9,7 @@ using TechShop.TechShop.Domain.Entities;
 
 namespace TechShop.Application.Features.Address.DeleteAddresses
 {
-    public class DeleteCartCommandHandler : IRequestHandler<DeleteAddressCommand, bool>
+    public class DeleteCartCommandHandler : IRequestHandler<DeleteCartItemCommand, bool>
     {
         private readonly IRepository<Addresses> _repository;
 
@@ -18,7 +18,7 @@ namespace TechShop.Application.Features.Address.DeleteAddresses
             _repository = repository;
         }
 
-        public async Task<bool> Handle(DeleteAddressCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(DeleteCartItemCommand request, CancellationToken cancellationToken)
         {
             var exists = await _repository.GetByIdAsync(request.id);
             if (exists == null) return false;

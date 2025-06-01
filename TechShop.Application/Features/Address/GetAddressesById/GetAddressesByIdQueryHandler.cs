@@ -11,12 +11,12 @@ using TechShop.TechShop.Domain.Entities;
 
 namespace TechShop.Application.Features.Address.GetAddressesById
 {
-    public class GetAddressesByIdQueryHandler : IRequestHandler<GetAddressesByIdQuery, AddressesDto?>
+    public class GetCartItemByIdQueryHandler : IRequestHandler<GetAddressesByIdQuery, AddressesDto?>
     {
         private readonly IRepository<Addresses> _repository;
         private readonly IMapper _mapper;
 
-        public GetAddressesByIdQueryHandler(IRepository<Addresses> repository, IMapper mapper)
+        public GetCartItemByIdQueryHandler(IRepository<Addresses> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

@@ -7,7 +7,7 @@ using FluentValidation;
 
 namespace TechShop.Application.Features.Address.CreateAddresses
 {
-    public class CreateCartCommandValidator : AbstractValidator<CreateAddressesCommand>
+    public class CreateCartCommandValidator : AbstractValidator<CreateCartItemCommand>
     {
         public CreateCartCommandValidator()
         {

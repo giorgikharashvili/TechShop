@@ -8,6 +8,6 @@ using TechShop.Domain.DTOs.Addresses;
 
 namespace TechShop.Application.Features.Address.GetAllAddresses
 {
-    public record GetAllAddressesQuery() : IRequest<IEnumerable<AddressesDto>>;
+    public record GetAllCartItemQuery() : IRequest<IEnumerable<AddressesDto>>;
   
 }
