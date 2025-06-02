@@ -7,14 +7,15 @@ using TechShop.Application.Services.Interfaces;
 using TechShop.Domain.DTOs.Users;
 using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories;
+using TechShop.Infrastructure.Repositories.Interfaces;
 
 namespace TechShop.Application.Services
 {
     public class UsersService : IEntityService<UserDto, CreateUserDto, UpdateUserDto>
     {
-        private readonly UsersRepository _usersRepository;
+        private readonly IRepository<Users> _usersRepository;
 
-        public UsersService(UsersRepository usersRepository)
+        public UsersService(IRepository<Users> usersRepository)
         {
             _usersRepository = usersRepository;
         }
@@ -67,7 +68,7 @@ namespace TechShop.Application.Services
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
             user.PhoneNumber = dto.PhoneNumber;
-            user.ModifedAt = DateTime.UtcNow;
+            user.ModifiedAt = DateTime.UtcNow;
             user.ModifiedBy = "System";
 
             await _usersRepository.UpdateAsync(user);

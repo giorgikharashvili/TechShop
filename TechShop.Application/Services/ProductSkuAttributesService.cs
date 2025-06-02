@@ -6,14 +6,15 @@ using TechShop.Application.Services.Interfaces;
 using TechShop.Domain.DTOs.ProductsSkuAttributes;
 using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories;
+using TechShop.Infrastructure.Repositories.Interfaces;
 
 namespace TechShop.Application.Services
 {
     public class ProductSkuAttributesService : IEntityService<ProductSkuAttributesDto, CreateProductSkuAttributesDto, UpdateProductsSkuAttributesDto>
     {
-        private readonly ProductSkuAttributesRepository _repository;
+        private readonly IRepository<ProductSkuAttributes> _repository;
 
-        public ProductSkuAttributesService(ProductSkuAttributesRepository repository)
+        public ProductSkuAttributesService(IRepository<ProductSkuAttributes> repository)
         {
             _repository = repository;
         }

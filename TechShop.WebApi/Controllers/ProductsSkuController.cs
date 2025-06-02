@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TechShop.Application.Services;
 using TechShop.Domain.DTOs.ProductsSkus;
 
@@ -20,6 +21,7 @@ namespace TechShop.Controllers
         /// </summary>
         /// <returns>List of all product SKUs.</returns>
         [HttpGet]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<ProductsSkusDto>>> GetAll()
         {
             var result = await _productsSkusService.GetAllAsync();
@@ -32,6 +34,7 @@ namespace TechShop.Controllers
         /// <param name="id">The ID of the product SKU to retrieve.</param>
         /// <returns>Product SKU with specified ID.</returns>
         [HttpGet("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<ProductsSkusDto>> GetById(int id)
         {
             var sku = await _productsSkusService.GetByIdAsync(id);
@@ -45,6 +48,7 @@ namespace TechShop.Controllers
         /// <param name="dto">The product SKU to create.</param>
         /// <returns>The newly created product SKU.</returns>
         [HttpPost]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<ProductsSkusDto>> Create([FromBody] CreateProductsSkusDto dto)
         {
             var created = await _productsSkusService.CreateAsync(dto);
@@ -58,6 +62,7 @@ namespace TechShop.Controllers
         /// <param name="dto">The updated product SKU details.</param>
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateProductsSkusDto dto)
         {
             var exists = await _productsSkusService.GetByIdAsync(id);
@@ -73,6 +78,7 @@ namespace TechShop.Controllers
         /// <param name="id">ID of the product SKU to delete.</param>
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
             var exists = await _productsSkusService.GetByIdAsync(id);

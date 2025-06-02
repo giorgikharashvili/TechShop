@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TechShop.Application.Services;
 using TechShop.Domain.DTOs.OrderItem;
 
@@ -21,6 +22,7 @@ namespace TechShop.Controllers
         /// </summary>
         /// <returns>List of all order items.</returns>
         [HttpGet]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<OrderItemDto>>> GetAll()
         {
             var result = await _orderItemsService.GetAllAsync();
@@ -33,6 +35,7 @@ namespace TechShop.Controllers
         /// <param name="id">The ID of the order item to retrieve.</param>
         /// <returns>Order item with specified ID.</returns>
         [HttpGet("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<OrderItemDto>> GetById(int id)
         {
             var item = await _orderItemsService.GetByIdAsync(id);
@@ -46,6 +49,7 @@ namespace TechShop.Controllers
         /// <param name="dto">The order item to create.</param>
         /// <returns>The newly created order item.</returns>
         [HttpPost]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<OrderItemDto>> Create([FromBody] CreateOrderItemDto dto)
         {
             var created = await _orderItemsService.CreateAsync(dto);
@@ -59,6 +63,7 @@ namespace TechShop.Controllers
         /// <param name="dto">The updated order item details.</param>
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateOrderItemDto dto)
         {
             var exists = await _orderItemsService.GetByIdAsync(id);
@@ -75,6 +80,7 @@ namespace TechShop.Controllers
         /// <param name="id">ID of the order item to delete.</param>
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
             var exists = await _orderItemsService.GetByIdAsync(id);

@@ -2,6 +2,7 @@
 using TechShop.Application.Services.Interfaces;
 using TechShop.Domain.DTOs.Categories;
 using TechShop.Application.Services;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace TechShop.WebApi.Controllers
 {
@@ -21,6 +22,7 @@ namespace TechShop.WebApi.Controllers
         /// </summary>
         /// <returns>List of all categories.</returns>
         [HttpGet]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<CategoriesDto>>> GetAll()
         {
             var result = await _categoryService.GetAllAsync();
@@ -33,6 +35,7 @@ namespace TechShop.WebApi.Controllers
         /// <param name="id">The ID of the category to retrieve.</param>
         /// <returns>Category with specified ID.</returns>
         [HttpGet("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<CategoriesDto>> GetById(int id)
         {
             var category = await _categoryService.GetByIdAsync(id);
@@ -46,6 +49,7 @@ namespace TechShop.WebApi.Controllers
         /// <param name="dto">The category to create.</param>
         /// <returns>The newly created category.</returns>
         [HttpPost]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<CategoriesDto>> Create([FromBody] CreateCategoriesDto dto)
         {
             var created = await _categoryService.CreateAsync(dto);
@@ -59,6 +63,7 @@ namespace TechShop.WebApi.Controllers
         /// <param name="dto">The updated category details.</param>
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoriesDto dto)
         {
             var exists = await _categoryService.GetByIdAsync(id);
@@ -74,6 +79,7 @@ namespace TechShop.WebApi.Controllers
         /// <param name="id">ID of the category to delete.</param>
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
             var exists = await _categoryService.GetByIdAsync(id);

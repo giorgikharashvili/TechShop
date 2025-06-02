@@ -8,14 +8,16 @@ using TechShop.Infrastructure.Repositories;
 using TechShop.Application.Services.Interfaces;
 using TechShop.Domain.DTOs.Addresses;
 using TechShop.TechShop.Domain.Entities;
+using TechShop.Infrastructure.Repositories.Interfaces;
+using System.Xml.Serialization;
 
 namespace TechShop.Application.Services
 {
     public class AddressesService : IEntityService<AddressesDto, CreateAddressesDto, UpdateAddressesDto>
     {
-        private readonly AddressesRepository _addressesRepository;
-
-        public AddressesService(AddressesRepository addressesRepository)
+        private readonly IRepository<Addresses> _addressesRepository;
+        
+        public AddressesService(IRepository<Addresses> addressesRepository)
         {
             _addressesRepository = addressesRepository;
         }

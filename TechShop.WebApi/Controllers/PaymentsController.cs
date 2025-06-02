@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TechShop.Application.Services;
 using TechShop.Domain.DTOs.Payments;
 
@@ -20,6 +21,7 @@ namespace TechShop.Controllers
         /// </summary>
         /// <returns>List of all payments.</returns>
         [HttpGet]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<PaymentsDto>>> GetAll()
         {
             var result = await _paymentsService.GetAllAsync();
@@ -32,6 +34,7 @@ namespace TechShop.Controllers
         /// <param name="id">The ID of the payment to retrieve.</param>
         /// <returns>Payment with specified ID.</returns>
         [HttpGet("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<PaymentsDto>> GetById(int id)
         {
             var payment = await _paymentsService.GetByIdAsync(id);
@@ -45,6 +48,7 @@ namespace TechShop.Controllers
         /// <param name="dto">The payment to create.</param>
         /// <returns>The newly created payment.</returns>
         [HttpPost]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<PaymentsDto>> Create([FromBody] CreatePaymentDto dto)
         {
             var created = await _paymentsService.CreateAsync(dto);
@@ -58,6 +62,7 @@ namespace TechShop.Controllers
         /// <param name="dto">The updated payment status.</param>
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdatePaymentStatusDto dto)
         {
             var exists = await _paymentsService.GetByIdAsync(id);
@@ -73,6 +78,7 @@ namespace TechShop.Controllers
         /// <param name="id">ID of the payment to delete.</param>
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
+        [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
             var exists = await _paymentsService.GetByIdAsync(id);

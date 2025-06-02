@@ -6,14 +6,15 @@ using TechShop.Application.Services.Interfaces;
 using TechShop.Domain.DTOs.OrderDetails;
 using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories;
+using TechShop.Infrastructure.Repositories.Interfaces;
 
 namespace TechShop.Application.Services
 {
     public class OrderDetailsService : IEntityService<OrderDetailsDto, CreateOrderDetailsDto, UpdateOrderDetailsDto>
     {
-        private readonly OrderDetailsRepository _orderDetailsRepository;
+        private readonly IRepository<OrderDetails> _orderDetailsRepository;
 
-        public OrderDetailsService(OrderDetailsRepository orderDetailsRepository)
+        public OrderDetailsService(IRepository<OrderDetails> orderDetailsRepository)
         {
             _orderDetailsRepository = orderDetailsRepository;
         }

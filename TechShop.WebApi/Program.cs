@@ -1,6 +1,14 @@
 using System.Reflection;
+using System.Threading.RateLimiting;
 using TechShop.Application.Services;
+using TechShop.Infrastructure;
 using TechShop.Infrastructure.Repositories;
+using Dapper;
+using System.Data;
+using Microsoft.Data.SqlClient;
+using TechShop.Infrastructure.Repositories.Interfaces;
+using TechShop.WebAPI.Config;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,29 +25,35 @@ builder.Services.AddSwaggerGen(options =>
     if (File.Exists(xmlPath)) options.IncludeXmlComments(xmlPath);
 });
 
-// Temporary database
-
-builder.Services.AddSingleton<shopDatabase>();
 
 
+// Rate Limiter
 
-// Repositories
+var rateLimitingSettings = builder.Configuration.GetSection("RateLimiter").Get<RateLimiterSettings>();
 
-builder.Services.AddScoped<AddressesRepository>();
-builder.Services.AddScoped<CartRepository>();
-builder.Services.AddScoped<CartItemRepository>();
-builder.Services.AddScoped<CategoriesRepository>();
-builder.Services.AddScoped<OrderDetailsRepository>();
-builder.Services.AddScoped<OrderItemRepository>();
-builder.Services.AddScoped<PaymentsRepository>();
-builder.Services.AddScoped<ProductSkuAttributesRepository>();
-builder.Services.AddScoped<ProductsRepository>();
-builder.Services.AddScoped<ProductsSkusRepository>();
-builder.Services.AddScoped<UsersRepository>();
-builder.Services.AddScoped<WishlistRepository>();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
-// Services
+    options.AddPolicy("RequestsLimiter", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
+        factory: partition => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = rateLimitingSettings.MaxRequests,
+            Window = TimeSpan.FromSeconds(rateLimitingSettings.WindowSeconds)
+        }));
+});
 
+
+
+builder.Services.AddScoped<IDbConnection>(db =>
+{
+    return new SqlConnection(Environment.GetEnvironmentVariable("DB_CONNECTION"));
+});
+
+
+#region Services
+builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<AddressesService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<CartItemService>();
@@ -52,6 +66,7 @@ builder.Services.AddScoped<ProductsService>();
 builder.Services.AddScoped<ProductsSkusService>();
 builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<WishlistService>();
+#endregion
 
 var app = builder.Build();
 
@@ -64,6 +79,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRateLimiter();
 
 app.UseAuthorization();
 
