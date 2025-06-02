@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace TechShop.Application.Features.Address.DeleteCart
+namespace TechShop.Application.Features.Cart.DeleteCart
 {
     public record DeleteCartCommand(int id) : IRequest<bool>;
 }

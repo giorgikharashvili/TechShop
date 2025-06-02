@@ -1,25 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
-using TechShop.Application.Features.Address.GetAllPayments;
-using TechShop.Domain.DTOs.Addresses;
 using TechShop.Domain.DTOs.Payments;
-using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.GetAllAddresses
+namespace TechShop.Application.Features.Payments.GetAllPayments
 {
     public class GetAllPaymentsQueryHandler : IRequestHandler<GetAllPaymentsQuery, IEnumerable<PaymentsDto>>
     {
-        private readonly IRepository<Payments> _repository;
+        private readonly IRepository<Domain.Entities.Payments> _repository;
         private readonly IMapper _mapper;
 
-        public GetAllPaymentsQueryHandler(IRepository<Payments> repository, IMapper mapper)
+        public GetAllPaymentsQueryHandler(IRepository<Domain.Entities.Payments> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

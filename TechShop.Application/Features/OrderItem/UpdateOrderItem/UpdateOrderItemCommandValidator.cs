@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace TechShop.Application.Features.Address.CreateOrderItem
+namespace TechShop.Application.Features.OrderItem.UpdateOrderItem
 {
-    internal class UpdateOrderItemCommandValidator
+    public class UpdateOrderItemCommandValidator : AbstractValidator<UpdateOrderItemCommand>
     {
+        public UpdateOrderItemCommandValidator()
+        {
+            RuleFor(x => x.Id).NotNull().GreaterThan(0);
+            RuleFor(x => x.Quantity).NotNull().GreaterThan(0);
+            RuleFor(x => x.ProductId).NotNull().GreaterThan(0);
+            RuleFor(x => x.ProductSkuId).NotNull().GreaterThan(0);
+        }
     }
 }

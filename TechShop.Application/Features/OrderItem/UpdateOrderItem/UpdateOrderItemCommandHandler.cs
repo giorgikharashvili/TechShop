@@ -1,18 +1,15 @@
 ﻿using AutoMapper;
 using MediatR;
-using TechShop.Application.Features.Address.UpdateOrderItem;
-using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.UpdateAddresses
+namespace TechShop.Application.Features.OrderItem.UpdateOrderItem
 {
     public class UpdateOrderItemCommandHandler : IRequestHandler<UpdateOrderItemCommand, bool>
     {
-        private readonly IRepository<OrderItem> _repository;
+        private readonly IRepository<Domain.Entities.OrderItem> _repository;
         private readonly IMapper _mapper;
 
-        public UpdateOrderItemCommandHandler(IRepository<OrderItem> repository, IMapper mapper)
+        public UpdateOrderItemCommandHandler(IRepository<Domain.Entities.OrderItem> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
@@ -20,9 +17,8 @@ namespace TechShop.Application.Features.Address.UpdateAddresses
 
         public async Task<bool> Handle(UpdateOrderItemCommand request, CancellationToken cancellationToken)
         {
-            var orderItem = await _repository.GetByIdAsync(request.id);
+            var orderItem = await _repository.GetByIdAsync(request.Id);
             if (orderItem == null) return false;
-
             _mapper.Map(request, orderItem);
             await _repository.UpdateAsync(orderItem);
             return true;

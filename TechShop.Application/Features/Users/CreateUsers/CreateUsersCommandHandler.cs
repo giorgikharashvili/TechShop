@@ -1,33 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
+using TechShop.Domain.DTOs.Users;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.CreateAddresses
+
+namespace TechShop.Application.Features.Users.CreateUsers
 {
-    public class CreateCartItemCommandHandler : IRequestHandler<CreateCartItemCommand, int>
+    public class CreateUsersCommandHandler : IRequestHandler<CreateUsersCommand, UserDto>
     {
-        private readonly IRepository<Addresses> _repository;
+        private readonly IRepository<Domain.Entities.Users> _repository;
         private readonly IMapper _mapper;
         
-        public CreateCartItemCommandHandler(IRepository<Addresses> repository, IMapper mapper)
+        public CreateUsersCommandHandler(IRepository<Domain.Entities.Users> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
 
-        public async Task<int> Handle(CreateCartItemCommand request, CancellationToken cancellationToken)
+        public async Task<UserDto> Handle(CreateUsersCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<Addresses>(request);
+            var entity = _mapper.Map<Domain.Entities.Users>(request);
             entity.CreatedAt = DateTime.UtcNow;
             await _repository.AddAsync(entity);
-            return entity.Id;
+            var dto = _mapper.Map<UserDto>(entity);
+            return dto;
         }
     }
 }

@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
-using TechShop.Domain.DTOs.Addresses;
 using TechShop.Domain.DTOs.ProductsSkus;
-using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.GetProductsSkusById
+namespace TechShop.Application.Features.ProductsSkus.GetProductsSkusById
 {
     public class GetProductsSkusByIdQueryHandler : IRequestHandler<GetProductsSkusByIdQuery, ProductsSkusDto?>
     {
-        private readonly IRepository<ProductsSkus> _repository;
+        private readonly IRepository<Domain.Entities.ProductsSkus> _repository;
         private readonly IMapper _mapper;
 
-        public GetProductsSkusByIdQueryHandler(IRepository<ProductsSkus> repository, IMapper mapper)
+        public GetProductsSkusByIdQueryHandler(IRepository<Domain.Entities.ProductsSkus> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

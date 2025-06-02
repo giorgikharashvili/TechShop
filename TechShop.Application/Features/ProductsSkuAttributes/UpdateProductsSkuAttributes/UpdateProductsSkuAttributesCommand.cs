@@ -1,22 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using TechShop.TechShop.Domain.Entities;
+﻿using MediatR;
 
-namespace TechShop.Application.Features.Address.UpdateProductsSkuAttributes
+namespace TechShop.Application.Features.ProductsSkuAttributes.UpdateProductsSkuAttributes
 {
-    
-
     public record UpdateProductsSkuAttributesCommand(
-        int id,
-        string AddressLine1, 
-        string AddressLine2, 
-        string Country, 
-        string City, 
-        string PostalCode
+        int Id,
+        string Type,
+        string Name
         ) : IRequest<bool>;
 }

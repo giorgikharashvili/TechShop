@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
+using TechShop.Domain.DTOs.Users;
 
-namespace TechShop.Application.Features.Address.CreateAddresses
+namespace TechShop.Application.Features.Users.CreateUsers
 {
-    public record CreateCartItemCommand(
-        string AddressLine1,
-        string AddressLine2,
-        string Country,
-        string City,
-        string PostalCode,
-        int UserId
-        ) : IRequest<int>;
+    public record CreateUsersCommand(
+        string FirstName,
+        string LastName,
+        string Username,
+        string Email,
+        string Password,
+        string PhoneNumber
+        ) : IRequest<UserDto>;
     
 }

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.DeleteProductsSkuAttributes
+namespace TechShop.Application.Features.ProductsSkuAttributes.DeleteProductsSkuAttributes
 {
     public class DeleteProductsSkuAttributesCommandHandler : IRequestHandler<DeleteProductsSkuAttributesCommand, bool>
     {
@@ -18,7 +12,6 @@ namespace TechShop.Application.Features.Address.DeleteProductsSkuAttributes
         {
             _repository = repository;
         }
-
         public async Task<bool> Handle(DeleteProductsSkuAttributesCommand request, CancellationToken cancellationToken)
         {
             var exists = await _repository.GetByIdAsync(request.id);

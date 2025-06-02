@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
-using TechShop.Application.Features.Address.CreateProductsSkuAttributes;
+using TechShop.Domain.DTOs.ProductsSkuAttributes;
 using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.CreateProductsSkuAttributes
+namespace TechShop.Application.Features.ProductsSkuAttributes.CreateProductsSkuAttributes
 {
-    public class CreateProductsSkuAttributesCommandHandler : IRequestHandler<CreateProductsSkuAttributesCommand, int>
+    public class CreateProductsSkuAttributesCommandHandler : IRequestHandler<CreateProductsSkuAttributesCommand, ProductSkuAttributesDto>
     {
         private readonly IRepository<ProductSkuAttributes> _repository;
         private readonly IMapper _mapper;
@@ -24,11 +18,12 @@ namespace TechShop.Application.Features.Address.CreateProductsSkuAttributes
         }
 
 
-        public async Task<int> Handle(CreateProductsSkuAttributesCommand request, CancellationToken cancellationToken)
+        public async Task<ProductSkuAttributesDto> Handle(CreateProductsSkuAttributesCommand request, CancellationToken cancellationToken)
         {
             var entity = _mapper.Map<ProductSkuAttributes>(request);
             await _repository.AddAsync(entity);
-            return entity.Id;
+            var dto = _mapper.Map<ProductSkuAttributesDto>(entity);
+            return dto;
         }
     }
 }

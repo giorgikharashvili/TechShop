@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using TechShop.Domain.DTOs.Addresses;
+﻿using MediatR;
 using TechShop.Domain.DTOs.ProductsSkuAttributes;
 
-namespace TechShop.Application.Features.Address.GetAllProductsSkuAttributes
+namespace TechShop.Application.Features.ProductsSkuAttributes.GetAllProductsSkuAttributes
 {
     public record GetAllProductsSkuAttributesQuery() : IRequest<IEnumerable<ProductSkuAttributesDto>>;
   

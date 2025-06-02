@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
+using TechShop.Domain.DTOs.OrderItem;
 
-namespace TechShop.Application.Features.Address.CreateOrderItem
+namespace TechShop.Application.Features.OrderItem.CreateOrderItem
 {
     public record CreateOrderItemCommand(
-        string AddressLine1,
-        string AddressLine2,
-        string Country,
-        string City,
-        string PostalCode,
-        int UserId
-        ) : IRequest<int>;
+        int ProductId,
+        int ProductSkuId,
+        int Quantity
+        ) : IRequest<OrderItemDto>;
     
 }

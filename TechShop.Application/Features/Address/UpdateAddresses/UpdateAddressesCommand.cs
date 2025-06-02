@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using TechShop.TechShop.Domain.Entities;
+﻿using MediatR;
 
 namespace TechShop.Application.Features.Address.UpdateAddresses
 {
     
 
-    public record UpdateCartCommand(
+    public record UpdateAddressesCommand(
         int id,
         string AddressLine1, 
         string AddressLine2, 

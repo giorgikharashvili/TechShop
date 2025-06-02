@@ -1,23 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
 using TechShop.Domain.DTOs.CartItem;
-using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.GetCartItemById
+namespace TechShop.Application.Features.CartItem.GetCartItemById
 {
     public class GetCartItemByIdQueryHandler : IRequestHandler<GetCartByIdQuery, CartItemDto?>
     {
-        private readonly IRepository<CartItem> _repository;
+        private readonly IRepository<Domain.Entities.CartItem> _repository;
         private readonly IMapper _mapper;
 
-        public GetCartItemByIdQueryHandler(IRepository<CartItem> repository, IMapper mapper)
+        public GetCartItemByIdQueryHandler(IRepository<Domain.Entities.CartItem> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

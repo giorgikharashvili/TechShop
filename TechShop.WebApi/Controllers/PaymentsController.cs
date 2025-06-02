@@ -1,90 +1,67 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using TechShop.Application.Services;
+using MediatR;
 using TechShop.Domain.DTOs.Payments;
+using TechShop.Application.Features.Payments.GetAllPayments;
+using TechShop.Application.Features.Payments.CreatePayments;
+using TechShop.Application.Features.Payments.DeletePayments;
+using TechShop.Application.Features.Payments.GetPaymentsById;
+using TechShop.Application.Features.Payments.UpdatePayments;
 
-namespace TechShop.Controllers
+namespace TechShop.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class PaymentsController : ControllerBase
     {
-        private readonly PaymentsService _paymentsService;
+        private readonly IMediator _mediator;
 
-        public PaymentsController(PaymentsService paymentsService)
+        public PaymentsController(IMediator mediator)
         {
-            _paymentsService = paymentsService;
+            _mediator = mediator;
         }
 
-        /// <summary>
-        /// Returns all payments.
-        /// </summary>
-        /// <returns>List of all payments.</returns>
         [HttpGet]
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<PaymentsDto>>> GetAll()
         {
-            var result = await _paymentsService.GetAllAsync();
+            var result = await _mediator.Send(new GetAllPaymentsQuery());
             return Ok(result);
         }
 
-        /// <summary>
-        /// Returns a payment by its ID.
-        /// </summary>
-        /// <param name="id">The ID of the payment to retrieve.</param>
-        /// <returns>Payment with specified ID.</returns>
         [HttpGet("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<PaymentsDto>> GetById(int id)
         {
-            var payment = await _paymentsService.GetByIdAsync(id);
-            if (payment == null) return NotFound();
-            return Ok(payment);
+            var result = await _mediator.Send(new GetPaymentsByIdQuery(id));
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
-        /// <summary>
-        /// Creates a new payment.
-        /// </summary>
-        /// <param name="dto">The payment to create.</param>
-        /// <returns>The newly created payment.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<ActionResult<PaymentsDto>> Create([FromBody] CreatePaymentDto dto)
+        public async Task<ActionResult<PaymentsDto>> Create([FromBody] CreatePaymentsCommand command)
         {
-            var created = await _paymentsService.CreateAsync(dto);
+            var created = await _mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        /// <summary>
-        /// Updates an existing payment.
-        /// </summary>
-        /// <param name="id">ID of the payment status to update.</param>
-        /// <param name="dto">The updated payment status.</param>
-        /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdatePaymentStatusDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdatePaymentsCommand command)
         {
-            var exists = await _paymentsService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            var success = await _paymentsService.UpdateAsync(id, dto);
-            
+            if (id != command.id) return BadRequest("ID mismatch");
+            var success = await _mediator.Send(command);
+            if (!success) return NotFound();
             return NoContent();
         }
 
-        /// <summary>
-        /// Deletes a payment by ID.
-        /// </summary>
-        /// <param name="id">ID of the payment to delete.</param>
-        /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _paymentsService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _paymentsService.DeleteAsync(id);
-            
+            var success = await _mediator.Send(new DeletePaymentsCommand(id));
+            if (!success) return NotFound();
             return NoContent();
         }
     }

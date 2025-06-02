@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using TechShop.Domain.DTOs.Addresses;
+﻿using MediatR;
 using TechShop.Domain.DTOs.ProductsSkus;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.GetProductsSkusById
+namespace TechShop.Application.Features.ProductsSkus.GetProductsSkusById
 {
     public record GetProductsSkusByIdQuery(int id) : IRequest<ProductsSkusDto?>;
 }

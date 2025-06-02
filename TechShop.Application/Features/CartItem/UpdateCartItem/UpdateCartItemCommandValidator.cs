@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace TechShop.Application.Features.Address.CreateCartItem
+namespace TechShop.Application.Features.CartItem.UpdateCartItem
 {
-    internal class UpdateCartCommandValidator
+    public class UpdateCartItemCommandValidator : AbstractValidator<UpdateCartItemCommand>
     {
+        public UpdateCartItemCommandValidator()
+        {
+            RuleFor(x => x.Quantity).NotNull().GreaterThan(0);
+            RuleFor(x => x.ProductId).NotNull().GreaterThan(0);
+            RuleFor(x => x.ProductName).NotNull().Length(30);
+            RuleFor(x => x.Price).NotNull().GreaterThan(0);
+            RuleFor(x => x.ProductIdSku).NotNull().GreaterThan(0);
+        }
     }
 }

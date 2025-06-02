@@ -6,10 +6,9 @@ using TechShop.Application.Features.Address.DeleteAddresses;
 using TechShop.Application.Features.Address.GetAddressesById;
 using TechShop.Application.Features.Address.GetAllAddresses;
 using TechShop.Application.Features.Address.UpdateAddresses;
-using TechShop.Application.Services;
 using TechShop.Domain.DTOs.Addresses;
 
-namespace TechShop.Controllers
+namespace TechShop.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -30,7 +29,7 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<AddressesDto>>> GetAll()
         {
-            var result = await _mediator.Send(new GetAllCartItemQuery());
+            var result = await _mediator.Send(new GetAllAddressQuery());
             return Ok(result);
         }
 
@@ -55,12 +54,10 @@ namespace TechShop.Controllers
         /// <returns>The newly created address.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<ActionResult<AddressesDto>> Create([FromBody] CreateCartItemCommand command)
+        public async Task<ActionResult<AddressesDto>> Create([FromBody] CreateAddressCommand command)
         {
-            var createdId = await _mediator.Send(command);
-
-            var createdAddress = await _mediator.Send(new GetAddressesByIdQuery(createdId));
-            return CreatedAtAction(nameof(GetById), new { id = createdId }, createdAddress);
+            var createdAddress = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetById), new { id = createdAddress }, createdAddress);
         }
 
         /// <summary>
@@ -71,7 +68,7 @@ namespace TechShop.Controllers
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateCartCommand command)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateAddressesCommand command)
         {
             if (id != command.id) return BadRequest();
             var success = await _mediator.Send(command);
@@ -88,7 +85,7 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _mediator.Send(new DeleteCartItemCommand(id));
+            var success = await _mediator.Send(new DeleteAddressCommand(id));
             if (!success) return NotFound();
             return NoContent();
         }

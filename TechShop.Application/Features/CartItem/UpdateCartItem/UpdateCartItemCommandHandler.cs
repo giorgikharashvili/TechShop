@@ -1,23 +1,21 @@
 ﻿using AutoMapper;
 using MediatR;
-using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.UpdateCartItem
+namespace TechShop.Application.Features.CartItem.UpdateCartItem
 {
-    public class UpdateCartCommandHandler : IRequestHandler<UpdateCartCommand, bool>
+    public class UpdateCartCommandHandler : IRequestHandler<UpdateCartItemCommand, bool>
     {
-        private readonly IRepository<CartItem> _repository;
+        private readonly IRepository<Domain.Entities.CartItem> _repository;
         private readonly IMapper _mapper;
 
-        public UpdateCartCommandHandler(IRepository<CartItem> repository, IMapper mapper)
+        public UpdateCartCommandHandler(IRepository<Domain.Entities.CartItem> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<bool> Handle(UpdateCartCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(UpdateCartItemCommand request, CancellationToken cancellationToken)
         {
             var cartItem = await _repository.GetByIdAsync(request.id);
             if (cartItem == null) return false;

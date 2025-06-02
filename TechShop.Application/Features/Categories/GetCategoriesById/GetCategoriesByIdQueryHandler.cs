@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
-using TechShop.Domain.DTOs.Addresses;
 using TechShop.Domain.DTOs.Categories;
-using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.GetCategoriesById
+namespace TechShop.Application.Features.Categories.GetCategoriesById
 {
     public class GetCategoriesByIdQueryHandler : IRequestHandler<GetCategoriesByIdQuery, CategoriesDto?>
     {
-        private readonly IRepository<Categories> _repository;
+        private readonly IRepository<Domain.Entities.Categories> _repository;
         private readonly IMapper _mapper;
 
-        public GetCategoriesByIdQueryHandler(IRepository<Categories> repository, IMapper mapper)
+        public GetCategoriesByIdQueryHandler(IRepository<Domain.Entities.Categories> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

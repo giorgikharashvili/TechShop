@@ -1,92 +1,67 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using TechShop.Application.Services;
+using MediatR;
+using TechShop.Application.Features.OrderDetails.CreateOrderDetails;
 using TechShop.Domain.DTOs.OrderDetails;
+using TechShop.Application.Features.OrderDetails.UpdateOrderDetails;
+using TechShop.Application.Features.OrderDetails.GetAllOrderDetails;
+using TechShop.Application.Features.OrderDetails.GetOrderDetailsById;
+using TechShop.Application.Features.OrderDetails.DeleteOrderDetails;
 
-namespace TechShop.Controllers
+namespace TechShop.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class OrderDetailsController : ControllerBase
     {
-        private readonly OrderDetailsService _orderDetailsService;
+        private readonly IMediator _mediator;
 
-        public OrderDetailsController(OrderDetailsService orderDetailsService)
+        public OrderDetailsController(IMediator mediator)
         {
-            _orderDetailsService = orderDetailsService;
+            _mediator = mediator;
         }
 
-        /// <summary>
-        /// Returns all order details.
-        /// </summary>
-        /// <returns>List of all order details.</returns>
         [HttpGet]
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<OrderDetailsDto>>> GetAll()
         {
-            var result = await _orderDetailsService.GetAllAsync();
+            var result = await _mediator.Send(new GetAllOrderDetailsQuery());
             return Ok(result);
         }
 
-        /// <summary>
-        /// Returns a specific order detail by ID.
-        /// </summary>
-        /// <param name="id">The ID of the order detail to retrieve.</param>
-        /// <returns>Order detail with specified ID.</returns>
         [HttpGet("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<OrderDetailsDto>> GetById(int id)
         {
-            var detail = await _orderDetailsService.GetByIdAsync(id);
-            if (detail == null) return NotFound();
-            return Ok(detail);
+            var result = await _mediator.Send(new GetOrderDetailsByIdQuery(id));
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
-        /// <summary>
-        /// Creates a new order detail.
-        /// </summary>
-        /// <param name="dto">The order detail to create.</param>
-        /// <returns>The newly created order detail.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<ActionResult<OrderDetailsDto>> Create([FromBody] CreateOrderDetailsDto dto)
+        public async Task<ActionResult<OrderDetailsDto>> Create([FromBody] CreateOrderDetailsCommand command)
         {
-            var created = await _orderDetailsService.CreateAsync(dto);
+            var created = await _mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        /// <summary>
-        /// Updates an existing order detail.
-        /// </summary>
-        /// <param name="id">ID of the order detail to update.</param>
-        /// <param name="dto">The updated order detail data.</param>
-        /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateOrderDetailsDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateOrderDetailsCommand command)
         {
-            var exists = await _orderDetailsService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-
-            await _orderDetailsService.UpdateAsync(id, dto);
-         
-
+            if (id != command.id) return BadRequest("ID mismatch");
+            var updated = await _mediator.Send(command);
+            if (!updated) return NotFound();
             return NoContent();
         }
 
-        /// <summary>
-        /// Deletes an order detail by ID.
-        /// </summary>
-        /// <param name="id">ID of the order detail to delete.</param>
-        /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _orderDetailsService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _orderDetailsService.DeleteAsync(id);
-            
+            var deleted = await _mediator.Send(new DeleteOrderDetailsCommand(id));
+            if (!deleted) return NotFound();
             return NoContent();
         }
     }

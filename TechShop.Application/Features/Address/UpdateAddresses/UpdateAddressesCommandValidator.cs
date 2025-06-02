@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
-using TechShop.Application.Features.Address.UpdateAddresses;
+﻿using FluentValidation;
 
-namespace TechShop.Application.Features.Address.CreateAddresses
+namespace TechShop.Application.Features.Address.UpdateAddresses
 {
-    public class UpdateCartCommandValidator : AbstractValidator<UpdateCartCommand>
+    public class UpdateAddressCommandValidator : AbstractValidator<UpdateAddressesCommand>
     {
-        public UpdateCartCommandValidator()
+        public UpdateAddressCommandValidator()
         {
             RuleFor(x => x.id).GreaterThan(0);
             RuleFor(x => x.AddressLine1).NotEmpty().MaximumLength(50);

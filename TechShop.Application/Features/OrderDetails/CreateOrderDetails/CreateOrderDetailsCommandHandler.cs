@@ -1,34 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
-using TechShop.Domain.Entities;
+using TechShop.Domain.DTOs.OrderDetails;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.CreateOrderDetails
+namespace TechShop.Application.Features.OrderDetails.CreateOrderDetails
 {
-    public class CreateOrderDetailsCommandHandler : IRequestHandler<CreateOrderDetailsCommand, int>
+    public class CreateOrderDetailsCommandHandler : IRequestHandler<CreateOrderDetailsCommand, OrderDetailsDto>
     {
-        private readonly IRepository<OrderDetails> _repository;
+        private readonly IRepository<Domain.Entities.OrderDetails> _repository;
         private readonly IMapper _mapper;
         
-        public CreateOrderDetailsCommandHandler(IRepository<OrderDetails> repository, IMapper mapper)
+        public CreateOrderDetailsCommandHandler(IRepository<Domain.Entities.OrderDetails> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
-
-
-        public async Task<int> Handle(CreateOrderDetailsCommand request, CancellationToken cancellationToken)
+        public async Task<OrderDetailsDto> Handle(CreateOrderDetailsCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<OrderDetails>(request);
+            var entity = _mapper.Map<Domain.Entities.OrderDetails>(request);
             entity.CreatedAt = DateTime.UtcNow;
             await _repository.AddAsync(entity);
-            return entity.Id;
+            var dto = _mapper.Map<OrderDetailsDto>(entity);
+            return dto;
         }
     }
 }

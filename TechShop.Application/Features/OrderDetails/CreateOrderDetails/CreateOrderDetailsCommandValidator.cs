@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace TechShop.Application.Features.Address.CreateOrderDetails
+namespace TechShop.Application.Features.OrderDetails.CreateOrderDetails
 {
-    internal class CreateOrderDetailsCommandValidator
+    public class CreateOrderDetailsCommandValidator : AbstractValidator<CreateOrderDetailsCommand>
     {
+        public CreateOrderDetailsCommandValidator()
+        {
+            RuleFor(x => x.UserId).NotEmpty().GreaterThan(0);
+            RuleFor(x => x.TotalPrice).NotEmpty().GreaterThan(0);
+        }
     }
 }

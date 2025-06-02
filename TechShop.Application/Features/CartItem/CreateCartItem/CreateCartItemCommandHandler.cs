@@ -1,33 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
-using TechShop.Domain.Entities;
+using TechShop.Domain.DTOs.CartItem;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.CreateCartItem
+namespace TechShop.Application.Features.CartItem.CreateCartItem
 {
-    public class CreateCartItemCommandHandler : IRequestHandler<CreateCartItemCommand, int>
+    public class CreateCartItemCommandHandler : IRequestHandler<CreateCartItemCommand, CartItemDto>
     {
-        private readonly IRepository<CartItem> _repository;
+        private readonly IRepository<Domain.Entities.CartItem> _repository;
         private readonly IMapper _mapper;
         
-        public CreateCartItemCommandHandler(IRepository<CartItem> repository, IMapper mapper)
+        public CreateCartItemCommandHandler(IRepository<Domain.Entities.CartItem> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
 
-        public async Task<int> Handle(CreateCartItemCommand request, CancellationToken cancellationToken)
+        public async Task<CartItemDto> Handle(CreateCartItemCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<CartItem>(request);
+            var entity = _mapper.Map<Domain.Entities.CartItem>(request);
             await _repository.AddAsync(entity);
-            return entity.Id;
+            var dto = _mapper.Map<CartItemDto>(entity);
+            return dto;
         }
     }
 }

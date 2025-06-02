@@ -1,33 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
-using TechShop.Domain.Entities;
+using TechShop.Domain.DTOs.Categories;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.CreateCategories
+namespace TechShop.Application.Features.Categories.CreateCategories
 {
-    public class CreateCartItemCommandHandler : IRequestHandler<CreateCartItemCommand, int>
+    public class CreateCategoriesCommandHandler : IRequestHandler<CreateCategoriesCommand, CategoriesDto>
     {
-        private readonly IRepository<Categories> _repository;
+        private readonly IRepository<Domain.Entities.Categories> _repository;
         private readonly IMapper _mapper;
         
-        public CreateCartItemCommandHandler(IRepository<Categories> repository, IMapper mapper)
+        public CreateCategoriesCommandHandler(IRepository<Domain.Entities.Categories> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
-
-
-        public async Task<int> Handle(CreateCartItemCommand request, CancellationToken cancellationToken)
+        public async Task<CategoriesDto> Handle(CreateCategoriesCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<Categories>(request);
+            var entity = _mapper.Map<Domain.Entities.Categories>(request);
             await _repository.AddAsync(entity);
-            return entity.Id;
+            var dto = _mapper.Map<CategoriesDto>(entity);
+            return dto;
         }
     }
 }

@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using TechShop.Domain.Entities;
+﻿using MediatR;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.DeletePayments
+namespace TechShop.Application.Features.Payments.DeletePayments
 {
     public class DeletePaymentsCommandHandler : IRequestHandler<DeletePaymentsCommand, bool>
     {
-        private readonly IRepository<Payments> _repository;
+        private readonly IRepository<Domain.Entities.Payments> _repository;
 
-        public DeletePaymentsCommandHandler(IRepository<Payments> repository)
+        public DeletePaymentsCommandHandler(IRepository<Domain.Entities.Payments> repository)
         {
             _repository = repository;
         }

@@ -1,6 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using TechShop.Application.Services;
+using MediatR;
+using TechShop.Application.Features.Cart.CreateCart;
+using TechShop.Application.Features.Cart.DeleteCart;
+using TechShop.Application.Features.Cart.UpdateCart;
+using TechShop.Application.Features.Cart.GetAllCart;
+using TechShop.Application.Features.Cart.GetCartById;
 using TechShop.Domain.DTOs.Cart;
 
 namespace TechShop.WebApi.Controllers
@@ -9,11 +14,11 @@ namespace TechShop.WebApi.Controllers
     [Route("api/[controller]")]
     public class CartController : ControllerBase
     {
-        private readonly CartService _cartService;
+        private readonly IMediator _mediator;
 
-        public CartController(CartService cartService)
+        public CartController(IMediator mediator)
         {
-            _cartService = cartService;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -24,7 +29,7 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<CartDto>>> GetAll()
         {
-            var result = await _cartService.GetAllAsync();
+            var result = await _mediator.Send(new GetAllCartQuery());
             return Ok(result);
         }
 
@@ -37,7 +42,7 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<CartDto>> GetById(int id)
         {
-            var cart = await _cartService.GetByIdAsync(id);
+            var cart = await _mediator.Send(new GetCartByIdQuery(id));
             if (cart == null) return NotFound();
             return Ok(cart);
         }
@@ -45,30 +50,30 @@ namespace TechShop.WebApi.Controllers
         /// <summary>
         /// Creates a new cart.
         /// </summary>
-        /// <param name="dto">The cart to create.</param>
+        /// <param name="command">The cart to create.</param>
         /// <returns>The newly created cart.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<ActionResult<CartDto>> Create([FromBody] CreateCartDto dto)
+        public async Task<ActionResult<CartDto>> Create([FromBody] CreateCartCommand command)
         {
-            var created = await _cartService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var createdId = await _mediator.Send(command);
+            var createdCart = await _mediator.Send(new GetCartByIdQuery(createdId.Id));
+            return CreatedAtAction(nameof(GetById), new { id = createdCart.Id }, createdCart);
         }
 
         /// <summary>
         /// Updates an existing cart.
         /// </summary>
         /// <param name="id">ID of the cart to update.</param>
-        /// <param name="dto">The updated cart details.</param>
+        /// <param name="command">The updated cart details.</param>
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateCartDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateCartCommand command)
         {
-            var exists = await _cartService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _cartService.UpdateAsync(id, dto);
-
+            if (id != command.id) return BadRequest();
+            var success = await _mediator.Send(command);
+            if (!success) return NotFound();
             return NoContent();
         }
 
@@ -81,10 +86,8 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _cartService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _cartService.DeleteAsync(id);
-           
+            var success = await _mediator.Send(new DeleteCartCommand(id));
+            if (!success) return NotFound();
             return NoContent();
         }
     }

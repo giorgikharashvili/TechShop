@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using TechShop.Domain.DTOs.Addresses;
+﻿using MediatR;
 using TechShop.Domain.DTOs.OrderItem;
 
-namespace TechShop.Application.Features.Address.GetAllOrderItem
+namespace TechShop.Application.Features.OrderItem.GetAllOrderItem
 {
     public record GetAllOrderItemQuery() : IRequest<IEnumerable<OrderItemDto>>;
   

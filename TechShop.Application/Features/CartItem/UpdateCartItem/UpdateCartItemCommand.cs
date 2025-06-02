@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using TechShop.TechShop.Domain.Entities;
+﻿using MediatR;
 
-namespace TechShop.Application.Features.Address.UpdateCartItem
+namespace TechShop.Application.Features.CartItem.UpdateCartItem
 {
-    
-
-    public record UpdateCartCommand(
+    public record UpdateCartItemCommand(
         int id,
-        string AddressLine1, 
-        string AddressLine2, 
-        string Country, 
-        string City, 
-        string PostalCode
+        int ProductId,
+        int ProductIdSku,
+        int Quantity,
+        string ProductName,
+        decimal Price
         ) : IRequest<bool>;
 }

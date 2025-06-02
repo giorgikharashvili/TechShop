@@ -1,32 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
-using TechShop.Domain.DTOs.Addresses;
+using TechShop.Domain.DTOs.Cart;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.GetAddressesById
+namespace TechShop.Application.Features.Cart.GetCartById
 {
-    public class GetCartItemByIdQueryHandler : IRequestHandler<GetCartByIdQuery, AddressesDto?>
+    public class GetCartItemByIdQueryHandler : IRequestHandler<GetCartByIdQuery, CartDto?>
     {
-        private readonly IRepository<Addresses> _repository;
+        private readonly IRepository<Domain.Entities.Cart> _repository;
         private readonly IMapper _mapper;
 
-        public GetCartItemByIdQueryHandler(IRepository<Addresses> repository, IMapper mapper)
+        public GetCartItemByIdQueryHandler(IRepository<Domain.Entities.Cart> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<AddressesDto?> Handle(GetCartByIdQuery request, CancellationToken cancellationToken)
+        public async Task<CartDto?> Handle(GetCartByIdQuery request, CancellationToken cancellationToken)
         {
-            var address = await _repository.GetByIdAsync(request.id);
-            if (address == null) return null;
-            return _mapper.Map<AddressesDto>(address);
+            var cart = await _repository.GetByIdAsync(request.id);
+            if (cart == null) return null;
+            return _mapper.Map<CartDto>(cart);
         }
     }
 }

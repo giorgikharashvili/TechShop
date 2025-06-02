@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using TechShop.TechShop.Domain.Entities;
+﻿using MediatR;
+using TechShop.TechShop.Domain.Enums;
 
-namespace TechShop.Application.Features.Address.UpdatePayments
+namespace TechShop.Application.Features.Payments.UpdatePayments
 {
-    
-
     public record UpdatePaymentsCommand(
         int id,
-        string AddressLine1, 
-        string AddressLine2, 
-        string Country, 
-        string City, 
-        string PostalCode
+        int OrderId,
+        int StripePaymentId,
+        decimal Amount,
+        string Currency,
+        OrderStatus Status
         ) : IRequest<bool>;
 }

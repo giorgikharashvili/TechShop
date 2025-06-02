@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace TechShop.Application.Features.Address.CreatePayments
+namespace TechShop.Application.Features.Payments.UpdatePayments
 {
-    internal class UpdatePaymentsCommandValidator
+    public class UpdatePaymentsCommandValidator :  AbstractValidator<UpdatePaymentsCommand>
     {
+        public UpdatePaymentsCommandValidator()
+        {
+            RuleFor(x => x.OrderId).NotNull().GreaterThan(0);
+            RuleFor(x => x.Amount).NotNull().GreaterThan(0);
+        }
     }
 }

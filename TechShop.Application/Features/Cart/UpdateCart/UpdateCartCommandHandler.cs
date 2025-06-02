@@ -1,17 +1,15 @@
 ﻿using AutoMapper;
 using MediatR;
-using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.UpdateCart
+namespace TechShop.Application.Features.Cart.UpdateCart
 {
     public class UpdateCartCommandHandler : IRequestHandler<UpdateCartCommand, bool>
     {
-        private readonly IRepository<Cart> _repository;
+        private readonly IRepository<Domain.Entities.Cart> _repository;
         private readonly IMapper _mapper;
 
-        public UpdateCartCommandHandler(IRepository<Cart> repository, IMapper mapper)
+        public UpdateCartCommandHandler(IRepository<Domain.Entities.Cart> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

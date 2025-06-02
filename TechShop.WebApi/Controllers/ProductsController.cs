@@ -1,91 +1,67 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using TechShop.Application.Services;
+using MediatR;
 using TechShop.Domain.DTOs.Products;
+using TechShop.Application.Features.Products.GetAllProducts;
+using TechShop.Application.Features.Products.CreateProducts;
+using TechShop.Application.Features.Products.DeleteProducts;
+using TechShop.Application.Features.Products.GetProductsById;
+using TechShop.Application.Features.Products.UpdateProducts;
 
-namespace TechShop.Controllers
+namespace TechShop.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly ProductsService _productsService;
+        private readonly IMediator _mediator;
 
-        public ProductsController(ProductsService productsService)
+        public ProductsController(IMediator mediator)
         {
-            _productsService = productsService;
+            _mediator = mediator;
         }
 
-        /// <summary>
-        /// Returns all products.
-        /// </summary>
-        /// <returns>List of all products.</returns>
         [HttpGet]
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<ProductsDto>>> GetAll()
         {
-            var result = await _productsService.GetAllAsync();
+            var result = await _mediator.Send(new GetAllProductsQuery());
             return Ok(result);
         }
 
-        /// <summary>
-        /// Returns a product by its ID.
-        /// </summary>
-        /// <param name="id">The ID of the product to retrieve.</param>
-        /// <returns>Product with specified ID.</returns>
         [HttpGet("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<ProductsDto>> GetById(int id)
         {
-            var product = await _productsService.GetByIdAsync(id);
-            if (product == null) return NotFound();
-            return Ok(product);
+            var result = await _mediator.Send(new GetProductsByIdQuery(id));
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
-        /// <summary>
-        /// Creates a new product.
-        /// </summary>
-        /// <param name="dto">The product to create.</param>
-        /// <returns>The newly created product.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<ActionResult<ProductsDto>> Create([FromBody] CreateProductDto dto)
+        public async Task<ActionResult<ProductsDto>> Create([FromBody] CreateProductsCommand command)
         {
-            var created = await _productsService.CreateAsync(dto);
+            var created = await _mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        /// <summary>
-        /// Updates an existing product.
-        /// </summary>
-        /// <param name="id">ID of the product to update.</param>
-        /// <param name="dto">The updated product details.</param>
-        /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateProductDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateProductsCommand command)
         {
-            var exists = await _productsService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _productsService.UpdateAsync(id, dto);
-            
+            if (id != command.id) return BadRequest("ID mismatch");
+            var success = await _mediator.Send(command);
+            if (!success) return NotFound();
             return NoContent();
         }
 
-        /// <summary>
-        /// Deletes a product by ID.
-        /// </summary>
-        /// <param name="id">ID of the product to delete.</param>
-        /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _productsService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _productsService.DeleteAsync(id);
-            
-
+            var success = await _mediator.Send(new DeleteProductsCommand(id));
+            if (!success) return NotFound();
             return NoContent();
         }
     }

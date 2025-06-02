@@ -1,33 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
-using TechShop.Domain.Entities;
+using TechShop.Domain.DTOs.ProductsSkus;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.CreateProductsSkus
+namespace TechShop.Application.Features.ProductsSkus.CreateProductsSkus
 {
-    public class CreateProductsSkusCommandHandler : IRequestHandler<CreateProductsSkusCommand, int>
+    public class CreateProductsSkusCommandHandler : IRequestHandler<CreateProductsSkusCommand, ProductsSkusDto>
     {
-        private readonly IRepository<ProductsSkus> _repository;
+        private readonly IRepository<Domain.Entities.ProductsSkus> _repository;
         private readonly IMapper _mapper;
         
-        public CreateProductsSkusCommandHandler(IRepository<ProductsSkus> repository, IMapper mapper)
+        public CreateProductsSkusCommandHandler(IRepository<Domain.Entities.ProductsSkus> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
 
-        public async Task<int> Handle(CreateProductsSkusCommand request, CancellationToken cancellationToken)
+        public async Task<ProductsSkusDto> Handle(CreateProductsSkusCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<ProductsSkus>(request);
+            var entity = _mapper.Map<Domain.Entities.ProductsSkus>(request);
             await _repository.AddAsync(entity);
-            return entity.Id;
+            var dto = _mapper.Map<ProductsSkusDto>(entity);
+            return dto;
         }
     }
 }

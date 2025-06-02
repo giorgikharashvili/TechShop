@@ -1,19 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using TechShop.Application.Services;
+using MediatR;
 using TechShop.Domain.DTOs.ProductsSkuAttributes;
+using TechShop.Application.Features.ProductsSkuAttributes.CreateProductsSkuAttributes;
+using TechShop.Application.Features.ProductsSkuAttributes.DeleteProductsSkuAttributes;
+using TechShop.Application.Features.ProductsSkuAttributes.GetAllProductsSkuAttributes;
+using TechShop.Application.Features.ProductsSkuAttributes.GetProductsSkuAttributesById;
+using TechShop.Application.Features.ProductsSkuAttributes.UpdateProductsSkuAttributes;
 
-namespace TechShop.Controllers
+namespace TechShop.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class ProductSkuAttributesController : ControllerBase
     {
-        private readonly ProductSkuAttributesService _skuAttributesService;
+        private readonly IMediator _mediator;
 
-        public ProductSkuAttributesController(ProductSkuAttributesService skuAttributesService)
+        public ProductSkuAttributesController(IMediator mediator)
         {
-            _skuAttributesService = skuAttributesService;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -24,7 +29,7 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<ProductSkuAttributesDto>>> GetAll()
         {
-            var result = await _skuAttributesService.GetAllAsync();
+            var result = await _mediator.Send(new GetAllProductsSkuAttributesQuery());
             return Ok(result);
         }
 
@@ -37,21 +42,21 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<ProductSkuAttributesDto>> GetById(int id)
         {
-            var attribute = await _skuAttributesService.GetByIdAsync(id);
-            if (attribute == null) return NotFound();
-            return Ok(attribute);
+            var result = await _mediator.Send(new GetProductsSkuAttributesByIdQuery(id));
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
         /// <summary>
         /// Creates a new product SKU attribute.
         /// </summary>
-        /// <param name="dto">The product SKU attribute to create.</param>
+        /// <param name="command">The product SKU attribute to create.</param>
         /// <returns>The newly created product SKU attribute.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<ActionResult<ProductSkuAttributesDto>> Create([FromBody] CreateProductSkuAttributesDto dto)
+        public async Task<ActionResult<ProductSkuAttributesDto>> Create([FromBody] CreateProductsSkuAttributesCommand command)
         {
-            var created = await _skuAttributesService.CreateAsync(dto);
+            var created = await _mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
@@ -59,16 +64,15 @@ namespace TechShop.Controllers
         /// Updates an existing product SKU attribute.
         /// </summary>
         /// <param name="id">ID of the product SKU attribute to update.</param>
-        /// <param name="dto">The updated product SKU attribute details.</param>
+        /// <param name="command">The updated product SKU attribute details.</param>
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateProductsSkuAttributesDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateProductsSkuAttributesCommand command)
         {
-            var exists = await _skuAttributesService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _skuAttributesService.UpdateAsync(id, dto);
-
+            if (id != command.Id) return BadRequest("ID mismatch");
+            var success = await _mediator.Send(command);
+            if (!success) return NotFound();
             return NoContent();
         }
 
@@ -81,10 +85,8 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _skuAttributesService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _skuAttributesService.DeleteAsync(id);
-
+            var success = await _mediator.Send(new DeleteProductsSkuAttributesCommand(id));
+            if (!success) return NotFound();
             return NoContent();
         }
     }

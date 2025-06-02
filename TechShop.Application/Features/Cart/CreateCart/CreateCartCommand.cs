@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
+using TechShop.Domain.DTOs.Cart;
 
-namespace TechShop.Application.Features.Address.CreateCart
+namespace TechShop.Application.Features.Cart.CreateCart
 {
     public record CreateCartCommand(
-        string AddressLine1,
-        string AddressLine2,
-        string Country,
-        string City,
-        string PostalCode,
-        int UserId
-        ) : IRequest<int>;
+        int id,
+        decimal TotalPrice
+        ) : IRequest<CartDto>;
     
 }

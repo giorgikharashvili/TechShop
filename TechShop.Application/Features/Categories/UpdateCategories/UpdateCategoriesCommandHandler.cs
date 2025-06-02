@@ -1,17 +1,15 @@
 ﻿using AutoMapper;
 using MediatR;
-using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.UpdateCategories
+namespace TechShop.Application.Features.Categories.UpdateCategories
 {
     public class UpdateCategoriesCommandHandler : IRequestHandler<UpdateCategoriesCommand, bool>
     {
-        private readonly IRepository<Categories> _repository;
+        private readonly IRepository<Domain.Entities.Categories> _repository;
         private readonly IMapper _mapper;
 
-        public UpdateCategoriesCommandHandler(IRepository<Categories> repository, IMapper mapper)
+        public UpdateCategoriesCommandHandler(IRepository<Domain.Entities.Categories> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

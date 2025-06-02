@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using TechShop.Application.Features.Address.DeleteOrderItem;
-using TechShop.Domain.Entities;
+﻿using MediatR;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.DeleteOrderItem
+namespace TechShop.Application.Features.OrderItem.DeleteOrderItem
 {
     public class DeleteOrderItemCommandHandler : IRequestHandler<DeleteOrderItemCommand, bool>
     {
-        private readonly IRepository<OrderItem> _repository;
+        private readonly IRepository<Domain.Entities.OrderItem> _repository;
 
-        public DeleteOrderItemCommandHandler(IRepository<OrderItem> repository)
+        public DeleteOrderItemCommandHandler(IRepository<Domain.Entities.OrderItem> repository)
         {
             _repository = repository;
         }

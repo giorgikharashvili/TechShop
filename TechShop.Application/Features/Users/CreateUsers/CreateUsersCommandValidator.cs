@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
+using TechShop.Domain.DTOs.Users;
 
-namespace TechShop.Application.Features.Address.CreateAddresses
+namespace TechShop.Application.Features.Users.CreateUsers
 {
-    internal class CreateCartCommandValidator
+    public class CreateCartUsersValidator  : AbstractValidator<UserDto>
     {
+        public CreateCartUsersValidator()
+        {
+            RuleFor(x => x.Email).NotEmpty().EmailAddress();
+            RuleFor(x => x.PhoneNumber).NotEmpty();
+            RuleFor(x => x.Username).NotEmpty();
+            RuleFor(x => x.FirstName).NotEmpty();
+            RuleFor(x => x.LastName).NotEmpty();
+        }
     }
 }

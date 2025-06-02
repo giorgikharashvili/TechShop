@@ -5,7 +5,7 @@ namespace TechShop.Domain.DTOs.Products
     public class UpdateProductDto
     {
         [Required]
-        [MaxLength(100)]
+        [MaxLength(50)]
         public string Name { get; set; }
 
         [MaxLength(500)]

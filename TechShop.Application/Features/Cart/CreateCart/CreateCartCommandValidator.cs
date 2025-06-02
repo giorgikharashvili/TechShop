@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace TechShop.Application.Features.Address.CreateAddresses
+namespace TechShop.Application.Features.Cart.CreateCart
 {
-    internal class CreateCartCommandValidator
+    public class CreateCartCommandValidator : AbstractValidator<CreateCartCommand>
     {
+        public CreateCartCommandValidator()
+        {
+            RuleFor(x => x.TotalPrice).GreaterThan(0);
+        }
     }
 }

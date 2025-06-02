@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
+using TechShop.Domain.DTOs.ProductsSkus;
 
-namespace TechShop.Application.Features.Address.CreateProductsSkus
+namespace TechShop.Application.Features.ProductsSkus.CreateProductsSkus
 {
     public record CreateProductsSkusCommand(
-        string AddressLine1,
-        string AddressLine2,
-        string Country,
-        string City,
-        string PostalCode,
-        int UserId
-        ) : IRequest<int>;
+        int ProductId,
+        decimal Price,
+        string Sku,
+        string StockQuantity
+        ) : IRequest<ProductsSkusDto>;
     
 }

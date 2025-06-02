@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
+using TechShop.Application.Features.Wishlist.CreateWishlist;
 
-namespace TechShop.Application.Features.Address.CreateCart
+namespace TechShop.Application.Features.Cart.UpdateCart
 {
-    internal class UpdateCartCommandValidator
+    public class UpdateCartCommandValidator :  AbstractValidator<UpdateCartCommand>
     {
+        public UpdateCartCommandValidator()
+        {
+            RuleFor(x => x.id).NotNull();
+            RuleFor(x => x.TotalPrice).GreaterThan(0);
+        }
     }
 }

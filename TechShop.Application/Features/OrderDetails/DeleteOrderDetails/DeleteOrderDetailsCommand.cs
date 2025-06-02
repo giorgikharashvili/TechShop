@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 
-namespace TechShop.Application.Features.Address.DeleteOrderDetails
+namespace TechShop.Application.Features.OrderDetails.DeleteOrderDetails
 {
     public record DeleteOrderDetailsCommand(int id) : IRequest<bool>;
 }

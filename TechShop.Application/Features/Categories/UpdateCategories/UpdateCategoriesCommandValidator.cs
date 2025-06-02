@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
+using TechShop.Application.Features.Categories.UpdateCategories;
 
-namespace TechShop.Application.Features.Address.CreateCategories
+namespace TechShop.Application.Features.Categories.UpdateCategories
 {
-    internal class UpdateCategoriesCommandValidator
+    public class UpdateCategoriesCommandValidator : AbstractValidator<UpdateCategoriesCommand>
     {
+        public UpdateCategoriesCommandValidator()
+        {
+            RuleFor(x => x.Description).NotEmpty().MaximumLength(500);
+            RuleFor(x => x.Name).NotEmpty().MaximumLength(50);
+        }
     }
 }

@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace TechShop.Application.Features.Address.CreateProductsSkus
+namespace TechShop.Application.Features.ProductsSkus.UpdateProductsSkus
 {
-    internal class UpdateProductsSkusCommandValidator
+    public class UpdateProductsSkusCommandValidator : AbstractValidator<UpdateProductsSkusCommand>
     {
+        public UpdateProductsSkusCommandValidator()
+        {
+            RuleFor(x => x.Price).NotNull().GreaterThan(0);
+            RuleFor(x => x.Sku).NotNull().NotEmpty();
+            RuleFor(x => x.StockQuantity).NotNull().NotEmpty();
+            RuleFor(x => x.ProductId).NotNull().GreaterThan(0);
+        }
     }
 }

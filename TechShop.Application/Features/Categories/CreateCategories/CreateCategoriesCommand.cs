@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
+using TechShop.Domain.DTOs.Categories;
 
-namespace TechShop.Application.Features.Address.CreateAddresses
+namespace TechShop.Application.Features.Categories.CreateCategories
 {
-    public record CreateCartItemCommand(
-        string AddressLine1,
-        string AddressLine2,
-        string Country,
-        string City,
-        string PostalCode,
-        int UserId
-        ) : IRequest<int>;
+    public record CreateCategoriesCommand(
+        int id,
+        string Name,
+        string Description
+        ) : IRequest<CategoriesDto>;
     
 }

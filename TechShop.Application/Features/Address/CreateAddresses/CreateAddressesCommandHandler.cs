@@ -1,33 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
+using TechShop.Domain.DTOs.Addresses;
 using TechShop.Infrastructure.Repositories.Interfaces;
 using TechShop.TechShop.Domain.Entities;
 
 namespace TechShop.Application.Features.Address.CreateAddresses
 {
-    public class CreateCartItemCommandHandler : IRequestHandler<CreateCartItemCommand, int>
+    public class CreateAddressesCommandHandler : IRequestHandler<CreateAddressCommand, AddressesDto>
     {
         private readonly IRepository<Addresses> _repository;
         private readonly IMapper _mapper;
         
-        public CreateCartItemCommandHandler(IRepository<Addresses> repository, IMapper mapper)
+        public CreateAddressesCommandHandler(IRepository<Addresses> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
-
-
-        public async Task<int> Handle(CreateCartItemCommand request, CancellationToken cancellationToken)
+        
+        public async Task<AddressesDto> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
         {
             var entity = _mapper.Map<Addresses>(request);
-            entity.CreatedAt = DateTime.UtcNow;
             await _repository.AddAsync(entity);
-            return entity.Id;
+
+            var dto = _mapper.Map<AddressesDto>(entity);
+            return dto;
         }
     }
 }

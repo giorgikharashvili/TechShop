@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using TechShop.Domain.Entities;
+﻿using MediatR;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.DeleteProductsSkus
+
+namespace TechShop.Application.Features.ProductsSkus.DeleteProductsSkus
 {
     public class DeleteProductsSkusCommandHandler : IRequestHandler<DeleteProductsSkusCommand, bool>
     {
-        private readonly IRepository<ProductsSkus> _repository;
+        private readonly IRepository<Domain.Entities.ProductsSkus> _repository;
 
-        public DeleteProductsSkusCommandHandler(IRepository<ProductsSkus> repository)
+        public DeleteProductsSkusCommandHandler(IRepository<Domain.Entities.ProductsSkus> repository)
         {
             _repository = repository;
         }

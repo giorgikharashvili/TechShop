@@ -1,34 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
-using TechShop.Application.Features.Address.CreateOrderItem;
-using TechShop.Domain.Entities;
+using TechShop.Domain.DTOs.OrderItem;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.CreateOrderItem
+namespace TechShop.Application.Features.OrderItem.CreateOrderItem
 {
-    public class CreateOrderItemCommandHandler : IRequestHandler<CreateOrderItemCommand int>
+    public class CreateOrderItemCommandHandler : IRequestHandler<CreateOrderItemCommand, OrderItemDto>
     {
-        private readonly IRepository<OrderItem> _repository;
+        private readonly IRepository<Domain.Entities.OrderItem> _repository;
         private readonly IMapper _mapper;
         
-        public CreateOrderItemCommandHandler(IRepository<OrderItem> repository, IMapper mapper)
+        public CreateOrderItemCommandHandler(IRepository<Domain.Entities.OrderItem> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
 
-        public async Task<int> Handle(CreateOrderItemCommand request, CancellationToken cancellationToken)
+        public async Task<OrderItemDto> Handle(CreateOrderItemCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<OrderItem>(request);
+            var entity = _mapper.Map<Domain.Entities.OrderItem>(request);
             await _repository.AddAsync(entity);
-            return entity.Id;
+            var dto = _mapper.Map<OrderItemDto>(entity);
+            return dto;
         }
     }
 }

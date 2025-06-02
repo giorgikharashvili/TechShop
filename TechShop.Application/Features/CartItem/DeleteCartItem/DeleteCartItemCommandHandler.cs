@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using TechShop.Domain.Entities;
+﻿using MediatR;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.DeleteCartItem
+namespace TechShop.Application.Features.CartItem.DeleteCartItem
 {
     public class DeleteCartCommandHandler : IRequestHandler<DeleteCartItemCommand, bool>
     {
-        private readonly IRepository<CartItem> _repository;
+        private readonly IRepository<Domain.Entities.CartItem> _repository;
 
-        public DeleteCartCommandHandler(IRepository<CartItem> repository)
+        public DeleteCartCommandHandler(IRepository<Domain.Entities.CartItem> repository)
         {
             _repository = repository;
         }

@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
-using TechShop.Domain.DTOs.Addresses;
 using TechShop.Domain.DTOs.ProductsSkuAttributes;
 using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.GetProductsSkuAttributesById
+namespace TechShop.Application.Features.ProductsSkuAttributes.GetProductsSkuAttributesById
 {
     public class GetProductsSkuAttributesByIdQueryHandler : IRequestHandler<GetProductsSkuAttributesByIdQuery, ProductSkuAttributesDto?>
     {

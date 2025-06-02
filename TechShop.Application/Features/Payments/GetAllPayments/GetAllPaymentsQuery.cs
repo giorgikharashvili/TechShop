@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using TechShop.Domain.DTOs.Addresses;
+﻿using MediatR;
 using TechShop.Domain.DTOs.Payments;
 
-namespace TechShop.Application.Features.Address.GetAllPayments
+namespace TechShop.Application.Features.Payments.GetAllPayments
 {
     public record GetAllPaymentsQuery() : IRequest<IEnumerable<PaymentsDto>>;
   

@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
+using TechShop.Domain.DTOs.Payments;
+using TechShop.TechShop.Domain.Enums;
 
-namespace TechShop.Application.Features.Address.CreatePayments
+namespace TechShop.Application.Features.Payments.CreatePayments
 {
     public record CreatePaymentsCommand(
-        string AddressLine1,
-        string AddressLine2,
-        string Country,
-        string City,
-        string PostalCode,
-        int UserId
-        ) : IRequest<int>;
+       int OrderId,
+       int StripePaymentId,
+       decimal Amount,
+       string Currency,
+       OrderStatus Status
+        ) : IRequest<PaymentsDto>;
     
 }

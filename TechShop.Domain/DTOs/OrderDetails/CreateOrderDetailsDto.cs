@@ -5,11 +5,11 @@ namespace TechShop.Domain.DTOs.OrderDetails
 {
     public class CreateOrderDetailsDto
     {
+        public int Id { get; set; }
         [Required]
         public int UserId { get; set; }
 
         [Required]
-        [Range(1, int.MaxValue)]
         public int TotalPrice { get; set; }
     }
 }

@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace TechShop.Application.Features.Address.CreateAddresses
+namespace TechShop.Application.Features.Categories.CreateCategories
 {
-    internal class CreateCartCommandValidator
+    public class CreateCategoriesCommandValidator : AbstractValidator<CreateCategoriesCommand>
     {
+        public CreateCategoriesCommandValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty().MaximumLength(50);
+            RuleFor(x => x.Description).NotEmpty().MaximumLength(500);
+        }
     }
 }

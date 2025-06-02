@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
-using TechShop.Application.Features.Address.UpdateProductsSkuAttributes;
 using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.UpdateAddresses
+namespace TechShop.Application.Features.ProductsSkuAttributes.UpdateProductsSkuAttributes
 {
     public class UpdateProductsSkuAttributesCommandHandler : IRequestHandler<UpdateProductsSkuAttributesCommand, bool>
     {
@@ -20,7 +18,7 @@ namespace TechShop.Application.Features.Address.UpdateAddresses
 
         public async Task<bool> Handle(UpdateProductsSkuAttributesCommand request, CancellationToken cancellationToken)
         {
-            var productSkuAttributes = await _repository.GetByIdAsync(request.id);
+            var productSkuAttributes = await _repository.GetByIdAsync(request.Id);
             if (productSkuAttributes == null) return false;
             _mapper.Map(request, productSkuAttributes);
             await _repository.UpdateAsync(productSkuAttributes);

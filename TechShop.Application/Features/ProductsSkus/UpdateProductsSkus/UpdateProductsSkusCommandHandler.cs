@@ -1,17 +1,14 @@
 ﻿using AutoMapper;
 using MediatR;
-using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
-
-namespace TechShop.Application.Features.Address.UpdateProductsSkus
+namespace TechShop.Application.Features.ProductsSkus.UpdateProductsSkus
 {
     public class UpdateProductsSkusCommandHandler : IRequestHandler<UpdateProductsSkusCommand, bool>
     {
-        private readonly IRepository<ProductsSkus> _repository;
+        private readonly IRepository<Domain.Entities.ProductsSkus> _repository;
         private readonly IMapper _mapper;
 
-        public UpdateProductsSkusCommandHandler(IRepository<ProductsSkus> repository, IMapper mapper)
+        public UpdateProductsSkusCommandHandler(IRepository<Domain.Entities.ProductsSkus> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
@@ -19,7 +16,7 @@ namespace TechShop.Application.Features.Address.UpdateProductsSkus
 
         public async Task<bool> Handle(UpdateProductsSkusCommand request, CancellationToken cancellationToken)
         {
-            var productsSkus = await _repository.GetByIdAsync(request.id);
+            var productsSkus = await _repository.GetByIdAsync(request.Id);
             if (productsSkus == null) return false;
             _mapper.Map(request, productsSkus);
             await _repository.UpdateAsync(productsSkus);

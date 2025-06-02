@@ -1,25 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
-using TechShop.Application.Features.Address.GetAllOrderItem;
-using TechShop.Domain.DTOs.Addresses;
 using TechShop.Domain.DTOs.OrderItem;
-using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
-using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.GetAllOrderItem
+namespace TechShop.Application.Features.OrderItem.GetAllOrderItem
 {
     public class GetAllOrderItemQueryHandler : IRequestHandler<GetAllOrderItemQuery, IEnumerable<OrderItemDto>>
     {
-        private readonly IRepository<OrderItem> _repository;
+        private readonly IRepository<Domain.Entities.OrderItem> _repository;
         private readonly IMapper _mapper;
 
-        public GetAllOrderItemQueryHandler(IRepository<OrderItem> repository, IMapper mapper)
+        public GetAllOrderItemQueryHandler(IRepository<Domain.Entities.OrderItem> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
