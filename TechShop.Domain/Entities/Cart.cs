@@ -10,7 +10,7 @@ namespace TechShop.Domain.Entities
     [DbSchema("cart")]
     public class Cart
     {
-        public int Id { get; set; }
+        public int Id { get; init; }
         public string UserId { get; set; }
         public decimal TotalPrice { get; set; }
     }
