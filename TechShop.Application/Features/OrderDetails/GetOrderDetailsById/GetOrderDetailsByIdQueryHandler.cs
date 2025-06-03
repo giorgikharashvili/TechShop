@@ -20,6 +20,7 @@ namespace TechShop.Application.Features.OrderDetails.GetOrderDetailsById
         {
             var orderDetails = await _repository.GetByIdAsync(request.id);
             if (orderDetails == null) return null;
+
             return _mapper.Map<OrderDetailsDto>(orderDetails);
         }
     }

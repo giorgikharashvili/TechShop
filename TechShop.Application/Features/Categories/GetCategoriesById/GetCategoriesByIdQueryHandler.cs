@@ -20,6 +20,7 @@ namespace TechShop.Application.Features.Categories.GetCategoriesById
         {
             var categories = await _repository.GetByIdAsync(request.id);
             if (categories == null) return null;
+
             return _mapper.Map<CategoriesDto>(categories);
         }
     }

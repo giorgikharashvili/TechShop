@@ -19,6 +19,7 @@ namespace TechShop.Application.Features.Categories.GetAllCategories
         public async Task<IEnumerable<CategoriesDto>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
         {
             var categories = await _repository.GetAllAsync();
+
             return _mapper.Map<IEnumerable<CategoriesDto>>(categories);
         }
     }

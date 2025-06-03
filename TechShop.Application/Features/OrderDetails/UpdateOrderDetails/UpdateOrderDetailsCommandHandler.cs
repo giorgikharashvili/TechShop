@@ -18,10 +18,14 @@ namespace TechShop.Application.Features.OrderDetails.UpdateOrderDetails
         {
             var orderDetails = await _repository.GetByIdAsync(request.id);
             if (orderDetails == null) return false;
+
             _mapper.Map(request, orderDetails);
+
             orderDetails.ModifiedAt = DateTime.UtcNow;
             orderDetails.ModifiedBy = "System";
+
             await _repository.UpdateAsync(orderDetails);
+
             return true;
         }
     }

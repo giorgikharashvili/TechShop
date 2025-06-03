@@ -20,9 +20,12 @@ namespace TechShop.Application.Features.Address.UpdateAddresses
         {
             var address = await _repository.GetByIdAsync(request.id);
             if (address == null) return false;
+
             _mapper.Map(request, address);
+
             address.ModifiedAt = DateTime.UtcNow;
             address.ModifiedBy = "System";
+
             await _repository.UpdateAsync(address);
             return true;
         }

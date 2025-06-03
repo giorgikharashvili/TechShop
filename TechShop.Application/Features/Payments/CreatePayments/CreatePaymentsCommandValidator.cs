@@ -6,8 +6,8 @@ namespace TechShop.Application.Features.Payments.CreatePayments
     {
         public CreatePaymentsCommandValidator()
         {
-            RuleFor(x => x.OrderId).NotNull().GreaterThan(0);
-            RuleFor(x => x.Amount).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.OrderId).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.Amount).NotNull().GreaterThan(0);
         }
     }
 }

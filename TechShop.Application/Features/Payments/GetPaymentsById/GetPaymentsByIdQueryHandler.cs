@@ -20,6 +20,7 @@ namespace TechShop.Application.Features.Payments.GetPaymentsById
         {
             var payments = await _repository.GetByIdAsync(request.id);
             if (payments == null) return null;
+
             return _mapper.Map<PaymentsDto>(payments);
         }
     }

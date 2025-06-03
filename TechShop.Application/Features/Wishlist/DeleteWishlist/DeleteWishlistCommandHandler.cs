@@ -18,6 +18,7 @@ namespace TechShop.Application.Features.Wishlist.DeleteWishlist
             if (exists == null) return false;
 
             await _repository.DeleteAsync(request.id);
+
             return true;
         }
     }

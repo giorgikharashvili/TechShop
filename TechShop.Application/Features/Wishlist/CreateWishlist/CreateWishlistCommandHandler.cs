@@ -19,10 +19,13 @@ namespace TechShop.Application.Features.Wishlist.CreateWishlist
 
         public async Task<WishlistDto> Handle(CreateWishlistCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<Domain.Entities.Wishlist>(request);
+            var entity = _mapper.Map<Domain.Entities.Wishlist>(request.Dto);
             entity.CreatedAt = DateTime.UtcNow;
+
             await _repository.AddAsync(entity);
+
             var dto = _mapper.Map<WishlistDto>(entity);
+
             return dto;
         }
     }

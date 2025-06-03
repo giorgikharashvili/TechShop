@@ -1,12 +1,7 @@
 ﻿using MediatR;
+using TechShop.Domain.DTOs.ProductsSkus;
 
 namespace TechShop.Application.Features.ProductsSkus.UpdateProductsSkus
 {
-    public record UpdateProductsSkusCommand(
-        int Id,
-        int ProductId,
-        decimal Price,
-        string Sku,
-        string StockQuantity
-        ) : IRequest<bool>;
+    public record UpdateProductsSkusCommand(int id, UpdateProductsSkusDto Dto) : IRequest<bool>;
 }

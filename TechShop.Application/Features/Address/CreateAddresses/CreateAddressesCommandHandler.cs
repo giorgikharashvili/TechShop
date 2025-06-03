@@ -19,10 +19,13 @@ namespace TechShop.Application.Features.Address.CreateAddresses
         
         public async Task<AddressesDto> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<Addresses>(request);
+            var entity = _mapper.Map<Addresses>(request.Dto);
+            entity.CreatedAt = DateTime.UtcNow;
+
             await _repository.AddAsync(entity);
 
             var dto = _mapper.Map<AddressesDto>(entity);
+
             return dto;
         }
     }

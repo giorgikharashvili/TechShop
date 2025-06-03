@@ -30,6 +30,7 @@ namespace TechShop.WebApi.Controllers
         public async Task<ActionResult<IEnumerable<CartDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllCartQuery());
+
             return Ok(result);
         }
 
@@ -44,6 +45,7 @@ namespace TechShop.WebApi.Controllers
         {
             var cart = await _mediator.Send(new GetCartByIdQuery(id));
             if (cart == null) return NotFound();
+
             return Ok(cart);
         }
 
@@ -58,6 +60,7 @@ namespace TechShop.WebApi.Controllers
         {
             var createdId = await _mediator.Send(command);
             var createdCart = await _mediator.Send(new GetCartByIdQuery(createdId.Id));
+
             return CreatedAtAction(nameof(GetById), new { id = createdCart.Id }, createdCart);
         }
 
@@ -72,8 +75,10 @@ namespace TechShop.WebApi.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCartCommand command)
         {
             if (id != command.id) return BadRequest();
-            var success = await _mediator.Send(command);
-            if (!success) return NotFound();
+
+            var isSuccess = await _mediator.Send(command);
+            if (!isSuccess) return NotFound();
+
             return NoContent();
         }
 
@@ -86,8 +91,9 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _mediator.Send(new DeleteCartCommand(id));
-            if (!success) return NotFound();
+            var isSuccess = await _mediator.Send(new DeleteCartCommand(id));
+            if (!isSuccess) return NotFound();
+
             return NoContent();
         }
     }

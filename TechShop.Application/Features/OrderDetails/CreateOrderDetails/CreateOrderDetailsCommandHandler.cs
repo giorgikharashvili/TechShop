@@ -17,10 +17,13 @@ namespace TechShop.Application.Features.OrderDetails.CreateOrderDetails
         }
         public async Task<OrderDetailsDto> Handle(CreateOrderDetailsCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<Domain.Entities.OrderDetails>(request);
+            var entity = _mapper.Map<Domain.Entities.OrderDetails>(request.Dto);
             entity.CreatedAt = DateTime.UtcNow;
+
             await _repository.AddAsync(entity);
+
             var dto = _mapper.Map<OrderDetailsDto>(entity);
+
             return dto;
         }
     }

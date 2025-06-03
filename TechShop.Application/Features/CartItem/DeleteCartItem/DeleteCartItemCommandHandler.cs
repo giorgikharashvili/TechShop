@@ -16,6 +16,7 @@ namespace TechShop.Application.Features.CartItem.DeleteCartItem
         {
             var exists = await _repository.GetByIdAsync(request.id);
             if (exists == null) return false;
+
             await _repository.DeleteAsync(request.id);
             return true;
         }

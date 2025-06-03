@@ -17,12 +17,16 @@ namespace TechShop.Application.Features.Users.UpdateUsers
 
         public async Task<bool> Handle(UpdateUsersCommand request, CancellationToken cancellationToken)
         {
-            var users = await _repository.GetByIdAsync(request.Id);
+            var users = await _repository.GetByIdAsync(request.id);
             if (users == null) return false;
+
             _mapper.Map(request, users);
+
             users.ModifiedAt = DateTime.UtcNow;
             users.ModifiedBy = "System";
+
             await _repository.UpdateAsync(users);
+
             return true;
         }
     }

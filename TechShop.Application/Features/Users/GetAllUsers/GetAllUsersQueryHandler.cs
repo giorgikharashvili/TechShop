@@ -19,6 +19,7 @@ namespace TechShop.Application.Features.Users.GetAllUsers
         public async Task<IEnumerable<UserDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
         {
             var users = await _repository.GetAllAsync();
+
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
     }

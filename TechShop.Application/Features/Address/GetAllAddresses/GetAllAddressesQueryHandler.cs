@@ -20,6 +20,7 @@ namespace TechShop.Application.Features.Address.GetAllAddresses
         public async Task<IEnumerable<AddressesDto>> Handle(GetAllAddressQuery request, CancellationToken cancellationToken)
         {
             var addresses = await _repository.GetAllAsync();
+
             return _mapper.Map<IEnumerable<AddressesDto>>(addresses);
         }
     }

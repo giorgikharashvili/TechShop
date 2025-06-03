@@ -16,10 +16,13 @@ namespace TechShop.Application.Features.ProductsSkus.UpdateProductsSkus
 
         public async Task<bool> Handle(UpdateProductsSkusCommand request, CancellationToken cancellationToken)
         {
-            var productsSkus = await _repository.GetByIdAsync(request.Id);
+            var productsSkus = await _repository.GetByIdAsync(request.id);
             if (productsSkus == null) return false;
+
             _mapper.Map(request, productsSkus);
+
             await _repository.UpdateAsync(productsSkus);
+
             return true;
         }
     }

@@ -6,8 +6,8 @@ namespace TechShop.Application.Features.Wishlist.CreateWishlist
     {
         public CreateWishlistCommandValidator()
         {
-            RuleFor(x => x.ProductId).NotNull().GreaterThan(0);
-            RuleFor(x => x.UserId).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.ProductId).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.UserId).NotNull();
         }
     }
 }

@@ -12,6 +12,7 @@ namespace TechShop.TechShop.Domain.Entities
     [DbSchema("auth")]
     public class Addresses
     {
+        
         public int Id { get; init; }
         public int UserId { get; init; }
         public string AddressLine1  { get; set; }
@@ -19,7 +20,7 @@ namespace TechShop.TechShop.Domain.Entities
         public string Country { get; set; }
         public string City { get; set; }
         public string PostalCode { get; set; }
-        public DateTime CreatedAt { get; init; }
+        public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; init; }
         public string ModifiedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }

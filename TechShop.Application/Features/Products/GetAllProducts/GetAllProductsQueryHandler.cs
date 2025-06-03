@@ -19,6 +19,7 @@ namespace TechShop.Application.Features.Products.GetAllProducts
         public async Task<IEnumerable<ProductsDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
         {
             var entities = await _repository.GetAllAsync();
+
             return _mapper.Map<IEnumerable<ProductsDto>>(entities);
         }
     }

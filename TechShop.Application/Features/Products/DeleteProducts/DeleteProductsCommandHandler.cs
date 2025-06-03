@@ -19,7 +19,9 @@ namespace TechShop.Application.Features.Products.DeleteProducts
         {
             var entity = await _repository.GetByIdAsync(request.id);
             if (entity == null) return false;
+
             await _repository.DeleteAsync(request.id);
+
             return true;
         }
     }

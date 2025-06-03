@@ -19,9 +19,11 @@ namespace TechShop.Application.Features.OrderItem.CreateOrderItem
 
         public async Task<OrderItemDto> Handle(CreateOrderItemCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<Domain.Entities.OrderItem>(request);
+            var entity = _mapper.Map<Domain.Entities.OrderItem>(request.Dto);
             await _repository.AddAsync(entity);
+
             var dto = _mapper.Map<OrderItemDto>(entity);
+
             return dto;
         }
     }

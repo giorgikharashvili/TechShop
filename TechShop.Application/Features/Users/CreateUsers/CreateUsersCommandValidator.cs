@@ -3,9 +3,9 @@ using TechShop.Domain.DTOs.Users;
 
 namespace TechShop.Application.Features.Users.CreateUsers
 {
-    public class CreateCartUsersValidator  : AbstractValidator<UserDto>
+    public class CreateUsersValidator  : AbstractValidator<UserDto>
     {
-        public CreateCartUsersValidator()
+        public CreateUsersValidator()
         {
             RuleFor(x => x.Email).NotEmpty().EmailAddress();
             RuleFor(x => x.PhoneNumber).NotEmpty();

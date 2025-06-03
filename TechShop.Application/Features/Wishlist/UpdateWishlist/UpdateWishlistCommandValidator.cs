@@ -7,8 +7,8 @@ namespace TechShop.Application.Features.Wishlist.UpdateWishlist
     {
         public UpdateWishlistCommandValidator()
         {
-            RuleFor(x => x.ProductId).NotNull().GreaterThan(0);
-            RuleFor(x => x.UserId).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.ProductId).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.UserId).NotNull();
         }
     }
 }

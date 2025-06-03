@@ -20,10 +20,13 @@ namespace TechShop.Application.Features.Users.CreateUsers
 
         public async Task<UserDto> Handle(CreateUsersCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<Domain.Entities.Users>(request);
+            var entity = _mapper.Map<Domain.Entities.Users>(request.Dto);
             entity.CreatedAt = DateTime.UtcNow;
+
             await _repository.AddAsync(entity);
+
             var dto = _mapper.Map<UserDto>(entity);
+
             return dto;
         }
     }

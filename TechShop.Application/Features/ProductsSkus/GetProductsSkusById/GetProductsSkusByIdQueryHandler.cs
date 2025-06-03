@@ -20,6 +20,7 @@ namespace TechShop.Application.Features.ProductsSkus.GetProductsSkusById
         {
             var productsSkus = await _repository.GetByIdAsync(request.id);
             if (productsSkus == null) return null;
+
             return _mapper.Map<ProductsSkusDto>(productsSkus);
         }
     }

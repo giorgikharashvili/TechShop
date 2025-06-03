@@ -19,10 +19,14 @@ namespace TechShop.Application.Features.Payments.UpdatePayments
         {
             var payments = await _repository.GetByIdAsync(request.id);
             if (payments == null) return false;
+
             _mapper.Map(request, payments);
+
             payments.ModifiedAt = DateTime.UtcNow;
             payments.ModifiedBy = "System";
+
             await _repository.UpdateAsync(payments);
+
             return true;
         }
     }

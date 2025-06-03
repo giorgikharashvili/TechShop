@@ -6,9 +6,8 @@ namespace TechShop.Application.Features.OrderItem.CreateOrderItem
     {
         public CreateCartCommandValidator()
         {
-            RuleFor(x => x.Quantity).NotNull().GreaterThan(0);
-            RuleFor(x => x.ProductId).NotNull().GreaterThan(0);
-            RuleFor(x => x.ProductSkuId).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.Quantity).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.ProductId).NotNull().GreaterThan(0);
         }
     }
 }

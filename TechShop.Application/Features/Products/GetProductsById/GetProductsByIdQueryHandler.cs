@@ -20,6 +20,7 @@ namespace TechShop.Application.Features.Products.GetProductsById
         {
             var entity = await _repository.GetByIdAsync(request.id);
             if (entity == null) return null;
+
             return _mapper.Map<ProductsDto>(entity);
         }
     }

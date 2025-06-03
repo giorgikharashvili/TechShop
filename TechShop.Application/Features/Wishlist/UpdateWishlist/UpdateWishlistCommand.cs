@@ -1,10 +1,7 @@
 ﻿using MediatR;
+using TechShop.Domain.DTOs.Wishlist;
 
 namespace TechShop.Application.Features.Wishlist.UpdateWishlist
 {
-    public record UpdateWishlistCommand(
-        int Id,
-        int ProductId,
-        int UserId
-        ) : IRequest<bool>;
+    public record UpdateWishlistCommand(int id, UpdateWishlistDto Dto) : IRequest<bool>;
 }

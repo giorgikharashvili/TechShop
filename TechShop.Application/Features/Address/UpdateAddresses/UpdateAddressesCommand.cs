@@ -1,15 +1,9 @@
 ﻿using MediatR;
+using TechShop.Domain.DTOs.Addresses;
 
 namespace TechShop.Application.Features.Address.UpdateAddresses
 {
     
 
-    public record UpdateAddressesCommand(
-        int id,
-        string AddressLine1, 
-        string AddressLine2, 
-        string Country, 
-        string City, 
-        string PostalCode
-        ) : IRequest<bool>;
+    public record UpdateAddressesCommand(int id, UpdateAddressesDto Dto) : IRequest<bool>;
 }

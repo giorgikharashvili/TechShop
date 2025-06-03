@@ -26,6 +26,7 @@ namespace TechShop.WebApi.Controllers
         public async Task<ActionResult<IEnumerable<CategoriesDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllCategoriesQuery());
+
             return Ok(result);
         }
 
@@ -35,6 +36,7 @@ namespace TechShop.WebApi.Controllers
         {
             var result = await _mediator.Send(new GetCategoriesByIdQuery(id));
             if (result == null) return NotFound();
+
             return Ok(result);
         }
 
@@ -43,6 +45,7 @@ namespace TechShop.WebApi.Controllers
         public async Task<ActionResult<CategoriesDto>> Create([FromBody] CreateCategoriesCommand command)
         {
             var created = await _mediator.Send(command);
+
             return CreatedAtAction(nameof(GetById), new { id = created.Id}, created);
         }
 
@@ -51,8 +54,10 @@ namespace TechShop.WebApi.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoriesCommand command)
         {
             if (id != command.id) return BadRequest("ID mismatch");
-            var result = await _mediator.Send(command);
-            if (!result) return NotFound();
+
+            var isSuccess = await _mediator.Send(command);
+            if (!isSuccess) return NotFound();
+
             return NoContent();
         }
 
@@ -60,8 +65,9 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _mediator.Send(new DeleteCategoriesCommand(id));
-            if (!result) return NotFound();
+            var isSuccess = await _mediator.Send(new DeleteCategoriesCommand(id));
+            if (!isSuccess) return NotFound();
+
             return NoContent();
         }
     }

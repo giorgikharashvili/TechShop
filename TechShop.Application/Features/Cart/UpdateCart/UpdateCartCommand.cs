@@ -1,11 +1,9 @@
 ﻿using MediatR;
+using TechShop.Domain.DTOs.Cart;
 
 namespace TechShop.Application.Features.Cart.UpdateCart
 {
     
 
-    public record UpdateCartCommand(
-        int id,
-        decimal TotalPrice
-        ) : IRequest<bool>;
+    public record UpdateCartCommand(int id, UpdateCartDto Dto) : IRequest<bool>;
 }

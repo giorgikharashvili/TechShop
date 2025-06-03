@@ -26,6 +26,7 @@ namespace TechShop.WebApi.Controllers
         public async Task<ActionResult<IEnumerable<OrderItemDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllOrderItemQuery());
+
             return Ok(result);
         }
 
@@ -35,6 +36,7 @@ namespace TechShop.WebApi.Controllers
         {
             var result = await _mediator.Send(new GetOrderItemByIdQuery(id));
             if (result == null) return NotFound();
+
             return Ok(result);
         }
 
@@ -43,6 +45,7 @@ namespace TechShop.WebApi.Controllers
         public async Task<ActionResult<OrderItemDto>> Create([FromBody] CreateOrderItemCommand command)
         {
             var created = await _mediator.Send(command);
+
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
@@ -50,9 +53,11 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateOrderItemCommand command)
         {
-            if (id != command.Id) return BadRequest("ID mismatch");
-            var updated = await _mediator.Send(command);
-            if (!updated) return NotFound();
+            if (id != command.id) return BadRequest("ID mismatch");
+
+            var isSuccess = await _mediator.Send(command);
+            if (!isSuccess) return NotFound();
+
             return NoContent();
         }
 
@@ -60,8 +65,9 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _mediator.Send(new DeleteOrderItemCommand(id));
-            if (!deleted) return NotFound();
+            var isSuccess = await _mediator.Send(new DeleteOrderItemCommand(id));
+            if (!isSuccess) return NotFound();
+
             return NoContent();
         }
     }

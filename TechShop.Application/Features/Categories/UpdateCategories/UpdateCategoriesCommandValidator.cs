@@ -7,8 +7,8 @@ namespace TechShop.Application.Features.Categories.UpdateCategories
     {
         public UpdateCategoriesCommandValidator()
         {
-            RuleFor(x => x.Description).NotEmpty().MaximumLength(500);
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(50);
+            RuleFor(x => x.Dto.Description).NotEmpty().MaximumLength(500);
+            RuleFor(x => x.Dto.Name).NotEmpty().MaximumLength(50);
         }
     }
 }

@@ -21,7 +21,9 @@ namespace TechShop.Application.Features.Categories.UpdateCategories
             if (address == null) return false;
 
             _mapper.Map(request, address);
+
             await _repository.UpdateAsync(address);
+
             return true;
         }
     }

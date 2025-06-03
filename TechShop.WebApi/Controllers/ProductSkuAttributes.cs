@@ -30,6 +30,7 @@ namespace TechShop.WebApi.Controllers
         public async Task<ActionResult<IEnumerable<ProductSkuAttributesDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllProductsSkuAttributesQuery());
+
             return Ok(result);
         }
 
@@ -44,6 +45,7 @@ namespace TechShop.WebApi.Controllers
         {
             var result = await _mediator.Send(new GetProductsSkuAttributesByIdQuery(id));
             if (result == null) return NotFound();
+
             return Ok(result);
         }
 
@@ -57,6 +59,7 @@ namespace TechShop.WebApi.Controllers
         public async Task<ActionResult<ProductSkuAttributesDto>> Create([FromBody] CreateProductsSkuAttributesCommand command)
         {
             var created = await _mediator.Send(command);
+
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
@@ -70,9 +73,11 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateProductsSkuAttributesCommand command)
         {
-            if (id != command.Id) return BadRequest("ID mismatch");
-            var success = await _mediator.Send(command);
-            if (!success) return NotFound();
+            if (id != command.id) return BadRequest("ID mismatch");
+
+            var isSuccess = await _mediator.Send(command);
+            if (!isSuccess) return NotFound();
+
             return NoContent();
         }
 
@@ -85,8 +90,9 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _mediator.Send(new DeleteProductsSkuAttributesCommand(id));
-            if (!success) return NotFound();
+            var isSuccess = await _mediator.Send(new DeleteProductsSkuAttributesCommand(id));
+            if (!isSuccess) return NotFound();
+
             return NoContent();
         }
     }

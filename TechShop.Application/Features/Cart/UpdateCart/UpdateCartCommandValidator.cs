@@ -7,8 +7,7 @@ namespace TechShop.Application.Features.Cart.UpdateCart
     {
         public UpdateCartCommandValidator()
         {
-            RuleFor(x => x.id).NotNull();
-            RuleFor(x => x.TotalPrice).GreaterThan(0);
+            RuleFor(x => x.Dto.TotalPrice).GreaterThan(0);
         }
     }
 }

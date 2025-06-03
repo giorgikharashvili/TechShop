@@ -17,9 +17,11 @@ namespace TechShop.Application.Features.Categories.CreateCategories
         }
         public async Task<CategoriesDto> Handle(CreateCategoriesCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<Domain.Entities.Categories>(request);
+            var entity = _mapper.Map<Domain.Entities.Categories>(request.Dto);
             await _repository.AddAsync(entity);
+
             var dto = _mapper.Map<CategoriesDto>(entity);
+
             return dto;
         }
     }

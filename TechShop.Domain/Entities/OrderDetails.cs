@@ -13,9 +13,9 @@ namespace TechShop.Domain.Entities
         public int Id { get; init; }
         public int UserId { get; set; }
         public int TotalPrice { get; set; }
-        public DateTime CreatedAt { get; init; }
+        public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; init; }
-        public string ModifiedBy { get; set; }
+        public string ModifiedBy { get; set; }  
         public DateTime? ModifiedAt { get; set; }
     }
 }

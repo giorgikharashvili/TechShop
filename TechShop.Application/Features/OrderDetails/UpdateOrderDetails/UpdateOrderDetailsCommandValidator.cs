@@ -7,8 +7,8 @@ namespace TechShop.Application.Features.OrderDetails.UpdateOrderDetails
     {
         public UpdateOrderDetailsCommandValidator()
         {
-            RuleFor(x => x.UserId).NotNull().GreaterThan(0);
-            RuleFor(x => x.TotalPrice).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.UserId).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.TotalPrice).NotNull().GreaterThan(0);
         }
     }
 }

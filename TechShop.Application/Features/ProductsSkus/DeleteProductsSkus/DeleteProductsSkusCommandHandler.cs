@@ -17,7 +17,9 @@ namespace TechShop.Application.Features.ProductsSkus.DeleteProductsSkus
         {
             var exists = await _repository.GetByIdAsync(request.id);
             if (exists == null) return false;
+
             await _repository.DeleteAsync(request.id);
+
             return true;
         }
     }

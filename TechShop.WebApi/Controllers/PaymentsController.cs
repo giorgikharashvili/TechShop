@@ -26,6 +26,7 @@ namespace TechShop.WebApi.Controllers
         public async Task<ActionResult<IEnumerable<PaymentsDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllPaymentsQuery());
+
             return Ok(result);
         }
 
@@ -35,6 +36,7 @@ namespace TechShop.WebApi.Controllers
         {
             var result = await _mediator.Send(new GetPaymentsByIdQuery(id));
             if (result == null) return NotFound();
+
             return Ok(result);
         }
 
@@ -43,6 +45,7 @@ namespace TechShop.WebApi.Controllers
         public async Task<ActionResult<PaymentsDto>> Create([FromBody] CreatePaymentsCommand command)
         {
             var created = await _mediator.Send(command);
+
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
@@ -51,8 +54,10 @@ namespace TechShop.WebApi.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] UpdatePaymentsCommand command)
         {
             if (id != command.id) return BadRequest("ID mismatch");
-            var success = await _mediator.Send(command);
-            if (!success) return NotFound();
+
+            var isSuccess = await _mediator.Send(command);
+            if (!isSuccess) return NotFound();
+
             return NoContent();
         }
 
@@ -60,8 +65,9 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _mediator.Send(new DeletePaymentsCommand(id));
-            if (!success) return NotFound();
+            var isSuccess = await _mediator.Send(new DeletePaymentsCommand(id));
+            if (!isSuccess) return NotFound();
+
             return NoContent();
         }
     }

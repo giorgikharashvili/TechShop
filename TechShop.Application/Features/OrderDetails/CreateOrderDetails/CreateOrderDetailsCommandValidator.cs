@@ -6,8 +6,8 @@ namespace TechShop.Application.Features.OrderDetails.CreateOrderDetails
     {
         public CreateOrderDetailsCommandValidator()
         {
-            RuleFor(x => x.UserId).NotEmpty().GreaterThan(0);
-            RuleFor(x => x.TotalPrice).NotEmpty().GreaterThan(0);
+            RuleFor(x => x.Dto.UserId).NotEmpty().GreaterThan(0);
+            RuleFor(x => x.Dto.TotalPrice).NotEmpty().GreaterThan(0);
         }
     }
 }

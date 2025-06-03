@@ -19,6 +19,7 @@ namespace TechShop.Application.Features.Wishlist.GetWishlistById
         {
             var wishlist = await _repository.GetByIdAsync(request.id);
             if (wishlist == null) return null;
+
             return _mapper.Map<WishlistDto>(wishlist);
         }
     }

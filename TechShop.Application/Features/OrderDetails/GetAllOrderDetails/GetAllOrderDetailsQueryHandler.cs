@@ -19,6 +19,7 @@ namespace TechShop.Application.Features.OrderDetails.GetAllOrderDetails
         public async Task<IEnumerable<OrderDetailsDto>> Handle(GetAllOrderDetailsQuery request, CancellationToken cancellationToken)
         {
             var orderDetails = await _repository.GetAllAsync();
+
             return _mapper.Map<IEnumerable<OrderDetailsDto>>(orderDetails);
         }
     }

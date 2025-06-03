@@ -21,6 +21,7 @@ namespace TechShop.Application.Features.Address.GetAddressesById
         {
             var address = await _repository.GetByIdAsync(request.id);
             if (address == null) return null;
+
             return _mapper.Map<AddressesDto>(address);
         }
     }

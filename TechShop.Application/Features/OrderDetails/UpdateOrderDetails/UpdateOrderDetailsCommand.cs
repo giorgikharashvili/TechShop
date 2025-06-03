@@ -1,11 +1,8 @@
 ﻿using MediatR;
+using TechShop.Domain.DTOs.OrderDetails;
 
 
 namespace TechShop.Application.Features.OrderDetails.UpdateOrderDetails
 {
-    public record UpdateOrderDetailsCommand(
-        int id,
-        int UserId,
-        decimal TotalPrice
-        ) : IRequest<bool>;
+    public record UpdateOrderDetailsCommand(int id,UpdateOrderDetailsDto Dto) : IRequest<bool>;
 }

@@ -30,6 +30,7 @@ namespace TechShop.WebApi.Controllers
         public async Task<ActionResult<IEnumerable<WishlistDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllWishlistQuery());
+
             return Ok(result);
         }
 
@@ -44,6 +45,7 @@ namespace TechShop.WebApi.Controllers
         {
             var item = await _mediator.Send(new GetWishlistByIdQuery(id));
             if (item == null) return NotFound();
+
             return Ok(item);
         }
 
@@ -57,6 +59,7 @@ namespace TechShop.WebApi.Controllers
         public async Task<ActionResult<WishlistDto>> Create([FromBody] CreateWishlistCommand dto)
         {
             var created = await _mediator.Send(dto);
+
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
@@ -70,10 +73,10 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateWishlistCommand dto)
         {
-            if (id != dto.Id) return BadRequest("ID mismatch");
+            if (id != dto.id) return BadRequest("ID mismatch");
 
-            var success = await _mediator.Send(dto);
-            if (!success) return NotFound();
+            var isSuccess = await _mediator.Send(dto);
+            if (!isSuccess) return NotFound();
 
             return NoContent();
         }
@@ -87,8 +90,8 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _mediator.Send(new DeleteWishlistCommand(id));
-            if (!success) return NotFound();
+            var isSuccess = await _mediator.Send(new DeleteWishlistCommand(id));
+            if (!isSuccess) return NotFound();
 
             return NoContent();
         }

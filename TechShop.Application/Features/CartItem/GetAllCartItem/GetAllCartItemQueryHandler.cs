@@ -19,6 +19,7 @@ namespace TechShop.Application.Features.CartItem.GetAllCartItem
         public async Task<IEnumerable<CartItemDto>> Handle(GetAllCartItemQuery request, CancellationToken cancellationToken)
         {
             var entity = await _repository.GetAllAsync();
+
             return _mapper.Map<IEnumerable<CartItemDto>>(entity);
         }
     }

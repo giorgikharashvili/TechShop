@@ -18,6 +18,7 @@ namespace TechShop.Application.Features.Wishlist.GetAllWishlist
         public async Task<IEnumerable<WishlistDto>> Handle(GetAllWishlistQuery request, CancellationToken cancellationToken)
         {
             var wishlist = await _repository.GetAllAsync();
+
             return _mapper.Map<IEnumerable<WishlistDto>>(wishlist);
         }
     }

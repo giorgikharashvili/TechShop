@@ -26,6 +26,7 @@ namespace TechShop.WebApi.Controllers
         public async Task<ActionResult<IEnumerable<OrderDetailsDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllOrderDetailsQuery());
+
             return Ok(result);
         }
 
@@ -35,6 +36,7 @@ namespace TechShop.WebApi.Controllers
         {
             var result = await _mediator.Send(new GetOrderDetailsByIdQuery(id));
             if (result == null) return NotFound();
+
             return Ok(result);
         }
 
@@ -43,6 +45,7 @@ namespace TechShop.WebApi.Controllers
         public async Task<ActionResult<OrderDetailsDto>> Create([FromBody] CreateOrderDetailsCommand command)
         {
             var created = await _mediator.Send(command);
+
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
@@ -51,8 +54,10 @@ namespace TechShop.WebApi.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] UpdateOrderDetailsCommand command)
         {
             if (id != command.id) return BadRequest("ID mismatch");
+
             var updated = await _mediator.Send(command);
             if (!updated) return NotFound();
+
             return NoContent();
         }
 
@@ -62,6 +67,7 @@ namespace TechShop.WebApi.Controllers
         {
             var deleted = await _mediator.Send(new DeleteOrderDetailsCommand(id));
             if (!deleted) return NotFound();
+
             return NoContent();
         }
     }

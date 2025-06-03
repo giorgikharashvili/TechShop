@@ -3,9 +3,6 @@ using TechShop.Domain.DTOs.Cart;
 
 namespace TechShop.Application.Features.Cart.CreateCart
 {
-    public record CreateCartCommand(
-        int id,
-        decimal TotalPrice
-        ) : IRequest<CartDto>;
+    public record CreateCartCommand(UpdateCartDto Dto) : IRequest<CartDto>;
     
 }

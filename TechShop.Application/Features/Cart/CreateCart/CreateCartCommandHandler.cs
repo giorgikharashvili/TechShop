@@ -19,9 +19,11 @@ namespace TechShop.Application.Features.Cart.CreateCart
 
         public async Task<CartDto> Handle(CreateCartCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<Domain.Entities.Cart>(request);
+            var entity = _mapper.Map<Domain.Entities.Cart>(request.Dto);
             await _repository.AddAsync(entity);
+
             var dto = _mapper.Map<CartDto>(entity);
+
             return dto;
         }
     }

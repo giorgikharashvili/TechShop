@@ -21,10 +21,14 @@ namespace TechShop.Application.Features.Products.UpdateProducts
         {
             var entity = await _repository.GetByIdAsync(request.id);
             if (entity == null) return false;
+
             _mapper.Map(request, entity);
+
             entity.ModifiedAt = DateTime.UtcNow;
             entity.ModifiedBy = "System";
+
             await _repository.UpdateAsync(entity);
+
             return true;
         }
     }

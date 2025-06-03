@@ -6,10 +6,10 @@ namespace TechShop.Application.Features.ProductsSkus.UpdateProductsSkus
     {
         public UpdateProductsSkusCommandValidator()
         {
-            RuleFor(x => x.Price).NotNull().GreaterThan(0);
-            RuleFor(x => x.Sku).NotNull().NotEmpty();
-            RuleFor(x => x.StockQuantity).NotNull().NotEmpty();
-            RuleFor(x => x.ProductId).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.Price).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.Sku).NotNull().NotEmpty();
+            RuleFor(x => x.Dto.StockQuantity).NotNull().NotEmpty();
+            RuleFor(x => x.Dto.ProductId).NotNull().GreaterThan(0);
         }
     }
 }

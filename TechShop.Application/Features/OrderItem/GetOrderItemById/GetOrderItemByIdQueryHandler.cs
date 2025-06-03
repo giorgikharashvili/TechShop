@@ -20,6 +20,7 @@ namespace TechShop.Application.Features.OrderItem.GetOrderItemById
         {
             var orderItem = await _repository.GetByIdAsync(request.id);
             if (orderItem == null) return null;
+
             return _mapper.Map<OrderItemDto>(orderItem);
         }
     }

@@ -19,6 +19,7 @@ namespace TechShop.Application.Features.Payments.GetAllPayments
         public async Task<IEnumerable<PaymentsDto>> Handle(GetAllPaymentsQuery request, CancellationToken cancellationToken)
         {
             var payments = await _repository.GetAllAsync();
+
             return _mapper.Map<IEnumerable<PaymentsDto>>(payments);
         }
     }

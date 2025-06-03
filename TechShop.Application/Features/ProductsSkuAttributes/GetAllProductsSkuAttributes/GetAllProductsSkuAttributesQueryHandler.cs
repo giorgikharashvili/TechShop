@@ -20,6 +20,7 @@ namespace TechShop.Application.Features.ProductsSkuAttributes.GetAllProductsSkuA
         public async Task<IEnumerable<ProductSkuAttributesDto>> Handle(GetAllProductsSkuAttributesQuery request, CancellationToken cancellationToken)
         {
             var productSkuAttributes = await _repository.GetAllAsync();
+
             return _mapper.Map<IEnumerable<ProductSkuAttributesDto>>(productSkuAttributes);
         }
     }

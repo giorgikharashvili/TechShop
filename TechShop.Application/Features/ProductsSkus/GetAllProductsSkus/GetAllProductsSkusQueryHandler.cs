@@ -19,6 +19,7 @@ namespace TechShop.Application.Features.ProductsSkus.GetAllProductsSkus
         public async Task<IEnumerable<ProductsSkusDto>> Handle(GetAllProductsSkusQuery request, CancellationToken cancellationToken)
         {
             var productsSkus = await _repository.GetAllAsync();
+
             return _mapper.Map<IEnumerable<ProductsSkusDto>>(productsSkus);
         }
     }

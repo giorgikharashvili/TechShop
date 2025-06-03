@@ -21,6 +21,7 @@ namespace TechShop.Application.Features.ProductsSkuAttributes.GetProductsSkuAttr
         {
             var productSkuAttributes = await _repository.GetByIdAsync(request.id);
             if (productSkuAttributes == null) return null;
+
             return _mapper.Map<ProductSkuAttributesDto>(productSkuAttributes);
         }
     }

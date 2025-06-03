@@ -20,6 +20,7 @@ namespace TechShop.Application.Features.CartItem.GetCartItemById
         {
             var address = await _repository.GetByIdAsync(request.id);
             if (address == null) return null;
+
             return _mapper.Map<CartItemDto>(address);
         }
     }

@@ -1,6 +1,5 @@
 using System.Reflection;
 using System.Threading.RateLimiting;
-using TechShop.Application.Services;
 using TechShop.Infrastructure;
 using TechShop.Infrastructure.Repositories;
 using Dapper;
@@ -57,17 +56,6 @@ builder.Services.AddApplicationServices();
 
 #region Services
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
-builder.Services.AddScoped<CartService>();
-builder.Services.AddScoped<CartItemService>();
-builder.Services.AddScoped<CategoriesService>();
-builder.Services.AddScoped<OrderDetailsService>();
-builder.Services.AddScoped<OrderItemService>();
-builder.Services.AddScoped<PaymentsService>();
-builder.Services.AddScoped<ProductSkuAttributesService>();
-builder.Services.AddScoped<ProductsService>();
-builder.Services.AddScoped<ProductsSkusService>();
-builder.Services.AddScoped<UsersService>();
-builder.Services.AddScoped<WishlistService>();
 #endregion
 
 var app = builder.Build();

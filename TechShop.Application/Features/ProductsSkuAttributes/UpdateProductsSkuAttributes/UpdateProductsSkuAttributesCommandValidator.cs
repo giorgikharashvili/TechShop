@@ -6,9 +6,9 @@ namespace TechShop.Application.Features.ProductsSkuAttributes.UpdateProductsSkuA
     {
         public UpdateProductsSkuAttributesCommandValidator()
         {
-            RuleFor(x => x.Id).NotNull().GreaterThan(0);
-            RuleFor(x => x.Type).NotNull().MaximumLength(50);
-            RuleFor(x => x.Name).NotNull().MaximumLength(50);
+            RuleFor(x => x.Dto.Id).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.Type).NotNull().MaximumLength(50);
+            RuleFor(x => x.Dto.Value).NotNull().MaximumLength(50);
         }
     }
 }

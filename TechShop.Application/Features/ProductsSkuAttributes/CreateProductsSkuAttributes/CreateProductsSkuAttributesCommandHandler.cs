@@ -20,9 +20,11 @@ namespace TechShop.Application.Features.ProductsSkuAttributes.CreateProductsSkuA
 
         public async Task<ProductSkuAttributesDto> Handle(CreateProductsSkuAttributesCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<ProductSkuAttributes>(request);
+            var entity = _mapper.Map<ProductSkuAttributes>(request.Dto);
             await _repository.AddAsync(entity);
+
             var dto = _mapper.Map<ProductSkuAttributesDto>(entity);
+
             return dto;
         }
     }

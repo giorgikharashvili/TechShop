@@ -20,6 +20,7 @@ namespace TechShop.Application.Features.Users.GetUsersById
         {
             var users = await _repository.GetByIdAsync(request.id);
             if (users == null) return null;
+
             return _mapper.Map<UserDto>(users);
         }
     }

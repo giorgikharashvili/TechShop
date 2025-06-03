@@ -17,10 +17,13 @@ namespace TechShop.Application.Features.OrderItem.UpdateOrderItem
 
         public async Task<bool> Handle(UpdateOrderItemCommand request, CancellationToken cancellationToken)
         {
-            var orderItem = await _repository.GetByIdAsync(request.Id);
+            var orderItem = await _repository.GetByIdAsync(request.id);
             if (orderItem == null) return false;
+
             _mapper.Map(request, orderItem);
+
             await _repository.UpdateAsync(orderItem);
+
             return true;
         }
     }

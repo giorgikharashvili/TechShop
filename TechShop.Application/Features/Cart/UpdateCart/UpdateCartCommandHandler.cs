@@ -19,8 +19,11 @@ namespace TechShop.Application.Features.Cart.UpdateCart
         {
             var cart = await _repository.GetByIdAsync(request.id);
             if (cart == null) return false;
+
             _mapper.Map(request, cart);
+
             await _repository.UpdateAsync(cart);
+
             return true;
         }
     }

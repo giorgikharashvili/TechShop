@@ -6,9 +6,9 @@ namespace TechShop.Application.Features.Products.CreateProducts
     {
         public CreateProductsCommandValidator()
         {
-            RuleFor(x => x.Name).NotNull().NotEmpty().MaximumLength(50);
-            RuleFor(x => x.Description).NotNull().NotEmpty().MaximumLength(500);
-            RuleFor(x => x.CategoryId).GreaterThan(0);
+            RuleFor(x => x.Dto.Name).NotNull().NotEmpty().MaximumLength(50);
+            RuleFor(x => x.Dto.Description).NotNull().NotEmpty().MaximumLength(500);
+            RuleFor(x => x.Dto.CategoryId).GreaterThan(0);
         }
     }
 }

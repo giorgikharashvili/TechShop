@@ -19,10 +19,13 @@ namespace TechShop.Application.Features.Payments.CreatePayments
 
         public async Task<PaymentsDto> Handle(CreatePaymentsCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<Domain.Entities.Payments>(request);
+            var entity = _mapper.Map<Domain.Entities.Payments>(request.Dto);
             entity.CreatedAt = DateTime.UtcNow;
+
             await _repository.AddAsync(entity);
+
             var dto = _mapper.Map<PaymentsDto>(entity);
+
             return dto;
         }
     }
