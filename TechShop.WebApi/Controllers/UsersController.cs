@@ -1,19 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using TechShop.Application.Services;
+using MediatR;
 using TechShop.Domain.DTOs.Users;
+using TechShop.Application.Features.Users.CreateUsers;
+using TechShop.Application.Features.Users.DeleteUsers;
+using TechShop.Application.Features.Users.GetAllUsers;
+using TechShop.Application.Features.Users.GetUsersById;
+using TechShop.Application.Features.Users.UpdateUsers;
 
-namespace TechShop.Controllers
+namespace TechShop.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly UsersService _usersService;
+        private readonly IMediator _mediator;
 
-        public UsersController(UsersService usersService)
+        public UsersController(IMediator mediator)
         {
-            _usersService = usersService;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -24,7 +29,8 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAll()
         {
-            var result = await _usersService.GetAllAsync();
+            var result = await _mediator.Send(new GetAllUsersQuery());
+
             return Ok(result);
         }
 
@@ -37,8 +43,9 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<UserDto>> GetById(int id)
         {
-            var user = await _usersService.GetByIdAsync(id);
+            var user = await _mediator.Send(new GetUsersByIdQuery(id));
             if (user == null) return NotFound();
+
             return Ok(user);
         }
 
@@ -49,9 +56,10 @@ namespace TechShop.Controllers
         /// <returns>The newly created user.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<ActionResult<UserDto>> Create([FromBody] CreateUserDto dto)
+        public async Task<ActionResult<UserDto>> Create([FromBody] CreateUsersCommand dto)
         {
-            var created = await _usersService.CreateAsync(dto);
+            var created = await _mediator.Send(dto);
+
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
@@ -63,11 +71,12 @@ namespace TechShop.Controllers
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateUsersCommand dto)
         {
-            var exists = await _usersService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _usersService.UpdateAsync(id, dto);
+            if (id != dto.id) return BadRequest("ID mismatch");
+
+            var isSuccess = await _mediator.Send(dto);
+            if (!isSuccess) return NotFound();
 
             return NoContent();
         }
@@ -81,9 +90,8 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _usersService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _usersService.DeleteAsync(id);
+            var isSuccess = await _mediator.Send(new DeleteUsersCommand(id));
+            if (!isSuccess) return NotFound();
 
             return NoContent();
         }

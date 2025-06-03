@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using TechShop.Application.Services;
+using MediatR;
+using TechShop.Application.Features.Cart.GetAllCart;
+using TechShop.Application.Features.Cart.UpdateCart;
+using TechShop.Application.Features.CartItem.CreateCartItem;
+using TechShop.Application.Features.CartItem.DeleteCartItem;
+using TechShop.Application.Features.CartItem.GetCartItemById;
 using TechShop.Domain.DTOs.CartItem;
-
 
 namespace TechShop.WebApi.Controllers
 {
@@ -10,11 +14,11 @@ namespace TechShop.WebApi.Controllers
     [Route("api/[controller]")]
     public class CartItemsController : ControllerBase
     {
-        private readonly CartItemService _cartItemsService;
+        private readonly IMediator _mediator;
 
-        public CartItemsController(CartItemService cartItemsService)
+        public CartItemsController(IMediator mediator)
         {
-            _cartItemsService = cartItemsService;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -25,7 +29,8 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<CartItemDto>>> GetAll()
         {
-            var result = await _cartItemsService.GetAllAsync();
+            var result = await _mediator.Send(new GetAllCartQuery());
+
             return Ok(result);
         }
 
@@ -38,39 +43,41 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<CartItemDto>> GetById(int id)
         {
-            var cartItem = await _cartItemsService.GetByIdAsync(id);
+            var cartItem = await _mediator.Send(new GetCartByIdQuery(id));
             if (cartItem == null) return NotFound();
+
             return Ok(cartItem);
         }
 
         /// <summary>
         /// Creates a new cart item.
         /// </summary>
-        /// <param name="dto">The cart item to create.</param>
+        /// <param name="command">The cart item to create.</param>
         /// <returns>The newly created cart item.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<ActionResult<CartItemDto>> Create([FromBody] CreateCartItemDto dto)
+        public async Task<ActionResult<CartItemDto>> Create([FromBody] CreateCartItemCommand command)
         {
-            var created = await _cartItemsService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var createdId = await _mediator.Send(command);
+            var createdCartItem = await _mediator.Send(new GetCartByIdQuery(createdId.Id));
+
+            return CreatedAtAction(nameof(GetById), new { id = createdId }, createdCartItem);
         }
 
         /// <summary>
         /// Updates an existing cart item.
         /// </summary>
         /// <param name="id">ID of the cart item to update.</param>
-        /// <param name="dto">The updated cart item details.</param>
+        /// <param name="command">The updated cart item details.</param>
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateCartItemDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateCartCommand command)
         {
-            var exists = await _cartItemsService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
+            if (id != command.id) return BadRequest();
 
-            await _cartItemsService.UpdateAsync(id, dto);
-            
+            var isSuccess = await _mediator.Send(command);
+            if (!isSuccess) return NotFound();
 
             return NoContent();
         }
@@ -84,12 +91,10 @@ namespace TechShop.WebApi.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _cartItemsService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _cartItemsService.DeleteAsync(id);
+            var isSuccess = await _mediator.Send(new DeleteCartItemCommand(id));
+            if (!isSuccess) return NotFound();
 
             return NoContent();
         }
     }
 }
-

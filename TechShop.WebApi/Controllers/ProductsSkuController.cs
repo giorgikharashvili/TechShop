@@ -1,19 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using TechShop.Application.Services;
+using MediatR;
 using TechShop.Domain.DTOs.ProductsSkus;
+using TechShop.Application.Features.ProductsSkus.CreateProductsSkus;
+using TechShop.Application.Features.ProductsSkus.DeleteProductsSkus;
+using TechShop.Application.Features.ProductsSkus.GetAllProductsSkus;
+using TechShop.Application.Features.ProductsSkus.GetProductsSkusById;
+using TechShop.Application.Features.ProductsSkus.UpdateProductsSkus;
 
-namespace TechShop.Controllers
+namespace TechShop.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class ProductsSkuController : ControllerBase
     {
-        private readonly ProductsSkusService _productsSkusService;
+        private readonly IMediator _mediator;
 
-        public ProductsSkuController(ProductsSkusService productsSkusService)
+        public ProductsSkuController(IMediator mediator)
         {
-            _productsSkusService = productsSkusService;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -24,7 +29,8 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<ProductsSkusDto>>> GetAll()
         {
-            var result = await _productsSkusService.GetAllAsync();
+            var result = await _mediator.Send(new GetAllProductsSkusQuery());
+
             return Ok(result);
         }
 
@@ -37,21 +43,23 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<ProductsSkusDto>> GetById(int id)
         {
-            var sku = await _productsSkusService.GetByIdAsync(id);
+            var sku = await _mediator.Send(new GetProductsSkusByIdQuery(id));
             if (sku == null) return NotFound();
+
             return Ok(sku);
         }
 
         /// <summary>
         /// Creates a new product SKU.
         /// </summary>
-        /// <param name="dto">The product SKU to create.</param>
+        /// <param name="command">The product SKU to create.</param>
         /// <returns>The newly created product SKU.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<ActionResult<ProductsSkusDto>> Create([FromBody] CreateProductsSkusDto dto)
+        public async Task<ActionResult<ProductsSkusDto>> Create([FromBody] CreateProductsSkusCommand command)
         {
-            var created = await _productsSkusService.CreateAsync(dto);
+            var created = await _mediator.Send(command);
+
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
@@ -59,15 +67,16 @@ namespace TechShop.Controllers
         /// Updates an existing product SKU.
         /// </summary>
         /// <param name="id">ID of the product SKU to update.</param>
-        /// <param name="dto">The updated product SKU details.</param>
+        /// <param name="command">The updated product SKU details.</param>
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateProductsSkusDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateProductsSkusCommand command)
         {
-            var exists = await _productsSkusService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _productsSkusService.UpdateAsync(id, dto);
+            if (id != command.id) return BadRequest("ID mismatch");
+
+            var isSuccess = await _mediator.Send(command);
+            if (!isSuccess) return NotFound();
 
             return NoContent();
         }
@@ -81,9 +90,8 @@ namespace TechShop.Controllers
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _productsSkusService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _productsSkusService.DeleteAsync(id);
+            var isSuccess = await _mediator.Send(new DeleteProductsSkusCommand(id));
+            if (!isSuccess) return NotFound();
 
             return NoContent();
         }

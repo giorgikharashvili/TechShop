@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TechShop.Application.Services.Interfaces;
-using TechShop.Domain.DTOs.Categories;
-using TechShop.Application.Services;
 using Microsoft.AspNetCore.RateLimiting;
+using MediatR;
+using TechShop.Application.Features.Categories.CreateCategories;
+using TechShop.Application.Features.Categories.DeleteCategories;
+using TechShop.Application.Features.Categories.GetAllCategories;
+using TechShop.Application.Features.Categories.GetCategoriesById;
+using TechShop.Application.Features.Categories.UpdateCategories;
+using TechShop.Domain.DTOs.Categories;
 
 namespace TechShop.WebApi.Controllers
 {
@@ -10,82 +14,59 @@ namespace TechShop.WebApi.Controllers
     [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
     {
-        private readonly CategoriesService _categoryService;
+        private readonly IMediator _mediator;
 
-        public CategoriesController(CategoriesService categoryService)
+        public CategoriesController(IMediator mediator)
         {
-            _categoryService = categoryService;
+            _mediator = mediator;
         }
 
-        /// <summary>
-        /// Returns all categories.
-        /// </summary>
-        /// <returns>List of all categories.</returns>
         [HttpGet]
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<IEnumerable<CategoriesDto>>> GetAll()
         {
-            var result = await _categoryService.GetAllAsync();
+            var result = await _mediator.Send(new GetAllCategoriesQuery());
+
             return Ok(result);
         }
 
-        /// <summary>
-        /// Returns a category by its ID.
-        /// </summary>
-        /// <param name="id">The ID of the category to retrieve.</param>
-        /// <returns>Category with specified ID.</returns>
         [HttpGet("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<ActionResult<CategoriesDto>> GetById(int id)
         {
-            var category = await _categoryService.GetByIdAsync(id);
-            if (category == null) return NotFound();
-            return Ok(category);
+            var result = await _mediator.Send(new GetCategoriesByIdQuery(id));
+            if (result == null) return NotFound();
+
+            return Ok(result);
         }
 
-        /// <summary>
-        /// Creates a new category.
-        /// </summary>
-        /// <param name="dto">The category to create.</param>
-        /// <returns>The newly created category.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<ActionResult<CategoriesDto>> Create([FromBody] CreateCategoriesDto dto)
+        public async Task<ActionResult<CategoriesDto>> Create([FromBody] CreateCategoriesCommand command)
         {
-            var created = await _categoryService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var created = await _mediator.Send(command);
+
+            return CreatedAtAction(nameof(GetById), new { id = created.Id}, created);
         }
 
-        /// <summary>
-        /// Updates an existing category.
-        /// </summary>
-        /// <param name="id">ID of the category to update.</param>
-        /// <param name="dto">The updated category details.</param>
-        /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoriesDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoriesCommand command)
         {
-            var exists = await _categoryService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _categoryService.UpdateAsync(id, dto);
+            if (id != command.id) return BadRequest("ID mismatch");
+
+            var isSuccess = await _mediator.Send(command);
+            if (!isSuccess) return NotFound();
 
             return NoContent();
         }
 
-        /// <summary>
-        /// Deletes a category by ID.
-        /// </summary>
-        /// <param name="id">ID of the category to delete.</param>
-        /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _categoryService.GetByIdAsync(id);
-            if (exists == null) return NotFound();
-            await _categoryService.DeleteAsync(id);
-            
+            var isSuccess = await _mediator.Send(new DeleteCategoriesCommand(id));
+            if (!isSuccess) return NotFound();
 
             return NoContent();
         }

@@ -10,7 +10,7 @@ namespace TechShop.Domain.Entities
     [DbSchema("orders")]
     public class OrderItem
     {
-        public int Id { get; set; }
+        public int Id { get; init; }
         public int OrderId { get; set; }
         public int ProductId { get; set; }
         public int ProductsSkuId { get; set; }

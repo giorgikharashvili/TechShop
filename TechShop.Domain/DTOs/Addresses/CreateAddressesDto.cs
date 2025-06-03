@@ -13,7 +13,6 @@ namespace TechShop.Domain.DTOs.Addresses
         public string City { get; set; }
         [Required]
         public int PostalCode { get; set; }
-        [Required]
-        public string UserId { get; set; }
+        public int UserId { get; set; }
     }
 }

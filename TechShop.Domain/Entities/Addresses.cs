@@ -12,15 +12,16 @@ namespace TechShop.TechShop.Domain.Entities
     [DbSchema("auth")]
     public class Addresses
     {
-        public int Id { get; set; }
-        public string UserId { get; set; }
+        
+        public int Id { get; init; }
+        public int UserId { get; init; }
         public string AddressLine1  { get; set; }
         public string AddressLine2  { get; set; }
         public string Country { get; set; }
         public string City { get; set; }
-        public int PostalCode { get; set; }
+        public string PostalCode { get; set; }
         public DateTime CreatedAt { get; set; }
-        public string CreatedBy { get; set; }
+        public string CreatedBy { get; init; }
         public string ModifiedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }
 

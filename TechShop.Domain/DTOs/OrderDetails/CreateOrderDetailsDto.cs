@@ -9,7 +9,6 @@ namespace TechShop.Domain.DTOs.OrderDetails
         public int UserId { get; set; }
 
         [Required]
-        [Range(1, int.MaxValue)]
         public int TotalPrice { get; set; }
     }
 }
