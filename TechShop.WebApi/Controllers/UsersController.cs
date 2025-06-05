@@ -7,6 +7,8 @@ using TechShop.Application.Features.Users.DeleteUsers;
 using TechShop.Application.Features.Users.GetAllUsers;
 using TechShop.Application.Features.Users.GetUsersById;
 using TechShop.Application.Features.Users.UpdateUsers;
+using Microsoft.AspNetCore.Authorization;
+using TechShop.Domain.Constants;
 
 namespace TechShop.WebApi.Controllers
 {
@@ -27,6 +29,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>List of all users.</returns>
         [HttpGet]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllUsersQuery());
@@ -41,6 +44,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>User with specified ID.</returns>
         [HttpGet("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<ActionResult<UserDto>> GetById(int id)
         {
             var user = await _mediator.Send(new GetUsersByIdQuery(id));
@@ -56,6 +60,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>The newly created user.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<ActionResult<UserDto>> Create([FromBody] CreateUsersCommand dto)
         {
             var created = await _mediator.Send(dto);
@@ -71,6 +76,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateUsersCommand dto)
         {
             if (id != dto.id) return BadRequest("ID mismatch");
@@ -88,6 +94,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<IActionResult> Delete(int id)
         {
             var isSuccess = await _mediator.Send(new DeleteUsersCommand(id));

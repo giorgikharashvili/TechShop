@@ -12,7 +12,7 @@ namespace TechShop.Infrastructure.Repositories
 {
     public class GenericRepository<T> : IRepository<T> where T : class
     {
-        private readonly IDbConnection _connection;
+        protected readonly IDbConnection _connection;
 
         public GenericRepository(IDbConnection connection)
         {

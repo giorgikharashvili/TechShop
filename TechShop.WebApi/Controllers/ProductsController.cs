@@ -7,6 +7,8 @@ using TechShop.Application.Features.Products.CreateProducts;
 using TechShop.Application.Features.Products.DeleteProducts;
 using TechShop.Application.Features.Products.GetProductsById;
 using TechShop.Application.Features.Products.UpdateProducts;
+using Microsoft.AspNetCore.Authorization;
+using TechShop.Domain.Constants;
 
 namespace TechShop.WebApi.Controllers
 {
@@ -23,6 +25,7 @@ namespace TechShop.WebApi.Controllers
 
         [HttpGet]
         [EnableRateLimiting("RequestsLimiter")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<ProductsDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllProductsQuery());
@@ -32,6 +35,7 @@ namespace TechShop.WebApi.Controllers
 
         [HttpGet("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<ActionResult<ProductsDto>> GetById(int id)
         {
             var result = await _mediator.Send(new GetProductsByIdQuery(id));
@@ -42,6 +46,7 @@ namespace TechShop.WebApi.Controllers
 
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<ActionResult<ProductsDto>> Create([FromBody] CreateProductsCommand command)
         {
             var created = await _mediator.Send(command);
@@ -51,6 +56,7 @@ namespace TechShop.WebApi.Controllers
 
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateProductsCommand command)
         {
             if (id != command.id) return BadRequest("ID mismatch");
@@ -63,6 +69,7 @@ namespace TechShop.WebApi.Controllers
 
         [HttpDelete("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<IActionResult> Delete(int id)
         {
             var isSuccess = await _mediator.Send(new DeleteProductsCommand(id));

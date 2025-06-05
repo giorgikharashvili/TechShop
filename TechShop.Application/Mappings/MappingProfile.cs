@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using TechShop.Application.Features.Address.CreateAddresses;
 using TechShop.Application.Features.Address.UpdateAddresses;
+using TechShop.Application.Features.Auth.Register;
 using TechShop.Application.Features.Cart.CreateCart;
 using TechShop.Application.Features.CartItem.CreateCartItem;
 using TechShop.Application.Features.Categories.CreateCategories;
@@ -31,6 +32,7 @@ using TechShop.Domain.DTOs.Payments;
 using TechShop.Domain.DTOs.Products;
 using TechShop.Domain.DTOs.ProductsSkuAttributes;
 using TechShop.Domain.DTOs.ProductsSkus;
+using TechShop.Domain.DTOs.Register;
 using TechShop.Domain.DTOs.Users;
 using TechShop.Domain.DTOs.Wishlist;
 using TechShop.Domain.Entities;
@@ -42,6 +44,20 @@ namespace TechShop.Application.Mappings
     {
         public MappingProfile()
         {
+
+
+
+            // Register
+            CreateMap<RegisterDto, Users>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => "User"))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.Username))
+                .ForMember(dest => dest.ModifiedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.ModifiedBy, opt => opt.Ignore())
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
+
+
             // Addresses
             CreateMap<CreateAddressesDto, Addresses>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())

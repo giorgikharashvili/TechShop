@@ -7,6 +7,8 @@ using TechShop.Application.Features.Wishlist.DeleteWishlist;
 using TechShop.Application.Features.Wishlist.GetAllWishlist;
 using TechShop.Application.Features.Wishlist.GetWishlistById;
 using TechShop.Application.Features.Wishlist.UpdateWishlist;
+using Microsoft.AspNetCore.Authorization;
+using TechShop.Domain.Constants;
 
 namespace TechShop.WebApi.Controllers
 {
@@ -27,6 +29,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>List of all wishlist items.</returns>
         [HttpGet]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<ActionResult<IEnumerable<WishlistDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllWishlistQuery());
@@ -41,6 +44,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>Wishlist item with specified ID.</returns>
         [HttpGet("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<ActionResult<WishlistDto>> GetById(int id)
         {
             var item = await _mediator.Send(new GetWishlistByIdQuery(id));
@@ -56,6 +60,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>The newly created wishlist item.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Customer}")]
         public async Task<ActionResult<WishlistDto>> Create([FromBody] CreateWishlistCommand dto)
         {
             var created = await _mediator.Send(dto);
@@ -71,6 +76,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Customer}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateWishlistCommand dto)
         {
             if (id != dto.id) return BadRequest("ID mismatch");
@@ -88,6 +94,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Customer}")]
         public async Task<IActionResult> Delete(int id)
         {
             var isSuccess = await _mediator.Send(new DeleteWishlistCommand(id));
