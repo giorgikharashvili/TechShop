@@ -12,6 +12,7 @@ using TechShop.Application.Features.OrderItem.CreateOrderItem;
 using TechShop.Application.Features.OrderItem.UpdateOrderItem;
 using TechShop.Application.Features.Payments.CreatePayments;
 using TechShop.Application.Features.Payments.UpdatePayments;
+using TechShop.Application.Features.Products.CreateFullProduct;
 using TechShop.Application.Features.Products.CreateProducts;
 using TechShop.Application.Features.Products.UpdateProducts;
 using TechShop.Application.Features.ProductsSkuAttributes.CreateProductsSkuAttributes;
@@ -44,10 +45,7 @@ namespace TechShop.Application.Mappings
     {
         public MappingProfile()
         {
-
-
-
-            // Register
+       // Register
             CreateMap<RegisterDto, Users>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => "User"))
@@ -126,6 +124,17 @@ namespace TechShop.Application.Mappings
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
             CreateMap<Payments, PaymentsDto>().ReverseMap();
+
+            // Full Product
+            CreateMap<FullProductDto, Products>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
+            CreateMap<ProductsSkusDto, ProductsSkus>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.ProductId, opt => opt.Ignore());
+            CreateMap<ProductSkuAttributesDto, ProductSkuAttributes>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
 
             // Products
             CreateMap<CreateProductDto, Products>()
