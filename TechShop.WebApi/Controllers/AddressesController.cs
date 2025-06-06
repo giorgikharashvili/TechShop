@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using TechShop.Application.Features.Address.CreateAddresses;
@@ -6,6 +7,7 @@ using TechShop.Application.Features.Address.DeleteAddresses;
 using TechShop.Application.Features.Address.GetAddressesById;
 using TechShop.Application.Features.Address.GetAllAddresses;
 using TechShop.Application.Features.Address.UpdateAddresses;
+using TechShop.Domain.Constants;
 using TechShop.Domain.DTOs.Addresses;
 
 namespace TechShop.WebApi.Controllers
@@ -27,6 +29,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>List of all addresses.</returns>
         [HttpGet]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}")]
         public async Task<ActionResult<IEnumerable<AddressesDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllAddressQuery());
@@ -41,6 +44,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>Address with specified ID.</returns>
         [HttpGet("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}")]
         public async Task<ActionResult<AddressesDto>> GetById(int id)
         {
             var address = await _mediator.Send(new GetAddressesByIdQuery(id));
@@ -56,6 +60,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>The newly created address.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Customer}")]
         public async Task<ActionResult<AddressesDto>> Create([FromBody] CreateAddressCommand command)
         {
             var createdAddress = await _mediator.Send(command);
@@ -71,6 +76,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateAddressesCommand command)
         {
             if (id != command.id) return BadRequest();
@@ -88,6 +94,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
         public async Task<IActionResult> Delete(int id)
         {
             var isSuccess = await _mediator.Send(new DeleteAddressCommand(id));

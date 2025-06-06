@@ -7,6 +7,8 @@ using TechShop.Application.Features.OrderDetails.UpdateOrderDetails;
 using TechShop.Application.Features.OrderDetails.GetAllOrderDetails;
 using TechShop.Application.Features.OrderDetails.GetOrderDetailsById;
 using TechShop.Application.Features.OrderDetails.DeleteOrderDetails;
+using Microsoft.AspNetCore.Authorization;
+using TechShop.Domain.Constants;
 
 namespace TechShop.WebApi.Controllers
 {
@@ -23,6 +25,7 @@ namespace TechShop.WebApi.Controllers
 
         [HttpGet]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
         public async Task<ActionResult<IEnumerable<OrderDetailsDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllOrderDetailsQuery());
@@ -32,6 +35,7 @@ namespace TechShop.WebApi.Controllers
 
         [HttpGet("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
         public async Task<ActionResult<OrderDetailsDto>> GetById(int id)
         {
             var result = await _mediator.Send(new GetOrderDetailsByIdQuery(id));
@@ -42,6 +46,7 @@ namespace TechShop.WebApi.Controllers
 
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
         public async Task<ActionResult<OrderDetailsDto>> Create([FromBody] CreateOrderDetailsCommand command)
         {
             var created = await _mediator.Send(command);
@@ -51,6 +56,7 @@ namespace TechShop.WebApi.Controllers
 
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateOrderDetailsCommand command)
         {
             if (id != command.id) return BadRequest("ID mismatch");
@@ -63,6 +69,7 @@ namespace TechShop.WebApi.Controllers
 
         [HttpDelete("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await _mediator.Send(new DeleteOrderDetailsCommand(id));
