@@ -7,6 +7,8 @@ using TechShop.Application.Features.CartItem.CreateCartItem;
 using TechShop.Application.Features.CartItem.DeleteCartItem;
 using TechShop.Application.Features.CartItem.GetCartItemById;
 using TechShop.Domain.DTOs.CartItem;
+using Microsoft.AspNetCore.Authorization;
+using TechShop.Domain.Constants;
 
 namespace TechShop.WebApi.Controllers
 {
@@ -27,6 +29,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>List of all cart items.</returns>
         [HttpGet]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Customer}, {UserRoles.Admin}")]
         public async Task<ActionResult<IEnumerable<CartItemDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllCartQuery());
@@ -41,6 +44,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>Cart item with specified ID.</returns>
         [HttpGet("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}")]
         public async Task<ActionResult<CartItemDto>> GetById(int id)
         {
             var cartItem = await _mediator.Send(new GetCartByIdQuery(id));
@@ -56,6 +60,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>The newly created cart item.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Customer}, {UserRoles.Admin}")]
         public async Task<ActionResult<CartItemDto>> Create([FromBody] CreateCartItemCommand command)
         {
             var createdId = await _mediator.Send(command);
@@ -72,6 +77,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Customer}, {UserRoles.Admin}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCartCommand command)
         {
             if (id != command.id) return BadRequest();
@@ -89,6 +95,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Customer}, {UserRoles.Admin}")]
         public async Task<IActionResult> Delete(int id)
         {
             var isSuccess = await _mediator.Send(new DeleteCartItemCommand(id));

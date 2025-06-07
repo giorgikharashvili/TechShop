@@ -7,6 +7,8 @@ using TechShop.Application.Features.ProductsSkuAttributes.DeleteProductsSkuAttri
 using TechShop.Application.Features.ProductsSkuAttributes.GetAllProductsSkuAttributes;
 using TechShop.Application.Features.ProductsSkuAttributes.GetProductsSkuAttributesById;
 using TechShop.Application.Features.ProductsSkuAttributes.UpdateProductsSkuAttributes;
+using Microsoft.AspNetCore.Authorization;
+using TechShop.Domain.Constants;
 
 namespace TechShop.WebApi.Controllers
 {
@@ -27,6 +29,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>List of all product SKU attributes.</returns>
         [HttpGet]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<ActionResult<IEnumerable<ProductSkuAttributesDto>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllProductsSkuAttributesQuery());
@@ -41,6 +44,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>Product SKU attribute with specified ID.</returns>
         [HttpGet("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<ActionResult<ProductSkuAttributesDto>> GetById(int id)
         {
             var result = await _mediator.Send(new GetProductsSkuAttributesByIdQuery(id));
@@ -56,6 +60,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>The newly created product SKU attribute.</returns>
         [HttpPost]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<ActionResult<ProductSkuAttributesDto>> Create([FromBody] CreateProductsSkuAttributesCommand command)
         {
             var created = await _mediator.Send(command);
@@ -71,6 +76,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateProductsSkuAttributesCommand command)
         {
             if (id != command.id) return BadRequest("ID mismatch");
@@ -88,6 +94,7 @@ namespace TechShop.WebApi.Controllers
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
         [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
         public async Task<IActionResult> Delete(int id)
         {
             var isSuccess = await _mediator.Send(new DeleteProductsSkuAttributesCommand(id));
