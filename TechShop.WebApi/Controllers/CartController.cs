@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using MediatR;
 using TechShop.Application.Features.Cart.CreateCart;
 using TechShop.Application.Features.Cart.DeleteCart;
@@ -7,101 +9,132 @@ using TechShop.Application.Features.Cart.UpdateCart;
 using TechShop.Application.Features.Cart.GetAllCart;
 using TechShop.Application.Features.Cart.GetCartById;
 using TechShop.Domain.DTOs.Cart;
-using Microsoft.AspNetCore.Authorization;
 using TechShop.Domain.Constants;
+using TechShop.Application.Features.Products.CreateFullProduct;
+using TechShop.Application.Features.Cart.CreateFullCart;
 
-namespace TechShop.WebApi.Controllers
+namespace TechShop.WebApi.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class CartController(IMediator _mediator, ILogger<CartController> _logger) : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class CartController : ControllerBase
+    /// <summary>
+    /// Returns all carts.
+    /// </summary>
+    [HttpGet]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
+    public async Task<ActionResult<IEnumerable<CartDto>>> GetAll()
     {
-        private readonly IMediator _mediator;
+        _logger.LogInformation("Fetching all cart entries");
 
-        public CartController(IMediator mediator)
+        var result = await _mediator.Send(new GetAllCartQuery());
+
+        _logger.LogInformation("Returned {Count} cart entries", result.Count());
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Returns a cart by its ID.
+    /// </summary>
+    [HttpGet("{id}")]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
+    public async Task<ActionResult<CartDto>> GetById(int id)
+    {
+        _logger.LogInformation("Fetching cart with given Id: {Id}", id);
+
+        var cart = await _mediator.Send(new GetCartByIdQuery(id));
+
+        if (cart == null)
         {
-            _mediator = mediator;
+            _logger.LogWarning("Cart with given Id: {Id} was not found", id);
+            return NotFound();
         }
 
-        /// <summary>
-        /// Returns all carts.
-        /// </summary>
-        /// <returns>List of all cart entries.</returns>
-        [HttpGet]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
-        public async Task<ActionResult<IEnumerable<CartDto>>> GetAll()
-        {
-            var result = await _mediator.Send(new GetAllCartQuery());
+        return Ok(cart);
+    }
 
-            return Ok(result);
+    /// <summary>
+    /// Creates a new cart.
+    /// </summary>
+    [HttpPost]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Customer}, {UserRoles.Admin}")]
+    public async Task<ActionResult<CartDto>> Create([FromBody] CreateCartCommand command)
+    {
+        _logger.LogInformation("Creating cart");
+
+        var createdId = await _mediator.Send(command);
+        var createdCart = await _mediator.Send(new GetCartByIdQuery(createdId.Id));
+
+        _logger.LogInformation("Created cart with ID: {CartId}", createdCart.Id);
+        return CreatedAtAction(nameof(GetById), new { id = createdCart.Id }, createdCart);
+    }
+
+    /// <summary>
+    /// Updates an existing cart.
+    /// </summary>
+    [HttpPut("{id}")]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Customer}, {UserRoles.Admin}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateCartCommand command)
+    {
+        if (id != command.id)
+        {
+            _logger.LogWarning("Cart update failed: ID mismatch (Route: {RouteId}, Payload: {PayloadId})", id, command.id);
+            return BadRequest();
         }
 
-        /// <summary>
-        /// Returns a cart by its ID.
-        /// </summary>
-        /// <param name="id">The ID of the cart to retrieve.</param>
-        /// <returns>Cart with specified ID.</returns>
-        [HttpGet("{id}")]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
-        public async Task<ActionResult<CartDto>> GetById(int id)
-        {
-            var cart = await _mediator.Send(new GetCartByIdQuery(id));
-            if (cart == null) return NotFound();
+        var isSuccess = await _mediator.Send(command);
 
-            return Ok(cart);
+        if (!isSuccess)
+        {
+            _logger.LogWarning("Update failed: cart with given Id: {Id} was not found", id);
+            return NotFound();
         }
 
-        /// <summary>
-        /// Creates a new cart.
-        /// </summary>
-        /// <param name="command">The cart to create.</param>
-        /// <returns>The newly created cart.</returns>
-        [HttpPost]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Customer}, {UserRoles.Admin}")]
-        public async Task<ActionResult<CartDto>> Create([FromBody] CreateCartCommand command)
-        {
-            var createdId = await _mediator.Send(command);
-            var createdCart = await _mediator.Send(new GetCartByIdQuery(createdId.Id));
+        _logger.LogInformation("Updated cart with Id {Id} successfully", id);
+        return NoContent();
+    }
 
-            return CreatedAtAction(nameof(GetById), new { id = createdCart.Id }, createdCart);
+    /// <summary>
+    /// Deletes a cart by ID.
+    /// </summary>
+    [HttpDelete("{id}")]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Customer}, {UserRoles.Admin}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        _logger.LogInformation("Deleting cart with given Id: {Id}", id);
+
+        var isSuccess = await _mediator.Send(new DeleteCartCommand(id));
+
+        if (!isSuccess)
+        {
+            _logger.LogWarning("Delete failed: cart with given Id: {Id} was not found", id);
+            return NotFound();
         }
 
-        /// <summary>
-        /// Updates an existing cart.
-        /// </summary>
-        /// <param name="id">ID of the cart to update.</param>
-        /// <param name="command">The updated cart details.</param>
-        /// <returns>No content if successful.</returns>
-        [HttpPut("{id}")]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Customer}, {UserRoles.Admin}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateCartCommand command)
-        {
-            if (id != command.id) return BadRequest();
+        _logger.LogInformation("Deleted cart with given Id: {Id} successfully", id);
+        return NoContent();
+    }
 
-            var isSuccess = await _mediator.Send(command);
-            if (!isSuccess) return NotFound();
+    /// <summary>
+    /// Creates a full cart with its items one request.
+    /// </summary>
+    /// <param name="command">The full cart structure to create.</param>
+    [HttpPost("full")]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
+    public async Task<ActionResult> CreateFullCart([FromBody] CreateFullCartCommand command)
+    {
+        _logger.LogInformation("Creating full cart structure");
 
-            return NoContent();
-        }
+        var productId = await _mediator.Send(command);
 
-        /// <summary>
-        /// Deletes a cart by ID.
-        /// </summary>
-        /// <param name="id">ID of the cart to delete.</param>
-        /// <returns>No content if successful.</returns>
-        [HttpDelete("{id}")]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Customer}, {UserRoles.Admin}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var isSuccess = await _mediator.Send(new DeleteCartCommand(id));
-            if (!isSuccess) return NotFound();
-
-            return NoContent();
-        }
+        _logger.LogInformation("Created full product with ID: {Id}", productId);
+        return CreatedAtAction(nameof(GetById), new { id = productId }, null);
     }
 }

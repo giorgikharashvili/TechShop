@@ -1,25 +1,28 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.OrderDetails.DeleteOrderDetails
+namespace TechShop.Application.Features.OrderDetails.DeleteOrderDetails;
+
+public class DeleteCartCommandHandler(
+    IRepository<Domain.Entities.OrderDetails> _repository,
+    ILogger<DeleteCartCommandHandler> _logger
+    ) : IRequestHandler<DeleteOrderDetailsCommand, bool>
 {
-    public class DeleteCartCommandHandler : IRequestHandler<DeleteOrderDetailsCommand, bool>
+    public async Task<bool> Handle(DeleteOrderDetailsCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.OrderDetails> _repository;
+        _logger.LogInformation("Handling DeleteOrderDetailsCommand for OrderDetails ID: {Id}", request.id);
 
-        public DeleteCartCommandHandler(IRepository<Domain.Entities.OrderDetails> repository)
+        var exists = await _repository.GetByIdAsync(request.id);
+        if (exists == null)
         {
-            _repository = repository;
+            _logger.LogWarning("OrderDetails with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(DeleteOrderDetailsCommand request, CancellationToken cancellationToken)
-        {
-            var exists = await _repository.GetByIdAsync(request.id);
-            if (exists == null) return false;
+        await _repository.DeleteAsync(request.id);
+        _logger.LogInformation("OrderDetails with ID: {Id} deleted successfully.", request.id);
 
-            await _repository.DeleteAsync(request.id);
-
-            return true;
-        }
+        return true;
     }
 }

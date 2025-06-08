@@ -1,30 +1,33 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.OrderItem.UpdateOrderItem
+namespace TechShop.Application.Features.OrderItem.UpdateOrderItem;
+
+public class UpdateOrderItemCommandHandler(
+    IRepository<Domain.Entities.OrderItem> _repository,
+    IMapper _mapper,
+    ILogger<UpdateOrderItemCommandHandler> _logger
+    ) : IRequestHandler<UpdateOrderItemCommand, bool>
 {
-    public class UpdateOrderItemCommandHandler : IRequestHandler<UpdateOrderItemCommand, bool>
+    public async Task<bool> Handle(UpdateOrderItemCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.OrderItem> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling UpdateOrderItemCommand for OrderItem ID: {Id}", request.id);
 
-        public UpdateOrderItemCommandHandler(IRepository<Domain.Entities.OrderItem> repository, IMapper mapper)
+        var orderItem = await _repository.GetByIdAsync(request.id);
+        if (orderItem == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("OrderItem with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(UpdateOrderItemCommand request, CancellationToken cancellationToken)
-        {
-            var orderItem = await _repository.GetByIdAsync(request.id);
-            if (orderItem == null) return false;
+        _mapper.Map(request, orderItem);
+        _logger.LogInformation("Mapped update request to OrderItem entity.");
 
-            _mapper.Map(request, orderItem);
+        await _repository.UpdateAsync(orderItem);
+        _logger.LogInformation("OrderItem with ID: {Id} updated successfully.", request.id);
 
-            await _repository.UpdateAsync(orderItem);
-
-            return true;
-        }
+        return true;
     }
 }

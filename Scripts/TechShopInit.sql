@@ -19,6 +19,7 @@ CREATE TABLE auth.Users (
   LastName NVARCHAR(255),
   Username NVARCHAR(255) UNIQUE,
   Email NVARCHAR(255) UNIQUE,
+  Role NVARCHAR(255),
   PasswordHash NVARCHAR(255),
   PhoneNumber NVARCHAR(255),
   CreatedAt DATETIME,
@@ -63,15 +64,15 @@ CREATE TABLE catalog.Products (
 );
 
 CREATE TABLE catalog.ProductsSkus (
-  Id INT PRIMARY KEY,
+  Id INT PRIMARY KEY IDENTITY(1, 1),
   ProductId INT FOREIGN KEY REFERENCES catalog.Products(Id),
   Price DECIMAL,
-  Sku NVARCHAR(255),
-  StockQuantity NVARCHAR(255)
+  Sku NVARCHAR(255) UNIQUE,
+  StockQuantity INT
 );
 
 CREATE TABLE catalog.ProductSkuAttributes (
-  Id INT PRIMARY KEY,
+  Id INT PRIMARY KEY IDENTITY(1, 1),
   Type NVARCHAR(255),
   Value NVARCHAR(255),
   FOREIGN KEY (Id) REFERENCES catalog.ProductsSkus(Id)
@@ -80,7 +81,7 @@ CREATE TABLE catalog.ProductSkuAttributes (
 -- == CART SCHEMA == --
 
 CREATE TABLE cart.Wishlist (
-  Id INT PRIMARY KEY,
+  Id INT PRIMARY KEY IDENTITY(1, 1),
   ProductId INT FOREIGN KEY REFERENCES catalog.Products(Id),
   UserId INT FOREIGN KEY REFERENCES auth.Users(Id),
   CreatedAt DATETIME,
@@ -90,33 +91,34 @@ CREATE TABLE cart.Wishlist (
 );
 
 CREATE TABLE cart.Cart (
-  Id INT PRIMARY KEY,
+  Id INT PRIMARY KEY IDENTITY(1, 1),
   UserId INT UNIQUE FOREIGN KEY REFERENCES auth.Users(Id),
   TotalPrice INT
 );
 
 CREATE TABLE cart.CartItem (
-  Id INT PRIMARY KEY,
+  Id INT PRIMARY KEY IDENTITY(1, 1),
   CartId INT FOREIGN KEY REFERENCES cart.Cart(Id),
   ProductId INT FOREIGN KEY REFERENCES catalog.Products(Id),
-  ProductSkuId INT FOREIGN KEY REFERENCES catalog.ProductsSkus(Id),
+  ProductSkuId NVARCHAR(255) FOREIGN KEY REFERENCES catalog.ProductsSkus(Sku), 
   Quantity INT
 );
 
 -- == ORDERS SCHEMA == -- 
 
 CREATE TABLE orders.OrderDetails (
-  Id INT PRIMARY KEY,
+  Id INT PRIMARY KEY IDENTITY(1, 1),
   UserId INT FOREIGN KEY REFERENCES auth.Users(Id),
   TotalPrice INT,
   CreatedAt DATETIME,
   CreatedBy NVARCHAR(255),
   ModifiedAt DATETIME,
-  ModifiedBy NVARCHAR(255)
+  ModifiedBy NVARCHAR(255),
+  Email NVARCHAR(255)
 );
 
 CREATE TABLE orders.OrderItem (
-  Id INT PRIMARY KEY,
+  Id INT PRIMARY KEY IDENTITY(1, 1),
   OrderId INT FOREIGN KEY REFERENCES orders.OrderDetails(Id),
   ProductId INT FOREIGN KEY REFERENCES catalog.Products(Id),
   ProductsSkuId INT FOREIGN KEY REFERENCES catalog.ProductsSkus(Id),
@@ -133,7 +135,8 @@ CREATE TABLE orders.Payments (
   CreatedAt DATETIME,
   CreatedBy NVARCHAR(255),
   ModifiedAt DATETIME,
-  ModifiedBy NVARCHAR(255)
+  ModifiedBy NVARCHAR(255),
+  StripeSessionId NVARCHAR(255)
 );
 
 

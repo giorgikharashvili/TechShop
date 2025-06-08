@@ -1,26 +1,29 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.Wishlist;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Wishlist.GetWishlistById
+namespace TechShop.Application.Features.Wishlist.GetWishlistById;
+
+public class GetWishlistByIdQueryHandler(
+    IRepository<Domain.Entities.Wishlist> _repository,
+    IMapper _mapper,
+    ILogger<GetWishlistByIdQueryHandler> _logger
+    ) : IRequestHandler<GetWishlistByIdQuery, WishlistDto?>
 {
-    public class GetWishlistByIdQueryHandler : IRequestHandler<GetWishlistByIdQuery, WishlistDto?>
+    public async Task<WishlistDto?> Handle(GetWishlistByIdQuery request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Wishlist> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling GetWishlistByIdQuery for Wishlist ID: {Id}", request.id);
 
-        public GetWishlistByIdQueryHandler(IRepository<Domain.Entities.Wishlist> repository, IMapper mapper)
+        var wishlist = await _repository.GetByIdAsync(request.id);
+        if (wishlist == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("Wishlist with ID: {Id} not found.", request.id);
+            return null;
         }
-        public async Task<WishlistDto?> Handle(GetWishlistByIdQuery request, CancellationToken cancellationToken)
-        {
-            var wishlist = await _repository.GetByIdAsync(request.id);
-            if (wishlist == null) return null;
 
-            return _mapper.Map<WishlistDto>(wishlist);
-        }
+        _logger.LogInformation("Wishlist found. Mapping to WishlistDto.");
+        return _mapper.Map<WishlistDto>(wishlist);
     }
 }

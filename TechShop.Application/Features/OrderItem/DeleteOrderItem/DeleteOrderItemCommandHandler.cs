@@ -1,25 +1,28 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.OrderItem.DeleteOrderItem
+namespace TechShop.Application.Features.OrderItem.DeleteOrderItem;
+
+public class DeleteOrderItemCommandHandler(
+    IRepository<Domain.Entities.OrderItem> _repository,
+    ILogger<DeleteOrderItemCommandHandler> _logger
+    ) : IRequestHandler<DeleteOrderItemCommand, bool>
 {
-    public class DeleteOrderItemCommandHandler : IRequestHandler<DeleteOrderItemCommand, bool>
+    public async Task<bool> Handle(DeleteOrderItemCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.OrderItem> _repository;
+        _logger.LogInformation("Handling DeleteOrderItemCommand for OrderItem ID: {Id}", request.id);
 
-        public DeleteOrderItemCommandHandler(IRepository<Domain.Entities.OrderItem> repository)
+        var exists = await _repository.GetByIdAsync(request.id);
+        if (exists == null)
         {
-            _repository = repository;
+            _logger.LogWarning("OrderItem with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(DeleteOrderItemCommand request, CancellationToken cancellationToken)
-        {
-            var exists = await _repository.GetByIdAsync(request.id);
-            if (exists == null) return false;
+        await _repository.DeleteAsync(request.id);
+        _logger.LogInformation("OrderItem with ID: {Id} deleted successfully.", request.id);
 
-            await _repository.DeleteAsync(request.id);
-
-            return true;
-        }
+        return true;
     }
 }

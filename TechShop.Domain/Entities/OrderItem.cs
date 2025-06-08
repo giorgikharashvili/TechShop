@@ -13,7 +13,6 @@ namespace TechShop.Domain.Entities
         public int Id { get; init; }
         public int OrderId { get; set; }
         public int ProductId { get; set; }
-        public int ProductsSkuId { get; set; }
         public int Quantity { get; set; }
     }
 }

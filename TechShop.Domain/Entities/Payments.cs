@@ -13,6 +13,7 @@ namespace TechShop.Domain.Entities
     {
         public int Id { get; init; }
         public int OrderId { get; set; }
+        public string StripeSessionId { get; set; }
         public string StripePaymentId { get; init; }
         public decimal Amount { get; set; }
         public string Currency { get; set; }

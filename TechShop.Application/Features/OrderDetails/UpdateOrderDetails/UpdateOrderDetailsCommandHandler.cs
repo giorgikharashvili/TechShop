@@ -1,32 +1,36 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.OrderDetails.UpdateOrderDetails
+namespace TechShop.Application.Features.OrderDetails.UpdateOrderDetails;
+
+public class UpdateOrderDetailsCommandHandler(
+    IRepository<Domain.Entities.OrderDetails> _repository,
+    IMapper _mapper,
+    ILogger<UpdateOrderDetailsCommandHandler> _logger
+    ) : IRequestHandler<UpdateOrderDetailsCommand, bool>
 {
-    public class UpdateOrderDetailsCommandHandler : IRequestHandler<UpdateOrderDetailsCommand, bool>
+    public async Task<bool> Handle(UpdateOrderDetailsCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.OrderDetails> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling UpdateOrderDetailsCommand for OrderDetails ID: {Id}", request.id);
 
-        public UpdateOrderDetailsCommandHandler(IRepository<Domain.Entities.OrderDetails> repository, IMapper mapper)
+        var orderDetails = await _repository.GetByIdAsync(request.id);
+        if (orderDetails == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("OrderDetails with ID: {Id} not found.", request.id);
+            return false;
         }
-        public async Task<bool> Handle(UpdateOrderDetailsCommand request, CancellationToken cancellationToken)
-        {
-            var orderDetails = await _repository.GetByIdAsync(request.id);
-            if (orderDetails == null) return false;
 
-            _mapper.Map(request, orderDetails);
+        _mapper.Map(request, orderDetails);
+        _logger.LogInformation("Mapped update request to existing OrderDetails entity.");
 
-            orderDetails.ModifiedAt = DateTime.UtcNow;
-            orderDetails.ModifiedBy = "System";
+        orderDetails.ModifiedAt = DateTime.UtcNow;
+        orderDetails.ModifiedBy = "System";
 
-            await _repository.UpdateAsync(orderDetails);
+        await _repository.UpdateAsync(orderDetails);
+        _logger.LogInformation("OrderDetails with ID: {Id} updated successfully.", request.id);
 
-            return true;
-        }
+        return true;
     }
 }

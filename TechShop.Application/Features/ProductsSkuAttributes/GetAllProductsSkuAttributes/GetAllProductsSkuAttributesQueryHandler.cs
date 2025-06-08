@@ -1,27 +1,26 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.ProductsSkuAttributes;
 using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.ProductsSkuAttributes.GetAllProductsSkuAttributes
+namespace TechShop.Application.Features.ProductsSkuAttributes.GetAllProductsSkuAttributes;
+
+public class GetAllProductsSkuAttributesQueryHandler(
+    IRepository<ProductSkuAttributes> _repository,
+    IMapper _mapper,
+    ILogger<GetAllProductsSkuAttributesQueryHandler> _logger
+    ) : IRequestHandler<GetAllProductsSkuAttributesQuery, IEnumerable<ProductSkuAttributesDto>>
 {
-    public class GetAllProductsSkuAttributesQueryHandler : IRequestHandler<GetAllProductsSkuAttributesQuery, IEnumerable<ProductSkuAttributesDto>>
+    public async Task<IEnumerable<ProductSkuAttributesDto>> Handle(GetAllProductsSkuAttributesQuery request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<ProductSkuAttributes> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling GetAllProductsSkuAttributesQuery");
 
-        public GetAllProductsSkuAttributesQueryHandler(IRepository<ProductSkuAttributes> repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+        var productSkuAttributes = await _repository.GetAllAsync();
 
-        public async Task<IEnumerable<ProductSkuAttributesDto>> Handle(GetAllProductsSkuAttributesQuery request, CancellationToken cancellationToken)
-        {
-            var productSkuAttributes = await _repository.GetAllAsync();
+        _logger.LogInformation("Retrieved {Count} ProductSkuAttributes from repository", productSkuAttributes.Count());
 
-            return _mapper.Map<IEnumerable<ProductSkuAttributesDto>>(productSkuAttributes);
-        }
+        return _mapper.Map<IEnumerable<ProductSkuAttributesDto>>(productSkuAttributes);
     }
 }

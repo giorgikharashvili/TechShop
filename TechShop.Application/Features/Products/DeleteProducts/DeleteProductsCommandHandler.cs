@@ -1,28 +1,28 @@
-using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Products.DeleteProducts
+namespace TechShop.Application.Features.Products.DeleteProducts;
+
+public class DeleteProductsCommandHandler(
+    IRepository<Domain.Entities.Products> _repository,
+    ILogger<DeleteProductsCommandHandler> _logger
+    ) : IRequestHandler<DeleteProductsCommand, bool>
 {
-    public class DeleteProductsCommandHandler : IRequestHandler<DeleteProductsCommand, bool>
+    public async Task<bool> Handle(DeleteProductsCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Products> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling DeleteProductsCommand for Product ID: {Id}", request.id);
 
-        public DeleteProductsCommandHandler(IRepository<Domain.Entities.Products> repository, IMapper mapper)
+        var entity = await _repository.GetByIdAsync(request.id);
+        if (entity == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("Product with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(DeleteProductsCommand request, CancellationToken cancellationToken)
-        {
-            var entity = await _repository.GetByIdAsync(request.id);
-            if (entity == null) return false;
+        await _repository.DeleteAsync(request.id);
+        _logger.LogInformation("Product with ID: {Id} deleted successfully.", request.id);
 
-            await _repository.DeleteAsync(request.id);
-
-            return true;
-        }
+        return true;
     }
 }

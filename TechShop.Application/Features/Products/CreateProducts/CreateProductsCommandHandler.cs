@@ -3,29 +3,20 @@ using MediatR;
 using TechShop.Domain.DTOs.Products;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Products.CreateProducts
+namespace TechShop.Application.Features.Products.CreateProducts;
+
+public class CreateProductsCommandHandler(IRepository<Domain.Entities.Products> _repository, IMapper _mapper) : IRequestHandler<CreateProductsCommand, ProductsDto>
 {
-    public class CreateProductsCommandHandler : IRequestHandler<CreateProductsCommand, ProductsDto>
+    public async Task<ProductsDto> Handle(CreateProductsCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Products> _repository;
-        private readonly IMapper _mapper;
+        var entity = _mapper.Map<Domain.Entities.Products>(request.Dto);
+        entity.CreatedAt = DateTime.UtcNow;
 
-        public CreateProductsCommandHandler(IRepository<Domain.Entities.Products> repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+        await _repository.AddAsync(entity);
 
-        public async Task<ProductsDto> Handle(CreateProductsCommand request, CancellationToken cancellationToken)
-        {
-            var entity = _mapper.Map<Domain.Entities.Products>(request.Dto);
-            entity.CreatedAt = DateTime.UtcNow;
+        var dto = _mapper.Map<ProductsDto>(entity);
 
-            await _repository.AddAsync(entity);
-
-            var dto = _mapper.Map<ProductsDto>(entity);
-
-            return dto;
-        }
+        return dto;
     }
 }
+

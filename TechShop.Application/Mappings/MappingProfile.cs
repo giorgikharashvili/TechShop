@@ -38,6 +38,9 @@ using TechShop.Domain.DTOs.Users;
 using TechShop.Domain.DTOs.Wishlist;
 using TechShop.Domain.Entities;
 using TechShop.TechShop.Domain.Entities;
+using TechShop.TechShop.Domain.Enums;
+using Stripe;
+using Stripe.Checkout;
 
 namespace TechShop.Application.Mappings
 {
@@ -45,16 +48,22 @@ namespace TechShop.Application.Mappings
     {
         public MappingProfile()
         {
-       // Register
-            CreateMap<RegisterDto, Users>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => "User"))
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
-                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.Username))
-                .ForMember(dest => dest.ModifiedAt, opt => opt.Ignore())
-                .ForMember(dest => dest.ModifiedBy, opt => opt.Ignore())
-                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
 
+            // Payments & Order Details
+            CreateMap<Session, OrderDetails>()
+                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.CustomerEmail))
+                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
+                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => 0)) 
+                 .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => (int)((src.AmountTotal ?? 0) / 100)));
+            // Register
+            CreateMap<RegisterDto, Users>()
+               .ForMember(dest => dest.Id, opt => opt.Ignore())
+               .ForMember(dest => dest.Role, opt => opt.MapFrom(src => "User"))
+               .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
+               .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.Username))
+               .ForMember(dest => dest.ModifiedAt, opt => opt.Ignore())
+               .ForMember(dest => dest.ModifiedBy, opt => opt.Ignore())
+               .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
 
             // Addresses
             CreateMap<CreateAddressesDto, Addresses>()
@@ -68,6 +77,8 @@ namespace TechShop.Application.Mappings
             CreateMap<Addresses, AddressesDto>().ReverseMap();
 
             // Cart
+            CreateMap<CreateFullCartDto, Cart>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<CreateCartDto, Cart>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<CreateCartCommand, Cart>()
@@ -75,6 +86,7 @@ namespace TechShop.Application.Mappings
             CreateMap<Cart, CartDto>().ReverseMap();
 
             // CartItem
+            CreateMap<CreateFullCartItemDto, CartItem>();
             CreateMap<CreateCartItemDto, CartItem>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<CreateCartItemCommand, CartItem>()
@@ -168,6 +180,7 @@ namespace TechShop.Application.Mappings
             CreateMap<ProductsSkus, ProductsSkusDto>().ReverseMap();
 
             // Users
+            CreateMap<CreateAddressForNewUser, Addresses>();
             CreateMap<CreateUserDto, Users>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<CreateUsersCommand, Users>()

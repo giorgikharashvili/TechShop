@@ -1,30 +1,29 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.OrderDetails;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.OrderDetails.CreateOrderDetails
+namespace TechShop.Application.Features.OrderDetails.CreateOrderDetails;
+
+public class CreateOrderDetailsCommandHandler(
+    IRepository<Domain.Entities.OrderDetails> _repository,
+    IMapper _mapper,
+    ILogger<CreateOrderDetailsCommandHandler> _logger
+    ) : IRequestHandler<CreateOrderDetailsCommand, OrderDetailsDto>
 {
-    public class CreateOrderDetailsCommandHandler : IRequestHandler<CreateOrderDetailsCommand, OrderDetailsDto>
+    public async Task<OrderDetailsDto> Handle(CreateOrderDetailsCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.OrderDetails> _repository;
-        private readonly IMapper _mapper;
-        
-        public CreateOrderDetailsCommandHandler(IRepository<Domain.Entities.OrderDetails> repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
-        public async Task<OrderDetailsDto> Handle(CreateOrderDetailsCommand request, CancellationToken cancellationToken)
-        {
-            var entity = _mapper.Map<Domain.Entities.OrderDetails>(request.Dto);
-            entity.CreatedAt = DateTime.UtcNow;
+        _logger.LogInformation("Handling CreateOrderDetailsCommand for UserId: {UserId}", request.Dto.UserId);
 
-            await _repository.AddAsync(entity);
+        var entity = _mapper.Map<Domain.Entities.OrderDetails>(request.Dto);
+        entity.CreatedAt = DateTime.UtcNow;
 
-            var dto = _mapper.Map<OrderDetailsDto>(entity);
+        await _repository.AddAsync(entity);
+        _logger.LogInformation("OrderDetails entity created with ID: {Id}", entity.Id);
 
-            return dto;
-        }
+        var dto = _mapper.Map<OrderDetailsDto>(entity);
+
+        return dto;
     }
 }

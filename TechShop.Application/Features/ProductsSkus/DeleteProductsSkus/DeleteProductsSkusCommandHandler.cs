@@ -1,26 +1,28 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
+namespace TechShop.Application.Features.ProductsSkus.DeleteProductsSkus;
 
-namespace TechShop.Application.Features.ProductsSkus.DeleteProductsSkus
+public class DeleteProductsSkusCommandHandler(
+    IRepository<Domain.Entities.ProductsSkus> _repository,
+    ILogger<DeleteProductsSkusCommandHandler> _logger
+    ) : IRequestHandler<DeleteProductsSkusCommand, bool>
 {
-    public class DeleteProductsSkusCommandHandler : IRequestHandler<DeleteProductsSkusCommand, bool>
+    public async Task<bool> Handle(DeleteProductsSkusCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.ProductsSkus> _repository;
+        _logger.LogInformation("Handling DeleteProductsSkusCommand for SKU ID: {Id}", request.id);
 
-        public DeleteProductsSkusCommandHandler(IRepository<Domain.Entities.ProductsSkus> repository)
+        var exists = await _repository.GetByIdAsync(request.id);
+        if (exists == null)
         {
-            _repository = repository;
+            _logger.LogWarning("Product SKU with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(DeleteProductsSkusCommand request, CancellationToken cancellationToken)
-        {
-            var exists = await _repository.GetByIdAsync(request.id);
-            if (exists == null) return false;
+        await _repository.DeleteAsync(request.id);
+        _logger.LogInformation("Product SKU with ID: {Id} deleted successfully.", request.id);
 
-            await _repository.DeleteAsync(request.id);
-
-            return true;
-        }
+        return true;
     }
 }

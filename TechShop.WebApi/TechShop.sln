@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechShop.Domain", "..\TechS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechShop.Application", "..\TechShop.Application\TechShop.Application.csproj", "{3BE96B74-EAF3-49C8-A798-2D5AC1B15DE4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechShop.Application.Tests", "..\TechShop.Application.Tests\TechShop.Application.Tests.csproj", "{D299728B-2D1A-4404-A3C3-B1C1102081AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{3BE96B74-EAF3-49C8-A798-2D5AC1B15DE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BE96B74-EAF3-49C8-A798-2D5AC1B15DE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BE96B74-EAF3-49C8-A798-2D5AC1B15DE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D299728B-2D1A-4404-A3C3-B1C1102081AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D299728B-2D1A-4404-A3C3-B1C1102081AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D299728B-2D1A-4404-A3C3-B1C1102081AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D299728B-2D1A-4404-A3C3-B1C1102081AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,27 +1,29 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.Categories;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Categories.GetCategoriesById
+namespace TechShop.Application.Features.Categories.GetCategoriesById;
+
+public class GetCategoriesByIdQueryHandler(
+    IRepository<Domain.Entities.Categories> _repository,
+    IMapper _mapper,
+    ILogger<GetCategoriesByIdQueryHandler> _logger
+    ) : IRequestHandler<GetCategoriesByIdQuery, CategoriesDto?>
 {
-    public class GetCategoriesByIdQueryHandler : IRequestHandler<GetCategoriesByIdQuery, CategoriesDto?>
+    public async Task<CategoriesDto?> Handle(GetCategoriesByIdQuery request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Categories> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling GetCategoriesByIdQuery for Category ID: {Id}", request.id);
 
-        public GetCategoriesByIdQueryHandler(IRepository<Domain.Entities.Categories> repository, IMapper mapper)
+        var categories = await _repository.GetByIdAsync(request.id);
+        if (categories == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("Category with ID: {Id} not found.", request.id);
+            return null;
         }
 
-        public async Task<CategoriesDto?> Handle(GetCategoriesByIdQuery request, CancellationToken cancellationToken)
-        {
-            var categories = await _repository.GetByIdAsync(request.id);
-            if (categories == null) return null;
-
-            return _mapper.Map<CategoriesDto>(categories);
-        }
+        _logger.LogInformation("Category found. Mapping to CategoriesDto.");
+        return _mapper.Map<CategoriesDto>(categories);
     }
 }

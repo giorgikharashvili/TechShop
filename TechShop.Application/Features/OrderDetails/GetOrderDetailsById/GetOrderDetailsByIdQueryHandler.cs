@@ -1,27 +1,29 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.OrderDetails;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.OrderDetails.GetOrderDetailsById
+namespace TechShop.Application.Features.OrderDetails.GetOrderDetailsById;
+
+public class GetOrderDetailsByIdQueryHandler(
+    IRepository<Domain.Entities.OrderDetails> _repository,
+    IMapper _mapper,
+    ILogger<GetOrderDetailsByIdQueryHandler> _logger
+    ) : IRequestHandler<GetOrderDetailsByIdQuery, OrderDetailsDto?>
 {
-    public class GetOrderDetailsByIdQueryHandler : IRequestHandler<GetOrderDetailsByIdQuery, OrderDetailsDto?>
+    public async Task<OrderDetailsDto?> Handle(GetOrderDetailsByIdQuery request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.OrderDetails> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling GetOrderDetailsByIdQuery for OrderDetails ID: {Id}", request.id);
 
-        public GetOrderDetailsByIdQueryHandler(IRepository<Domain.Entities.OrderDetails> repository, IMapper mapper)
+        var orderDetails = await _repository.GetByIdAsync(request.id);
+        if (orderDetails == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("OrderDetails with ID: {Id} not found.", request.id);
+            return null;
         }
 
-        public async Task<OrderDetailsDto?> Handle(GetOrderDetailsByIdQuery request, CancellationToken cancellationToken)
-        {
-            var orderDetails = await _repository.GetByIdAsync(request.id);
-            if (orderDetails == null) return null;
-
-            return _mapper.Map<OrderDetailsDto>(orderDetails);
-        }
+        _logger.LogInformation("OrderDetails found. Mapping to OrderDetailsDto.");
+        return _mapper.Map<OrderDetailsDto>(orderDetails);
     }
 }

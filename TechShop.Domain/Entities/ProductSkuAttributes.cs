@@ -10,7 +10,7 @@ namespace TechShop.Domain.Entities
     [DbSchema("catalog")]
     public class ProductSkuAttributes
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public string Type { get; set; }
         public string Value { get; set; }
 

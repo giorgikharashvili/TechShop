@@ -1,29 +1,33 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.CartItem.UpdateCartItem
+namespace TechShop.Application.Features.CartItem.UpdateCartItem;
+
+public class UpdateCartCommandHandler(
+    IRepository<Domain.Entities.CartItem> _repository,
+    IMapper _mapper,
+    ILogger<UpdateCartCommandHandler> _logger
+    ) : IRequestHandler<UpdateCartItemCommand, bool>
 {
-    public class UpdateCartCommandHandler : IRequestHandler<UpdateCartItemCommand, bool>
+    public async Task<bool> Handle(UpdateCartItemCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.CartItem> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling UpdateCartItemCommand for CartItem ID: {Id}", request.id);
 
-        public UpdateCartCommandHandler(IRepository<Domain.Entities.CartItem> repository, IMapper mapper)
+        var cartItem = await _repository.GetByIdAsync(request.id);
+        if (cartItem == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("CartItem with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(UpdateCartItemCommand request, CancellationToken cancellationToken)
-        {
-            var cartItem = await _repository.GetByIdAsync(request.id);
-            if (cartItem == null) return false;
+        _mapper.Map(request, cartItem);
+        _logger.LogInformation("Mapped update request to CartItem entity.");
 
-            _mapper.Map(request, cartItem);
+        await _repository.UpdateAsync(cartItem);
+        _logger.LogInformation("CartItem with ID: {Id} updated successfully.", request.id);
 
-            await _repository.UpdateAsync(cartItem);
-            return true;
-        }
+        return true;
     }
 }

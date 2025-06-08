@@ -15,7 +15,7 @@ namespace TechShop.Domain.Entities
         public string Description { get; set; }
         public int CategoryId { get; set; }
         public DateTime CreatedAt { get; set; }
-        public string CreatedBy { get; init; }
+        public string CreatedBy { get; set; }
         public string? ModifiedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }
 
