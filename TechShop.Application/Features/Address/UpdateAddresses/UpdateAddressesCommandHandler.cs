@@ -1,33 +1,39 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.UpdateAddresses
+namespace TechShop.Application.Features.Address.UpdateAddresses;
+
+public class UpdateAddressCommandHandler(
+    IRepository<Addresses> _repository,
+    IMapper _mapper,
+    ILogger<UpdateAddressCommandHandler> _logger
+    ) : IRequestHandler<UpdateAddressesCommand, bool>
 {
-    public class UpdateAddressCommandHandler : IRequestHandler<UpdateAddressesCommand, bool>
+    public async Task<bool> Handle(UpdateAddressesCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Addresses> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling UpdateAddressesCommand for Address ID: {Id}", request.id);
 
-        public UpdateAddressCommandHandler(IRepository<Addresses> repository, IMapper mapper)
+        var address = await _repository.GetByIdAsync(request.id);
+        if (address == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("Address with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(UpdateAddressesCommand request, CancellationToken cancellationToken)
-        {
-            var address = await _repository.GetByIdAsync(request.id);
-            if (address == null) return false;
+        _mapper.Map(request.Dto, address);
+        _logger.LogInformation("Mapped update request to existing address entity.");
 
-            _mapper.Map(request, address);
+        address.Id = request.id;
+        address.ModifiedAt = DateTime.UtcNow;
+        address.ModifiedBy = "System";
 
-            address.ModifiedAt = DateTime.UtcNow;
-            address.ModifiedBy = "System";
+        _logger.LogDebug("Updating Address entity: {@Address}", address);
+        await _repository.UpdateAsync(address);
+        _logger.LogInformation("Address with ID: {Id} updated successfully.", request.id);
 
-            await _repository.UpdateAsync(address);
-            return true;
-        }
+        return true;
     }
 }

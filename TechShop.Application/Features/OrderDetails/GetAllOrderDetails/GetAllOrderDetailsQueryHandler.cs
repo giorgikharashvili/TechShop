@@ -1,26 +1,25 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.OrderDetails;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
+namespace TechShop.Application.Features.OrderDetails.GetAllOrderDetails;
 
-namespace TechShop.Application.Features.OrderDetails.GetAllOrderDetails
+public class GetAllCartQueryHandler(
+    IRepository<Domain.Entities.OrderDetails> _repository,
+    IMapper _mapper,
+    ILogger<GetAllCartQueryHandler> _logger
+    ) : IRequestHandler<GetAllOrderDetailsQuery, IEnumerable<OrderDetailsDto>>
 {
-    public class GetAllCartQueryHandler : IRequestHandler<GetAllOrderDetailsQuery, IEnumerable<OrderDetailsDto>>
+    public async Task<IEnumerable<OrderDetailsDto>> Handle(GetAllOrderDetailsQuery request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.OrderDetails> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling GetAllOrderDetailsQuery");
 
-        public GetAllCartQueryHandler(IRepository<Domain.Entities.OrderDetails> repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
-        public async Task<IEnumerable<OrderDetailsDto>> Handle(GetAllOrderDetailsQuery request, CancellationToken cancellationToken)
-        {
-            var orderDetails = await _repository.GetAllAsync();
+        var orderDetails = await _repository.GetAllAsync();
 
-            return _mapper.Map<IEnumerable<OrderDetailsDto>>(orderDetails);
-        }
+        _logger.LogInformation("Retrieved {Count} order details from repository", orderDetails.Count());
+
+        return _mapper.Map<IEnumerable<OrderDetailsDto>>(orderDetails);
     }
 }

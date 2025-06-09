@@ -1,32 +1,33 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.Addresses;
 using TechShop.Infrastructure.Repositories.Interfaces;
 using TechShop.TechShop.Domain.Entities;
 
-namespace TechShop.Application.Features.Address.CreateAddresses
+namespace TechShop.Application.Features.Address.CreateAddresses;
+
+public class CreateAddressesCommandHandler(
+    IRepository<Addresses> _repository,
+    IMapper _mapper,
+    ILogger<CreateAddressesCommandHandler> _logger
+    ) : IRequestHandler<CreateAddressCommand, AddressesDto>
 {
-    public class CreateAddressesCommandHandler : IRequestHandler<CreateAddressCommand, AddressesDto>
+    public async Task<AddressesDto> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Addresses> _repository;
-        private readonly IMapper _mapper;
-        
-        public CreateAddressesCommandHandler(IRepository<Addresses> repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
-        
-        public async Task<AddressesDto> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
-        {
-            var entity = _mapper.Map<Addresses>(request.Dto);
-            entity.CreatedAt = DateTime.UtcNow;
+        _logger.LogInformation("Handling CreateAddressCommand for user: {UserId}", request.Dto.UserId);
 
-            await _repository.AddAsync(entity);
+        var entity = _mapper.Map<Addresses>(request.Dto);
+        entity.CreatedAt = DateTime.UtcNow;
 
-            var dto = _mapper.Map<AddressesDto>(entity);
+        _logger.LogInformation("Mapped AddressesDto to Addresses entity.");
 
-            return dto;
-        }
+        await _repository.AddAsync(entity);
+        _logger.LogInformation("Address entity added to repository with ID: {Id}", entity.Id);
+
+        var dto = _mapper.Map<AddressesDto>(entity);
+        _logger.LogInformation("Returning created AddressesDto.");
+
+        return dto;
     }
 }

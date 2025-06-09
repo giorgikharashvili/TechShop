@@ -1,29 +1,33 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
-namespace TechShop.Application.Features.ProductsSkus.UpdateProductsSkus
+
+namespace TechShop.Application.Features.ProductsSkus.UpdateProductsSkus;
+
+public class UpdateProductsSkusCommandHandler(
+    IRepository<Domain.Entities.ProductsSkus> _repository,
+    IMapper _mapper,
+    ILogger<UpdateProductsSkusCommandHandler> _logger
+    ) : IRequestHandler<UpdateProductsSkusCommand, bool>
 {
-    public class UpdateProductsSkusCommandHandler : IRequestHandler<UpdateProductsSkusCommand, bool>
+    public async Task<bool> Handle(UpdateProductsSkusCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.ProductsSkus> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling UpdateProductsSkusCommand for SKU ID: {Id}", request.id);
 
-        public UpdateProductsSkusCommandHandler(IRepository<Domain.Entities.ProductsSkus> repository, IMapper mapper)
+        var productsSkus = await _repository.GetByIdAsync(request.id);
+        if (productsSkus == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("Product SKU with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(UpdateProductsSkusCommand request, CancellationToken cancellationToken)
-        {
-            var productsSkus = await _repository.GetByIdAsync(request.id);
-            if (productsSkus == null) return false;
+        _mapper.Map(request.Dto, productsSkus);
+        _logger.LogInformation("Mapped update request to Product SKU entity.");
 
-            _mapper.Map(request, productsSkus);
+        await _repository.UpdateAsync(productsSkus);
+        _logger.LogInformation("Product SKU with ID: {Id} updated successfully.", request.id);
 
-            await _repository.UpdateAsync(productsSkus);
-
-            return true;
-        }
+        return true;
     }
 }

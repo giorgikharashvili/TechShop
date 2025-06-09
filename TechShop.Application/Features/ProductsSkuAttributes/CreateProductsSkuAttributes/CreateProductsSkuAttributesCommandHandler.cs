@@ -1,31 +1,29 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.ProductsSkuAttributes;
 using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.ProductsSkuAttributes.CreateProductsSkuAttributes
+namespace TechShop.Application.Features.ProductsSkuAttributes.CreateProductsSkuAttributes;
+
+public class CreateProductsSkuAttributesCommandHandler(
+    IRepository<ProductSkuAttributes> _repository,
+    IMapper _mapper,
+    ILogger<CreateProductsSkuAttributesCommandHandler> _logger
+    ) : IRequestHandler<CreateProductsSkuAttributesCommand, ProductSkuAttributesDto>
 {
-    public class CreateProductsSkuAttributesCommandHandler : IRequestHandler<CreateProductsSkuAttributesCommand, ProductSkuAttributesDto>
+    public async Task<ProductSkuAttributesDto> Handle(CreateProductsSkuAttributesCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<ProductSkuAttributes> _repository;
-        private readonly IMapper _mapper;
-        
-        public CreateProductsSkuAttributesCommandHandler(IRepository<ProductSkuAttributes> repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+        _logger.LogInformation("Handling CreateProductsSkuAttributesCommand for SKU");
 
+        var entity = _mapper.Map<ProductSkuAttributes>(request.Dto);
+        await _repository.AddAsync(entity);
 
-        public async Task<ProductSkuAttributesDto> Handle(CreateProductsSkuAttributesCommand request, CancellationToken cancellationToken)
-        {
-            var entity = _mapper.Map<ProductSkuAttributes>(request.Dto);
-            await _repository.AddAsync(entity);
+        _logger.LogInformation("ProductSkuAttribute created with ID: {Id}", entity.Id);
 
-            var dto = _mapper.Map<ProductSkuAttributesDto>(entity);
+        var dto = _mapper.Map<ProductSkuAttributesDto>(entity);
 
-            return dto;
-        }
+        return dto;
     }
 }

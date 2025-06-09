@@ -1,26 +1,25 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.Categories;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Categories.GetAllCategories
+namespace TechShop.Application.Features.Categories.GetAllCategories;
+
+public class GetAllCategoriesQueryHandler(
+    IRepository<Domain.Entities.Categories> _repository,
+    IMapper _mapper,
+    ILogger<GetAllCategoriesQueryHandler> _logger
+    ) : IRequestHandler<GetAllCategoriesQuery, IEnumerable<CategoriesDto>>
 {
-    public class GetAllCategoriesQueryHandler : IRequestHandler<GetAllCategoriesQuery, IEnumerable<CategoriesDto>>
+    public async Task<IEnumerable<CategoriesDto>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Categories> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling GetAllCategoriesQuery");
 
-        public GetAllCategoriesQueryHandler(IRepository<Domain.Entities.Categories> repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+        var categories = await _repository.GetAllAsync();
 
-        public async Task<IEnumerable<CategoriesDto>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
-        {
-            var categories = await _repository.GetAllAsync();
+        _logger.LogInformation("Retrieved {Count} categories from repository", categories.Count());
 
-            return _mapper.Map<IEnumerable<CategoriesDto>>(categories);
-        }
+        return _mapper.Map<IEnumerable<CategoriesDto>>(categories);
     }
 }

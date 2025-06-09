@@ -1,26 +1,25 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.Payments;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Payments.GetAllPayments
+namespace TechShop.Application.Features.Payments.GetAllPayments;
+
+public class GetAllPaymentsQueryHandler(
+    IRepository<Domain.Entities.Payments> _repository,
+    IMapper _mapper,
+    ILogger<GetAllPaymentsQueryHandler> _logger
+    ) : IRequestHandler<GetAllPaymentsQuery, IEnumerable<PaymentsDto>>
 {
-    public class GetAllPaymentsQueryHandler : IRequestHandler<GetAllPaymentsQuery, IEnumerable<PaymentsDto>>
+    public async Task<IEnumerable<PaymentsDto>> Handle(GetAllPaymentsQuery request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Payments> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling GetAllPaymentsQuery");
 
-        public GetAllPaymentsQueryHandler(IRepository<Domain.Entities.Payments> repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+        var payments = await _repository.GetAllAsync();
 
-        public async Task<IEnumerable<PaymentsDto>> Handle(GetAllPaymentsQuery request, CancellationToken cancellationToken)
-        {
-            var payments = await _repository.GetAllAsync();
+        _logger.LogInformation("Retrieved {Count} payments from repository", payments.Count());
 
-            return _mapper.Map<IEnumerable<PaymentsDto>>(payments);
-        }
+        return _mapper.Map<IEnumerable<PaymentsDto>>(payments);
     }
 }

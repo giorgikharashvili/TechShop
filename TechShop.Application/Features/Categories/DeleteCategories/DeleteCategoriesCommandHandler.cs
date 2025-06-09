@@ -1,23 +1,28 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Categories.DeleteCategories
+namespace TechShop.Application.Features.Categories.DeleteCategories;
+
+public class DeleteCartCommandHandler(
+    IRepository<Domain.Entities.Categories> _repository,
+    ILogger<DeleteCartCommandHandler> _logger
+    ) : IRequestHandler<DeleteCategoriesCommand, bool>
 {
-    public class DeleteCartCommandHandler : IRequestHandler<DeleteCategoriesCommand, bool>
+    public async Task<bool> Handle(DeleteCategoriesCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Categories> _repository;
+        _logger.LogInformation("Handling DeleteCategoriesCommand for Category ID: {Id}", request.id);
 
-        public DeleteCartCommandHandler(IRepository<Domain.Entities.Categories> repository)
+        var exists = await _repository.GetByIdAsync(request.id);
+        if (exists == null)
         {
-            _repository = repository;
+            _logger.LogWarning("Category with ID: {Id} not found.", request.id);
+            return false;
         }
-        public async Task<bool> Handle(DeleteCategoriesCommand request, CancellationToken cancellationToken)
-        {
-            var exists = await _repository.GetByIdAsync(request.id);
-            if (exists == null) return false;
 
-            await _repository.DeleteAsync(request.id);
-            return true;
-        }
+        await _repository.DeleteAsync(request.id);
+        _logger.LogInformation("Category with ID: {Id} deleted successfully.", request.id);
+
+        return true;
     }
 }

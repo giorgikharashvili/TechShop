@@ -1,26 +1,25 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.OrderItem;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.OrderItem.GetAllOrderItem
+namespace TechShop.Application.Features.OrderItem.GetAllOrderItem;
+
+public class GetAllOrderItemQueryHandler(
+    IRepository<Domain.Entities.OrderItem> _repository,
+    IMapper _mapper,
+    ILogger<GetAllOrderItemQueryHandler> _logger
+    ) : IRequestHandler<GetAllOrderItemQuery, IEnumerable<OrderItemDto>>
 {
-    public class GetAllOrderItemQueryHandler : IRequestHandler<GetAllOrderItemQuery, IEnumerable<OrderItemDto>>
+    public async Task<IEnumerable<OrderItemDto>> Handle(GetAllOrderItemQuery request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.OrderItem> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling GetAllOrderItemQuery");
 
-        public GetAllOrderItemQueryHandler(IRepository<Domain.Entities.OrderItem> repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+        var orderItem = await _repository.GetAllAsync();
 
-        public async Task<IEnumerable<OrderItemDto>> Handle(GetAllOrderItemQuery request, CancellationToken cancellationToken)
-        {
-            var orderItem = await _repository.GetAllAsync();
+        _logger.LogInformation("Retrieved {Count} order items from repository", orderItem.Count());
 
-            return _mapper.Map<IEnumerable<OrderItemDto>>(orderItem);
-        }
+        return _mapper.Map<IEnumerable<OrderItemDto>>(orderItem);
     }
 }

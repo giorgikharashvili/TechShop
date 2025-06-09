@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using MediatR;
 using TechShop.Domain.DTOs.Wishlist;
 using TechShop.Application.Features.Wishlist.CreateWishlist;
@@ -7,100 +9,120 @@ using TechShop.Application.Features.Wishlist.DeleteWishlist;
 using TechShop.Application.Features.Wishlist.GetAllWishlist;
 using TechShop.Application.Features.Wishlist.GetWishlistById;
 using TechShop.Application.Features.Wishlist.UpdateWishlist;
-using Microsoft.AspNetCore.Authorization;
 using TechShop.Domain.Constants;
 
-namespace TechShop.WebApi.Controllers
+namespace TechShop.WebApi.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class WishlistController(IMediator _mediator, ILogger<WishlistController> _logger) : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class WishlistController : ControllerBase
+    /// <summary>
+    /// Returns all wishlist items.
+    /// </summary>
+    /// <returns>List of all wishlist items.</returns>
+    [HttpGet]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
+    public async Task<ActionResult<IEnumerable<WishlistDto>>> GetAll()
     {
-        private readonly IMediator _mediator;
+        _logger.LogInformation("Fetching all wishlist items");
 
-        public WishlistController(IMediator mediator)
+        var result = await _mediator.Send(new GetAllWishlistQuery());
+
+        _logger.LogInformation("Returned {Count} wishlist items", result.Count());
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Returns a wishlist item by ID.
+    /// </summary>
+    /// <param name="id">The ID of the wishlist item to retrieve.</param>
+    /// <returns>Wishlist item with specified ID.</returns>
+    [HttpGet("{id}")]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
+    public async Task<ActionResult<WishlistDto>> GetById(int id)
+    {
+        _logger.LogInformation("Fetching wishlist item with ID: {Id}", id);
+
+        var item = await _mediator.Send(new GetWishlistByIdQuery(id));
+
+        if (item == null)
         {
-            _mediator = mediator;
+            _logger.LogWarning("Wishlist item with ID {Id} not found", id);
+            return NotFound();
         }
 
-        /// <summary>
-        /// Returns all wishlist items.
-        /// </summary>
-        /// <returns>List of all wishlist items.</returns>
-        [HttpGet]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
-        public async Task<ActionResult<IEnumerable<WishlistDto>>> GetAll()
-        {
-            var result = await _mediator.Send(new GetAllWishlistQuery());
+        return Ok(item);
+    }
 
-            return Ok(result);
+    /// <summary>
+    /// Creates a new wishlist item.
+    /// </summary>
+    /// <param name="dto">The wishlist item to create.</param>
+    /// <returns>The newly created wishlist item.</returns>
+    [HttpPost]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Customer}")]
+    public async Task<ActionResult<WishlistDto>> Create([FromBody] CreateWishlistCommand dto)
+    {
+        _logger.LogInformation("Creating new wishlist");
+
+        var result = await _mediator.Send(dto);
+
+        _logger.LogInformation("Created wishlist");
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Updates an existing wishlist item.
+    /// </summary>
+    /// <param name="id">ID of the wishlist item to update.</param>
+    /// <param name="dto">The updated wishlist item details.</param>
+    /// <returns>No content if successful.</returns>
+    [HttpPut("{id}")]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Customer}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateWishlistCommand dto)
+    {
+        if (id != dto.id)
+        {
+            _logger.LogWarning("Wishlist update failed: ID mismatch (Route: {RouteId}, Payload: {PayloadId})", id, dto.id);
+            return BadRequest("ID mismatch");
         }
 
-        /// <summary>
-        /// Returns a wishlist item by its ID.
-        /// </summary>
-        /// <param name="id">The ID of the wishlist item to retrieve.</param>
-        /// <returns>Wishlist item with specified ID.</returns>
-        [HttpGet("{id}")]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Manager}")]
-        public async Task<ActionResult<WishlistDto>> GetById(int id)
+        var isSuccess = await _mediator.Send(dto);
+        if (!isSuccess)
         {
-            var item = await _mediator.Send(new GetWishlistByIdQuery(id));
-            if (item == null) return NotFound();
-
-            return Ok(item);
+            _logger.LogWarning("Update failed: Wishlist item with ID {Id} not found", id);
+            return NotFound();
         }
 
-        /// <summary>
-        /// Creates a new wishlist item.
-        /// </summary>
-        /// <param name="dto">The wishlist item to create.</param>
-        /// <returns>The newly created wishlist item.</returns>
-        [HttpPost]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Customer}")]
-        public async Task<ActionResult<WishlistDto>> Create([FromBody] CreateWishlistCommand dto)
-        {
-            var created = await _mediator.Send(dto);
+        _logger.LogInformation("Wishlist item with ID {Id} updated successfully", id);
+        return NoContent();
+    }
 
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+    /// <summary>
+    /// Deletes a wishlist item by ID.
+    /// </summary>
+    /// <param name="id">ID of the wishlist item to delete.</param>
+    /// <returns>No content if successful.</returns>
+    [HttpDelete("{id}")]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Customer}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        _logger.LogInformation("Deleting wishlist item with ID: {Id}", id);
+
+        var isSuccess = await _mediator.Send(new DeleteWishlistCommand(id));
+        if (!isSuccess)
+        {
+            _logger.LogWarning("Delete failed: Wishlist item with ID {Id} not found", id);
+            return NotFound();
         }
 
-        /// <summary>
-        /// Updates an existing wishlist item.
-        /// </summary>
-        /// <param name="id">ID of the wishlist item to update.</param>
-        /// <param name="dto">The updated wishlist item details.</param>
-        /// <returns>No content if successful.</returns>
-        [HttpPut("{id}")]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Customer}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateWishlistCommand dto)
-        {
-            if (id != dto.id) return BadRequest("ID mismatch");
-
-            var isSuccess = await _mediator.Send(dto);
-            if (!isSuccess) return NotFound();
-
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Deletes a wishlist item by ID.
-        /// </summary>
-        /// <param name="id">ID of the wishlist item to delete.</param>
-        /// <returns>No content if successful.</returns>
-        [HttpDelete("{id}")]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Customer}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var isSuccess = await _mediator.Send(new DeleteWishlistCommand(id));
-            if (!isSuccess) return NotFound();
-
-            return NoContent();
-        }
+        _logger.LogInformation("Wishlist item with ID {Id} deleted successfully", id);
+        return NoContent();
     }
 }

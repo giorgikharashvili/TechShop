@@ -1,24 +1,29 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.Entities;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.ProductsSkuAttributes.DeleteProductsSkuAttributes
+namespace TechShop.Application.Features.ProductsSkuAttributes.DeleteProductsSkuAttributes;
+
+public class DeleteProductsSkuAttributesCommandHandler(
+    IRepository<ProductSkuAttributes> _repository,
+    ILogger<DeleteProductsSkuAttributesCommandHandler> _logger
+    ) : IRequestHandler<DeleteProductsSkuAttributesCommand, bool>
 {
-    public class DeleteProductsSkuAttributesCommandHandler : IRequestHandler<DeleteProductsSkuAttributesCommand, bool>
+    public async Task<bool> Handle(DeleteProductsSkuAttributesCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<ProductSkuAttributes> _repository;
+        _logger.LogInformation("Handling DeleteProductsSkuAttributesCommand for Attribute ID: {Id}", request.id);
 
-        public DeleteProductsSkuAttributesCommandHandler(IRepository<ProductSkuAttributes> repository)
+        var exists = await _repository.GetByIdAsync(request.id);
+        if (exists == null)
         {
-            _repository = repository;
+            _logger.LogWarning("ProductSkuAttribute with ID: {Id} not found.", request.id);
+            return false;
         }
-        public async Task<bool> Handle(DeleteProductsSkuAttributesCommand request, CancellationToken cancellationToken)
-        {
-            var exists = await _repository.GetByIdAsync(request.id);
-            if (exists == null) return false;
 
-            await _repository.DeleteAsync(request.id);
-            return true;
-        }
+        await _repository.DeleteAsync(request.id);
+        _logger.LogInformation("ProductSkuAttribute with ID: {Id} deleted successfully.", request.id);
+
+        return true;
     }
 }

@@ -1,27 +1,29 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.Users;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Users.GetUsersById
+namespace TechShop.Application.Features.Users.GetUsersById;
+
+public class GetUsersByIdQueryHandler(
+    IRepository<Domain.Entities.Users> _repository,
+    IMapper _mapper,
+    ILogger<GetUsersByIdQueryHandler> _logger
+    ) : IRequestHandler<GetUsersByIdQuery, UserDto?>
 {
-    public class GetUsersByIdQueryHandler : IRequestHandler<GetUsersByIdQuery, UserDto?>
+    public async Task<UserDto?> Handle(GetUsersByIdQuery request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Users> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling GetUsersByIdQuery for User ID: {Id}", request.id);
 
-        public GetUsersByIdQueryHandler(IRepository<Domain.Entities.Users> repository, IMapper mapper)
+        var users = await _repository.GetByIdAsync(request.id);
+        if (users == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("User with ID: {Id} not found.", request.id);
+            return null;
         }
 
-        public async Task<UserDto?> Handle(GetUsersByIdQuery request, CancellationToken cancellationToken)
-        {
-            var users = await _repository.GetByIdAsync(request.id);
-            if (users == null) return null;
-
-            return _mapper.Map<UserDto>(users);
-        }
+        _logger.LogInformation("User found. Mapping to UserDto.");
+        return _mapper.Map<UserDto>(users);
     }
 }

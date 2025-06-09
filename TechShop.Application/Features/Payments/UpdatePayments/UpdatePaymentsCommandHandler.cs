@@ -1,33 +1,36 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Payments.UpdatePayments
+namespace TechShop.Application.Features.Payments.UpdatePayments;
+
+public class UpdatePaymentsCommandHandler(
+    IRepository<Domain.Entities.Payments> _repository,
+    IMapper _mapper,
+    ILogger<UpdatePaymentsCommandHandler> _logger
+    ) : IRequestHandler<UpdatePaymentsCommand, bool>
 {
-    public class UpdatePaymentsCommandHandler : IRequestHandler<UpdatePaymentsCommand, bool>
+    public async Task<bool> Handle(UpdatePaymentsCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Payments> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling UpdatePaymentsCommand for Payment ID: {Id}", request.id);
 
-        public UpdatePaymentsCommandHandler(IRepository<Domain.Entities.Payments> repository, IMapper mapper)
+        var payments = await _repository.GetByIdAsync(request.id);
+        if (payments == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("Payment with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(UpdatePaymentsCommand request, CancellationToken cancellationToken)
-        {
-            var payments = await _repository.GetByIdAsync(request.id);
-            if (payments == null) return false;
+        _mapper.Map(request.Dto, payments);
+        _logger.LogInformation("Mapped update request to Payment entity.");
 
-            _mapper.Map(request, payments);
+        payments.ModifiedAt = DateTime.UtcNow;
+        payments.ModifiedBy = "System";
 
-            payments.ModifiedAt = DateTime.UtcNow;
-            payments.ModifiedBy = "System";
+        await _repository.UpdateAsync(payments);
+        _logger.LogInformation("Payment with ID: {Id} updated successfully.", request.id);
 
-            await _repository.UpdateAsync(payments);
-
-            return true;
-        }
+        return true;
     }
 }

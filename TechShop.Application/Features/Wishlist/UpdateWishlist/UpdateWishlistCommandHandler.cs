@@ -1,33 +1,36 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Wishlist.UpdateWishlist
+namespace TechShop.Application.Features.Wishlist.UpdateWishlist;
+
+public class UpdateWishlistCommandHandler(
+    IRepository<Domain.Entities.Wishlist> _repository,
+    IMapper _mapper,
+    ILogger<UpdateWishlistCommandHandler> _logger
+    ) : IRequestHandler<UpdateWishlistCommand, bool>
 {
-    public class UpdateCartCommandHandler : IRequestHandler<UpdateWishlistCommand, bool>
+    public async Task<bool> Handle(UpdateWishlistCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Wishlist> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling UpdateWishlistCommand for Wishlist ID: {Id}", request.id);
 
-        public UpdateCartCommandHandler(IRepository<Domain.Entities.Wishlist> repository, IMapper mapper)
+        var wishlist = await _repository.GetByIdAsync(request.id);
+        if (wishlist == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("Wishlist with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(UpdateWishlistCommand request, CancellationToken cancellationToken)
-        {
-            var wishlist = await _repository.GetByIdAsync(request.id);
-            if (wishlist == null) return false;
+        _mapper.Map(request.Dto, wishlist);
+        _logger.LogInformation("Mapped update request to wishlist entity.");
 
-            _mapper.Map(request, wishlist);
+        wishlist.ModifiedAt = DateTime.UtcNow;
+        wishlist.ModifiedBy = "System";
 
-            wishlist.ModifiedAt = DateTime.UtcNow;
-            wishlist.ModifiedBy = "System";
+        await _repository.UpdateAsync(wishlist);
+        _logger.LogInformation("Wishlist with ID: {Id} updated successfully.", request.id);
 
-            await _repository.UpdateAsync(wishlist);
-
-            return true;
-        }
+        return true;
     }
 }

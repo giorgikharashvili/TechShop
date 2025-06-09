@@ -3,36 +3,49 @@ using TechShop.Infrastructure.Repositories.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using TechShop.Domain.Entities;
+using TechShop.TechShop.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
+namespace TechShop.Application.Features.Auth.Register;
 
-namespace TechShop.Application.Features.Auth.Register
+public class RegisterCommandHandler(
+    IUserRepository _userRepository,
+    IRepository<Addresses> _addressesRepository,
+    IMapper _mapper,
+    PasswordHasher<Domain.Entities.Users> _passwordHasher,
+    ILogger<RegisterCommandHandler> _logger
+   ) : IRequestHandler<RegisterCommand, string>
 {
-    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
+    public async Task<string> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
-        private readonly PasswordHasher<Domain.Entities.Users> _passwordHasher;
+        _logger.LogInformation("Handling RegisterCommand for Email: {Email}", request.Dto.Email);
 
-        public RegisterCommandHandler(IUserRepository userRepository, IMapper mapper, PasswordHasher<Domain.Entities.Users> passwordHasher)
+        var existingUser = await _userRepository.GetByEmailAsync(request.Dto.Email);
+        if (existingUser != null)
         {
-            _userRepository = userRepository;
-            _mapper = mapper;
-            _passwordHasher = passwordHasher;
+            _logger.LogWarning("User with Email: {Email} already exists", request.Dto.Email);
+            throw new Exception("User with given Email already exists");
         }
 
-        public async Task<string> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        var user = _mapper.Map<Domain.Entities.Users>(request.Dto);
+        user.PasswordHash = _passwordHasher.HashPassword(user, request.Dto.Password);
+        user.CreatedAt = DateTime.UtcNow;
+
+        var userId = await _userRepository.AddAsync(user);
+        _logger.LogInformation("User created with ID: {UserId}", userId);
+
+        foreach (var addresses in request.Dto.addresses)
         {
-            var existingUser = await _userRepository.GetByEmailAsync(request.Dto.Email);
-            if (existingUser != null) throw new Exception("User with given Email already exists");
+            var address = _mapper.Map<Addresses>(addresses);
+            address.UserId = user.Id;
+            address.CreatedBy = "User";
+            address.CreatedAt = DateTime.UtcNow;
 
-            var user = _mapper.Map<Domain.Entities.Users>(request.Dto);
-
-            user.PasswordHash = _passwordHasher.HashPassword(user, request.Dto.Password);
-            user.CreatedAt = DateTime.UtcNow;
-
-            await _userRepository.AddAsync(user);
-
-            return "User registered successfully";
+            _logger.LogInformation("Saving user's address for UserId: {UserId}", user.Id);
+            await _addressesRepository.AddAsync(address);
         }
+
+        _logger.LogInformation("User registration completed successfully for Email: {Email}", request.Dto.Email);
+        return "User registered successfully";
     }
 }

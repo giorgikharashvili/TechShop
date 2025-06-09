@@ -7,6 +7,7 @@ using TechShop.Application.Features.Address.DeleteAddresses;
 using TechShop.Application.Features.Address.GetAddressesById;
 using TechShop.Application.Features.Address.GetAllAddresses;
 using TechShop.Application.Features.Address.UpdateAddresses;
+using TechShop.Application.Services.Interfaces;
 using TechShop.Domain.Constants;
 using TechShop.Domain.DTOs.Addresses;
 
@@ -14,15 +15,8 @@ namespace TechShop.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AddressesController : ControllerBase
+    public class AddressesController(IMediator _mediator, ILogger<AddressesController> _logger, IAddressesService _addressesService) : ControllerBase
     {
-        private readonly IMediator _mediator;
-
-        public AddressesController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
         /// <summary>
         /// Returns all addresses.
         /// </summary>
@@ -32,8 +26,11 @@ namespace TechShop.WebApi.Controllers
         [Authorize(Roles = $"{UserRoles.Admin}")]
         public async Task<ActionResult<IEnumerable<AddressesDto>>> GetAll()
         {
+            _logger.LogInformation("Fetching all addresses");
+
             var result = await _mediator.Send(new GetAllAddressQuery());
 
+            _logger.LogInformation("Returned {Count} addresses", result.Count());
             return Ok(result);
         }
 
@@ -47,11 +44,77 @@ namespace TechShop.WebApi.Controllers
         [Authorize(Roles = $"{UserRoles.Admin}")]
         public async Task<ActionResult<AddressesDto>> GetById(int id)
         {
+            _logger.LogInformation("Fetching address with given Id: {Id}", id);
             var address = await _mediator.Send(new GetAddressesByIdQuery(id));
-            if (address == null) return NotFound();
 
+            if (address == null)
+            {
+                _logger.LogWarning("Address with given Id: {Id} was not found", id);
+                return NotFound();
+            }
+            
             return Ok(address);
         }
+
+
+        /// <summary>
+        /// gets an addresses by country.
+        /// </summary>
+        /// <param name="country">country of the addresses to get.</param>
+        /// <returns>addresses by its country.</returns>
+        [HttpGet("country/{country}")]
+        [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
+        public async Task<ActionResult<IEnumerable<AddressesDto>>> GetByCountry(string country)
+        {
+            _logger.LogInformation("Returning addresses with given Country: {country}", country);
+
+            var result = await _addressesService.GetByCountryAsync(country);
+            if (result == null) return NotFound();
+
+            _logger.LogInformation("Returned addresses with given Country: {country} successfully", country);
+            return Ok(result);
+        }
+
+
+        /// <summary>
+        /// gets an address by city.
+        /// </summary>
+        /// <param name="city">city of the addresses to get.</param>
+        /// <returns>addresses by its city.</returns>
+        [HttpGet("city/{city}")]
+        [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
+        public async Task<ActionResult<IEnumerable<AddressesDto>>> GetByCity(string city)
+        {
+            _logger.LogInformation("Returning addresses with given City: {city}", city);
+
+            var result = await _addressesService.GetByCityAsync(city);
+            if (result == null) return NotFound();
+
+            _logger.LogInformation("Returned addresses with given City: {city} successfully", city);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// gets an address by postal Code.
+        /// </summary>
+        /// <param name="postalCode">postal Code of the addresses to get.</param>
+        /// <returns>addresses by its postal Code.</returns>
+        [HttpGet("postalCode/{postalCode}")]
+        [EnableRateLimiting("RequestsLimiter")]
+        [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
+        public async Task<ActionResult<IEnumerable<AddressesDto>>> GetByPostalCode(string postalCode)
+        {
+            _logger.LogInformation("Returning addresses with given PostalCode: {postalCode}", postalCode);
+
+            var result = await _addressesService.GetByPostalCodeAsync(postalCode);
+            if (result == null) return NotFound();
+
+            _logger.LogInformation("Returned addresses with given PostalCode: {postalCode} successfully", postalCode);
+            return Ok(result);
+        }
+
 
         /// <summary>
         /// Creates a new address.
@@ -63,9 +126,12 @@ namespace TechShop.WebApi.Controllers
         [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Customer}")]
         public async Task<ActionResult<AddressesDto>> Create([FromBody] CreateAddressCommand command)
         {
+            _logger.LogInformation("Creating address for {UserId}", command.Dto.UserId);
+
             var createdAddress = await _mediator.Send(command);
 
-            return CreatedAtAction(nameof(GetById), new { id = createdAddress.Id }, createdAddress);
+            _logger.LogInformation("Created address");
+            return Ok(createdAddress);
         }
 
         /// <summary>
@@ -79,11 +145,21 @@ namespace TechShop.WebApi.Controllers
         [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateAddressesCommand command)
         {
-            if (id != command.id) return BadRequest();
+            if (id != command.id)
+            {
+                _logger.LogWarning("Address update failed: ID mismatch");
+                return NotFound(0);
+            }
+
             var isSuccess = await _mediator.Send(command);
 
-            if (!isSuccess) return NotFound();
+            if (!isSuccess)
+            {
+                _logger.LogWarning("Update failed: address with given Id: {Id} was not found", id);
+                return NotFound();
+            }
 
+            _logger.LogInformation("Updated address with Id {Id} successfully", id);
             return NoContent();
         }
 
@@ -97,9 +173,17 @@ namespace TechShop.WebApi.Controllers
         [Authorize(Roles = $"{UserRoles.Admin}, {UserRoles.Manager}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var isSuccess = await _mediator.Send(new DeleteAddressCommand(id));
-            if (!isSuccess) return NotFound();
+            _logger.LogInformation("Deleting address with given Id: {Id}", id);
 
+            var isSuccess = await _mediator.Send(new DeleteAddressCommand(id));
+
+            if (!isSuccess)
+            {
+                _logger.LogInformation("Delete failed: address with given Id: {Id} was not found", id);
+                return NotFound();
+            }
+
+            _logger.LogInformation("Deleted address with given Id: {Id} successfully", id);
             return NoContent();
         }
     }

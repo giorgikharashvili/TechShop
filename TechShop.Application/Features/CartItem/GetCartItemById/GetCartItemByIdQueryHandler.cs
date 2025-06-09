@@ -1,27 +1,29 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.CartItem;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.CartItem.GetCartItemById
+namespace TechShop.Application.Features.CartItem.GetCartItemById;
+
+public class GetCartItemByIdQueryHandler(
+    IRepository<Domain.Entities.CartItem> _repository,
+    IMapper _mapper,
+    ILogger<GetCartItemByIdQueryHandler> _logger
+    ) : IRequestHandler<GetCartByIdQuery, CartItemDto?>
 {
-    public class GetCartItemByIdQueryHandler : IRequestHandler<GetCartByIdQuery, CartItemDto?>
+    public async Task<CartItemDto?> Handle(GetCartByIdQuery request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.CartItem> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling GetCartByIdQuery for CartItem ID: {Id}", request.id);
 
-        public GetCartItemByIdQueryHandler(IRepository<Domain.Entities.CartItem> repository, IMapper mapper)
+        var address = await _repository.GetByIdAsync(request.id);
+        if (address == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("CartItem with ID: {Id} not found.", request.id);
+            return null;
         }
 
-        public async Task<CartItemDto?> Handle(GetCartByIdQuery request, CancellationToken cancellationToken)
-        {
-            var address = await _repository.GetByIdAsync(request.id);
-            if (address == null) return null;
-
-            return _mapper.Map<CartItemDto>(address);
-        }
+        _logger.LogInformation("CartItem found. Mapping to CartItemDto.");
+        return _mapper.Map<CartItemDto>(address);
     }
 }

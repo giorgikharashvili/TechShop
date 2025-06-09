@@ -2,8 +2,9 @@
 
 namespace TechShop.Infrastructure.Repositories.Interfaces
 {
-    public interface IUserRepository : IRepository<Users>
+    public interface IUserRepository
     {
+        Task<int> AddAsync(Users users);
         Task<Users?> GetByEmailAsync(string email);
     }
 }

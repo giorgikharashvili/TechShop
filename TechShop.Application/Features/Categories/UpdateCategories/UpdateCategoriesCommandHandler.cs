@@ -1,30 +1,33 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Categories.UpdateCategories
+namespace TechShop.Application.Features.Categories.UpdateCategories;
+
+public class UpdateCategoriesCommandHandler(
+    IRepository<Domain.Entities.Categories> _repository,
+    IMapper _mapper,
+    ILogger<UpdateCategoriesCommandHandler> _logger
+    ) : IRequestHandler<UpdateCategoriesCommand, bool>
 {
-    public class UpdateCategoriesCommandHandler : IRequestHandler<UpdateCategoriesCommand, bool>
+    public async Task<bool> Handle(UpdateCategoriesCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Categories> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling UpdateCategoriesCommand for Category ID: {Id}", request.id);
 
-        public UpdateCategoriesCommandHandler(IRepository<Domain.Entities.Categories> repository, IMapper mapper)
+        var address = await _repository.GetByIdAsync(request.id);
+        if (address == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("Category with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(UpdateCategoriesCommand request, CancellationToken cancellationToken)
-        {
-            var address = await _repository.GetByIdAsync(request.id);
-            if (address == null) return false;
+        _mapper.Map(request.Dto, address);
+        _logger.LogInformation("Mapped update request to existing Category entity.");
 
-            _mapper.Map(request, address);
+        await _repository.UpdateAsync(address);
+        _logger.LogInformation("Category with ID: {Id} updated successfully.", request.id);
 
-            await _repository.UpdateAsync(address);
-
-            return true;
-        }
+        return true;
     }
 }

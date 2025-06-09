@@ -10,7 +10,7 @@ namespace TechShop.Domain.Entities
     [DbSchema("auth")]
     public class Users
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public string FirstName { get; init; }
         public string LastName { get; init; }
         public string Username { get; set; }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using MediatR;
 using TechShop.Domain.DTOs.Payments;
 using TechShop.Application.Features.Payments.GetAllPayments;
@@ -7,75 +9,122 @@ using TechShop.Application.Features.Payments.CreatePayments;
 using TechShop.Application.Features.Payments.DeletePayments;
 using TechShop.Application.Features.Payments.GetPaymentsById;
 using TechShop.Application.Features.Payments.UpdatePayments;
-using Microsoft.AspNetCore.Authorization;
 using TechShop.Domain.Constants;
 
-namespace TechShop.WebApi.Controllers
+namespace TechShop.WebApi.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class PaymentsController(IMediator _mediator, ILogger<PaymentsController> _logger) : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class PaymentsController : ControllerBase
+    /// <summary>
+    /// Returns all payments.
+    /// </summary>
+    /// <returns>List of all payment records.</returns>
+    [HttpGet]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Admin}")]
+    public async Task<ActionResult<IEnumerable<PaymentsDto>>> GetAll()
     {
-        private readonly IMediator _mediator;
+        _logger.LogInformation("Fetching all payment records");
 
-        public PaymentsController(IMediator mediator)
+        var result = await _mediator.Send(new GetAllPaymentsQuery());
+
+        _logger.LogInformation("Returned {Count} payments", result.Count());
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Returns a payment by ID.
+    /// </summary>
+    /// <param name="id">The ID of the payment to retrieve.</param>
+    /// <returns>The payment with the specified ID.</returns>
+    [HttpGet("{id}")]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Admin}")]
+    public async Task<ActionResult<PaymentsDto>> GetById(int id)
+    {
+        _logger.LogInformation("Fetching payment with ID: {Id}", id);
+
+        var result = await _mediator.Send(new GetPaymentsByIdQuery(id));
+
+        if (result == null)
         {
-            _mediator = mediator;
+            _logger.LogWarning("Payment with ID: {Id} was not found", id);
+            return NotFound();
         }
 
-        [HttpGet]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Admin}")]
-        public async Task<ActionResult<IEnumerable<PaymentsDto>>> GetAll()
-        {
-            var result = await _mediator.Send(new GetAllPaymentsQuery());
+        return Ok(result);
+    }
 
-            return Ok(result);
+    /// <summary>
+    /// Creates a new payment.
+    /// </summary>
+    /// <param name="command">The payment data to create.</param>
+    /// <returns>The newly created payment.</returns>
+    [HttpPost]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Admin}")]
+    public async Task<ActionResult<PaymentsDto>> Create([FromBody] CreatePaymentsCommand command)
+    {
+        _logger.LogInformation("Creating a new payment");
+
+        var result = await _mediator.Send(command);
+
+        _logger.LogInformation("Created payment");
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Updates an existing payment.
+    /// </summary>
+    /// <param name="id">ID of the payment to update.</param>
+    /// <param name="command">The updated payment data.</param>
+    /// <returns>No content if successful.</returns>
+    [HttpPut("{id}")]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Admin}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdatePaymentsCommand command)
+    {
+        if (id != command.id)
+        {
+            _logger.LogWarning("Payment update failed: ID mismatch");
+            return BadRequest("ID mismatch");
         }
 
-        [HttpGet("{id}")]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Admin}")]
-        public async Task<ActionResult<PaymentsDto>> GetById(int id)
-        {
-            var result = await _mediator.Send(new GetPaymentsByIdQuery(id));
-            if (result == null) return NotFound();
+        var isSuccess = await _mediator.Send(command);
 
-            return Ok(result);
+        if (!isSuccess)
+        {
+            _logger.LogWarning("Update failed: Payment with ID {Id} not found", id);
+            return NotFound();
         }
 
-        [HttpPost]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Admin}")]
-        public async Task<ActionResult<PaymentsDto>> Create([FromBody] CreatePaymentsCommand command)
-        {
-            var created = await _mediator.Send(command);
+        _logger.LogInformation("Payment with ID {Id} updated successfully", id);
+        return NoContent();
+    }
 
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+    /// <summary>
+    /// Deletes a payment by ID.
+    /// </summary>
+    /// <param name="id">ID of the payment to delete.</param>
+    /// <returns>No content if successful.</returns>
+    [HttpDelete("{id}")]
+    [EnableRateLimiting("RequestsLimiter")]
+    [Authorize(Roles = $"{UserRoles.Admin}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        _logger.LogInformation("Deleting payment with ID: {Id}", id);
+
+        var isSuccess = await _mediator.Send(new DeletePaymentsCommand(id));
+
+        if (!isSuccess)
+        {
+            _logger.LogWarning("Delete failed: Payment with ID {Id} not found", id);
+            return NotFound();
         }
 
-        [HttpPut("{id}")]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Admin}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdatePaymentsCommand command)
-        {
-            if (id != command.id) return BadRequest("ID mismatch");
-
-            var isSuccess = await _mediator.Send(command);
-            if (!isSuccess) return NotFound();
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        [EnableRateLimiting("RequestsLimiter")]
-        [Authorize(Roles = $"{UserRoles.Admin}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var isSuccess = await _mediator.Send(new DeletePaymentsCommand(id));
-            if (!isSuccess) return NotFound();
-
-            return NoContent();
-        }
+        _logger.LogInformation("Payment with ID {Id} deleted successfully", id);
+        return NoContent();
     }
 }

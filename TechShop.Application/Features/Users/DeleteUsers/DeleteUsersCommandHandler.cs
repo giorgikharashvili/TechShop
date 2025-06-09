@@ -1,25 +1,28 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Users.DeleteUsers
+namespace TechShop.Application.Features.Users.DeleteUsers;
+
+public class DeleteUsersCommandHandler(
+    IRepository<Domain.Entities.Users> _repository,
+    ILogger<DeleteUsersCommandHandler> _logger
+    ) : IRequestHandler<DeleteUsersCommand, bool>
 {
-    public class DeleteUsersCommandHandler : IRequestHandler<DeleteUsersCommand, bool>
+    public async Task<bool> Handle(DeleteUsersCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Users> _repository;
+        _logger.LogInformation("Handling DeleteUsersCommand for User ID: {Id}", request.id);
 
-        public DeleteUsersCommandHandler(IRepository<Domain.Entities.Users> repository)
+        var exists = await _repository.GetByIdAsync(request.id);
+        if (exists == null)
         {
-            _repository = repository;
+            _logger.LogWarning("User with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(DeleteUsersCommand request, CancellationToken cancellationToken)
-        {
-            var exists = await _repository.GetByIdAsync(request.id);
-            if (exists == null) return false;
+        await _repository.DeleteAsync(request.id);
+        _logger.LogInformation("User with ID: {Id} deleted successfully.", request.id);
 
-            await _repository.DeleteAsync(request.id);
-
-            return true;
-        }
+        return true;
     }
 }

@@ -1,27 +1,29 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.Products;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Products.GetProductsById
+namespace TechShop.Application.Features.Products.GetProductsById;
+
+public class GetProductsByIdQueryHandler(
+    IRepository<Domain.Entities.Products> _repository,
+    IMapper _mapper,
+    ILogger<GetProductsByIdQueryHandler> _logger
+    ) : IRequestHandler<GetProductsByIdQuery, ProductsDto>
 {
-    public class GetProductsByIdQueryHandler : IRequestHandler<GetProductsByIdQuery, ProductsDto>
+    public async Task<ProductsDto> Handle(GetProductsByIdQuery request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Products> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling GetProductsByIdQuery for Product ID: {Id}", request.id);
 
-        public GetProductsByIdQueryHandler(IRepository<Domain.Entities.Products> repository, IMapper mapper)
+        var entity = await _repository.GetByIdAsync(request.id);
+        if (entity == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("Product with ID: {Id} not found.", request.id);
+            return null;
         }
 
-        public async Task<ProductsDto> Handle(GetProductsByIdQuery request, CancellationToken cancellationToken)
-        {
-            var entity = await _repository.GetByIdAsync(request.id);
-            if (entity == null) return null;
-
-            return _mapper.Map<ProductsDto>(entity);
-        }
+        _logger.LogInformation("Product found. Mapping to ProductsDto.");
+        return _mapper.Map<ProductsDto>(entity);
     }
 }

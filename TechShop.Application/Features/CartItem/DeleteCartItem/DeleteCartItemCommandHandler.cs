@@ -1,24 +1,28 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.CartItem.DeleteCartItem
+namespace TechShop.Application.Features.CartItem.DeleteCartItem;
+
+public class DeleteCartCommandHandler(
+    IRepository<Domain.Entities.CartItem> _repository,
+    ILogger<DeleteCartCommandHandler> _logger
+    ) : IRequestHandler<DeleteCartItemCommand, bool>
 {
-    public class DeleteCartCommandHandler : IRequestHandler<DeleteCartItemCommand, bool>
+    public async Task<bool> Handle(DeleteCartItemCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.CartItem> _repository;
+        _logger.LogInformation("Handling DeleteCartItemCommand for CartItem ID: {Id}", request.id);
 
-        public DeleteCartCommandHandler(IRepository<Domain.Entities.CartItem> repository)
+        var exists = await _repository.GetByIdAsync(request.id);
+        if (exists == null)
         {
-            _repository = repository;
+            _logger.LogWarning("CartItem with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(DeleteCartItemCommand request, CancellationToken cancellationToken)
-        {
-            var exists = await _repository.GetByIdAsync(request.id);
-            if (exists == null) return false;
+        await _repository.DeleteAsync(request.id);
+        _logger.LogInformation("CartItem with ID: {Id} deleted successfully.", request.id);
 
-            await _repository.DeleteAsync(request.id);
-            return true;
-        }
+        return true;
     }
 }

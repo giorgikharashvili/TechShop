@@ -1,33 +1,36 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Users.UpdateUsers
+namespace TechShop.Application.Features.Users.UpdateUsers;
+
+public class UpdateUsersCommandHandler(
+    IRepository<Domain.Entities.Users> _repository,
+    IMapper _mapper,
+    ILogger<UpdateUsersCommandHandler> _logger
+    ) : IRequestHandler<UpdateUsersCommand, bool>
 {
-    public class UpdateUsersCommandHandler : IRequestHandler<UpdateUsersCommand, bool>
+    public async Task<bool> Handle(UpdateUsersCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Users> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling UpdateUsersCommand for User ID: {Id}", request.id);
 
-        public UpdateUsersCommandHandler(IRepository<Domain.Entities.Users> repository, IMapper mapper)
+        var users = await _repository.GetByIdAsync(request.id);
+        if (users == null)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _logger.LogWarning("User with ID: {Id} not found.", request.id);
+            return false;
         }
 
-        public async Task<bool> Handle(UpdateUsersCommand request, CancellationToken cancellationToken)
-        {
-            var users = await _repository.GetByIdAsync(request.id);
-            if (users == null) return false;
+        _mapper.Map(request.Dto, users);
+        _logger.LogInformation("Mapped update request to user entity.");
 
-            _mapper.Map(request, users);
+        users.ModifiedAt = DateTime.UtcNow;
+        users.ModifiedBy = "System";
 
-            users.ModifiedAt = DateTime.UtcNow;
-            users.ModifiedBy = "System";
+        await _repository.UpdateAsync(users);
+        _logger.LogInformation("User with ID: {Id} updated successfully.", request.id);
 
-            await _repository.UpdateAsync(users);
-
-            return true;
-        }
+        return true;
     }
 }

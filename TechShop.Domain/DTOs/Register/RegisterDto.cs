@@ -1,4 +1,6 @@
 ﻿
+using TechShop.Domain.DTOs.Addresses;
+
 namespace TechShop.Domain.DTOs.Register
 {
     public class RegisterDto
@@ -9,5 +11,6 @@ namespace TechShop.Domain.DTOs.Register
         public string Email { get; set; }
         public string Password { get; set; }
         public string PhoneNumber { get; set; }
+        public List<CreateAddressForNewUser> addresses { get; set; }
     }
 }

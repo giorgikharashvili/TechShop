@@ -6,7 +6,7 @@ namespace TechShop.Application.Features.Cart.CreateCart
     {
         public CreateCartCommandValidator()
         {
-            RuleFor(x => x.Dto.TotalPrice).GreaterThan(0);
+
         }
     }
 }

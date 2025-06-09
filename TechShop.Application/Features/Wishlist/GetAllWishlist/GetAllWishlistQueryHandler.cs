@@ -1,25 +1,25 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TechShop.Domain.DTOs.Wishlist;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
-namespace TechShop.Application.Features.Wishlist.GetAllWishlist
+namespace TechShop.Application.Features.Wishlist.GetAllWishlist;
+
+public class GetAllWishlistQueryHandler(
+    IRepository<Domain.Entities.Wishlist> _repository,
+    IMapper _mapper,
+    ILogger<GetAllWishlistQueryHandler> _logger
+    ) : IRequestHandler<GetAllWishlistQuery, IEnumerable<WishlistDto>>
 {
-    public class GetAllWishlistQueryHandler : IRequestHandler<GetAllWishlistQuery, IEnumerable<WishlistDto>>
+    public async Task<IEnumerable<WishlistDto>> Handle(GetAllWishlistQuery request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Domain.Entities.Wishlist> _repository;
-        private readonly IMapper _mapper;
+        _logger.LogInformation("Handling GetAllWishlistQuery");
 
-        public GetAllWishlistQueryHandler(IRepository<Domain.Entities.Wishlist> repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
-        public async Task<IEnumerable<WishlistDto>> Handle(GetAllWishlistQuery request, CancellationToken cancellationToken)
-        {
-            var wishlist = await _repository.GetAllAsync();
+        var wishlist = await _repository.GetAllAsync();
 
-            return _mapper.Map<IEnumerable<WishlistDto>>(wishlist);
-        }
+        _logger.LogInformation("Retrieved {Count} wishlist items from repository", wishlist.Count());
+
+        return _mapper.Map<IEnumerable<WishlistDto>>(wishlist);
     }
 }

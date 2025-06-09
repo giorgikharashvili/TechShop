@@ -8,7 +8,7 @@ namespace TechShop.Application.Features.CartItem.CreateCartItem
         {
             RuleFor(x => x.Dto.Quantity).NotNull().GreaterThan(0);
             RuleFor(x => x.Dto.ProductId).NotNull().GreaterThan(0);
-            RuleFor(x => x.Dto.ProductSkuId).NotNull().GreaterThan(0);
+            RuleFor(x => x.Dto.ProductSkuId).NotNull();
         }
     }
 }
