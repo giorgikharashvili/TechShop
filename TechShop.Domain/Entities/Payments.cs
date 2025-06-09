@@ -11,7 +11,7 @@ namespace TechShop.Domain.Entities
     [DbSchema("orders")]
     public class Payments
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public int OrderId { get; set; }
         public string StripeSessionId { get; set; }
         public string StripePaymentId { get; init; }

@@ -22,8 +22,10 @@ public class UpdateCartCommandHandler(
             return false;
         }
 
-        _mapper.Map(request, cart);
+        _mapper.Map(request.Dto, cart);
+        cart.Id = request.id;
         _logger.LogInformation("Mapped update request to existing cart entity.");
+        
 
         await _repository.UpdateAsync(cart);
         _logger.LogInformation("Cart with ID: {Id} updated successfully.", request.id);

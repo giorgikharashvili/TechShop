@@ -130,8 +130,8 @@ namespace TechShop.WebApi.Controllers
 
             var createdAddress = await _mediator.Send(command);
 
-            _logger.LogInformation("Created address with Id: {Id}", createdAddress.Id);
-            return CreatedAtAction(nameof(GetById), new { id = createdAddress.Id }, createdAddress);
+            _logger.LogInformation("Created address");
+            return Ok(createdAddress);
         }
 
         /// <summary>

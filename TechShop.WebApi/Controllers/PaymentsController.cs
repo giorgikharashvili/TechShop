@@ -69,10 +69,10 @@ public class PaymentsController(IMediator _mediator, ILogger<PaymentsController>
     {
         _logger.LogInformation("Creating a new payment");
 
-        var created = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-        _logger.LogInformation("Created payment with ID: {Id}", created.Id);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        _logger.LogInformation("Created payment");
+        return Ok(result);
     }
 
     /// <summary>

@@ -10,7 +10,7 @@ namespace TechShop.Domain.Entities
     [DbSchema("catalog")]
     public class Products
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int CategoryId { get; set; }

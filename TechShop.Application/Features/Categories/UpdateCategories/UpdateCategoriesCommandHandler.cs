@@ -22,7 +22,7 @@ public class UpdateCategoriesCommandHandler(
             return false;
         }
 
-        _mapper.Map(request, address);
+        _mapper.Map(request.Dto, address);
         _logger.LogInformation("Mapped update request to existing Category entity.");
 
         await _repository.UpdateAsync(address);

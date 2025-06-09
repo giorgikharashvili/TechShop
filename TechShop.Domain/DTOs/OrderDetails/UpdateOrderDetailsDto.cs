@@ -10,8 +10,10 @@ namespace TechShop.Domain.DTOs.OrderDetails
     public class UpdateOrderDetailsDto
     {
         [Required]
-        public int TotalPrice { get; set; }
+        public int UserId { get; set; }
         [Required]
-        public int Quantity { get; set; }
+        public string Email { get; set; }
+        [Required]
+        public int TotalPrice { get; set; }
     }
 }

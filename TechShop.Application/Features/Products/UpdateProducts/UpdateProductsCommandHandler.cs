@@ -23,7 +23,7 @@ public class UpdateProductsCommandHandler(
             return false;
         }
 
-        _mapper.Map(request, entity);
+        _mapper.Map(request.Dto, entity);
         _logger.LogInformation("Mapped update request to product entity.");
 
         entity.ModifiedAt = DateTime.UtcNow;

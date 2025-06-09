@@ -88,10 +88,10 @@ public class ProductsController(IMediator _mediator, ILogger<ProductsController>
     {
         _logger.LogInformation("Creating product: {Name}", command.Dto.Name);
 
-        var created = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-        _logger.LogInformation("Created product with ID: {Id}", created.Id);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        _logger.LogInformation("Created product");
+        return Ok(result);
     }
 
     /// <summary>

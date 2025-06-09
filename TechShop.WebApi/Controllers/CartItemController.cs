@@ -66,11 +66,10 @@ namespace TechShop.WebApi.Controllers;
         public async Task<ActionResult<CartItemDto>> Create([FromBody] CreateCartItemCommand command)
         {
             _logger.LogInformation("Creating Cart Item");
-            var createdId = await _mediator.Send(command);
-            var createdCartItem = await _mediator.Send(new GetCartByIdQuery(createdId.Id));
+            var result = await _mediator.Send(command);
 
-            _logger.LogInformation("Created cart item with Id: {Id}", createdCartItem.Id);
-            return CreatedAtAction(nameof(GetById), new { id = createdId }, createdCartItem);
+            _logger.LogInformation("Created cart item");
+            return Ok(result);
         }
 
         /// <summary>

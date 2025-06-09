@@ -22,7 +22,7 @@ public class UpdateUsersCommandHandler(
             return false;
         }
 
-        _mapper.Map(request, users);
+        _mapper.Map(request.Dto, users);
         _logger.LogInformation("Mapped update request to user entity.");
 
         users.ModifiedAt = DateTime.UtcNow;

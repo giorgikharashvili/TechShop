@@ -69,10 +69,10 @@ public class OrderDetailsController(IMediator _mediator, ILogger<OrderDetailsCon
     {
         _logger.LogInformation("Creating new order details");
 
-        var created = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-        _logger.LogInformation("Created order details with ID: {Id}", created.Id);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        _logger.LogInformation("Created order");
+        return Ok(result);
     }
 
     /// <summary>

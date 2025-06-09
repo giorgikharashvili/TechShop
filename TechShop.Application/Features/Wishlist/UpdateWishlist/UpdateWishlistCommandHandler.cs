@@ -22,7 +22,7 @@ public class UpdateWishlistCommandHandler(
             return false;
         }
 
-        _mapper.Map(request, wishlist);
+        _mapper.Map(request.Dto, wishlist);
         _logger.LogInformation("Mapped update request to wishlist entity.");
 
         wishlist.ModifiedAt = DateTime.UtcNow;

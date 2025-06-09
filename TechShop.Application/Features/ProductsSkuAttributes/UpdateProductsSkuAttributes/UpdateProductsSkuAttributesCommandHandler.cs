@@ -23,7 +23,7 @@ public class UpdateProductsSkuAttributesCommandHandler(
             return false;
         }
 
-        _mapper.Map(request, productSkuAttributes);
+        _mapper.Map(request.Dto, productSkuAttributes);
         _logger.LogInformation("Mapped update request to entity.");
 
         await _repository.UpdateAsync(productSkuAttributes);

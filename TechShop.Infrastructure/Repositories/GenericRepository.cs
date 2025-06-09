@@ -55,7 +55,14 @@ public class GenericRepository<T> : IRepository<T> where T : class
         var props = typeof(T).GetProperties().Where(p => p.Name != "Id").ToList();
         var setClause = string.Join(", ", props.Select(p => $"[{p.Name}] = @{p.Name}"));
         var query = $"UPDATE {FullTableName()} SET {setClause} WHERE Id = @Id";
-        await _connection.ExecuteAsync(query, entity);
+
+        var parameters = new DynamicParameters();
+        foreach (var prop in typeof(T).GetProperties())
+        {
+            parameters.Add("@" + prop.Name, prop.GetValue(entity));
+        }
+
+        await _connection.ExecuteAsync(query, parameters);
     }
 
     private string GetSchema()

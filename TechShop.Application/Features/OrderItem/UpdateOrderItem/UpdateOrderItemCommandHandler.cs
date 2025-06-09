@@ -22,7 +22,7 @@ public class UpdateOrderItemCommandHandler(
             return false;
         }
 
-        _mapper.Map(request, orderItem);
+        _mapper.Map(request.Dto, orderItem);
         _logger.LogInformation("Mapped update request to OrderItem entity.");
 
         await _repository.UpdateAsync(orderItem);

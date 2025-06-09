@@ -41,6 +41,7 @@ using TechShop.TechShop.Domain.Entities;
 using TechShop.TechShop.Domain.Enums;
 using Stripe;
 using Stripe.Checkout;
+using TechShop.Application.Features.Cart.UpdateCart;
 
 namespace TechShop.Application.Mappings
 {
@@ -70,13 +71,13 @@ namespace TechShop.Application.Mappings
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
-            CreateMap<UpdateAddressesCommand, Addresses>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
+            CreateMap<UpdateAddressesDto, Addresses>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
             CreateMap<Addresses, AddressesDto>().ReverseMap();
 
             // Cart
+            CreateMap<UpdateCartDto, Cart>();
             CreateMap<CreateFullCartDto, Cart>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<CreateCartDto, Cart>()
@@ -92,13 +93,14 @@ namespace TechShop.Application.Mappings
             CreateMap<CreateCartItemCommand, CartItem>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<CartItem, CartItemDto>().ReverseMap();
+            CreateMap<UpdateCartItemDto, CartItem>();
 
             // Categories
             CreateMap<CreateCategoriesDto, Categories>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<CreateCategoriesCommand, Categories>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
-            CreateMap<UpdateCategoriesCommand, Categories>()
+            CreateMap<UpdateCategoriesDto, Categories>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<Categories, CategoriesDto>().ReverseMap();
 
@@ -109,7 +111,7 @@ namespace TechShop.Application.Mappings
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
-            CreateMap<UpdateOrderDetailsCommand, OrderDetails>()
+            CreateMap<UpdateOrderDetailsDto, OrderDetails>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
@@ -120,7 +122,7 @@ namespace TechShop.Application.Mappings
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<CreateOrderItemCommand, OrderItem>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
-            CreateMap<UpdateOrderItemCommand, OrderItem>()
+            CreateMap<UpdateOrderItemDto, OrderItem>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<OrderItem, OrderItemDto>().ReverseMap();
 
@@ -131,10 +133,8 @@ namespace TechShop.Application.Mappings
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
-            CreateMap<UpdatePaymentsCommand, Payments>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
+            CreateMap<UpdatePaymentStatusDto, Payments>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<Payments, PaymentsDto>().ReverseMap();
 
             // Full Product
@@ -155,7 +155,7 @@ namespace TechShop.Application.Mappings
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
-            CreateMap<UpdateProductsCommand, Products>()
+            CreateMap<UpdateProductDto, Products>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
@@ -166,7 +166,7 @@ namespace TechShop.Application.Mappings
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<CreateProductsSkuAttributesCommand, ProductSkuAttributes>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
-            CreateMap<UpdateProductsSkuAttributesCommand, ProductSkuAttributes>()
+            CreateMap<UpdateProductsSkuAttributesDto, ProductSkuAttributes>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<ProductSkuAttributes, ProductSkuAttributesDto>().ReverseMap();
 
@@ -175,7 +175,7 @@ namespace TechShop.Application.Mappings
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<CreateProductsSkusCommand, ProductsSkus>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
-            CreateMap<UpdateProductsSkusCommand, ProductsSkus>()
+            CreateMap<UpdateProductsSkusDto, ProductsSkus>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<ProductsSkus, ProductsSkusDto>().ReverseMap();
 
@@ -187,7 +187,7 @@ namespace TechShop.Application.Mappings
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
-            CreateMap<UpdateUsersCommand, Users>()
+            CreateMap<UpdateUserDto, Users>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
@@ -200,7 +200,7 @@ namespace TechShop.Application.Mappings
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
-            CreateMap<UpdateWishlistCommand, Wishlist>()
+            CreateMap<UpdateWishlistDto, Wishlist>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());

@@ -69,10 +69,10 @@ public class UsersController(IMediator _mediator, ILogger<UsersController> _logg
     {
         _logger.LogInformation("Creating new user");
 
-        var created = await _mediator.Send(dto);
+        var result = await _mediator.Send(dto);
 
-        _logger.LogInformation("Created user with ID: {Id}", created.Id);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        _logger.LogInformation("Created user");
+        return Ok(result);
     }
 
     /// <summary>

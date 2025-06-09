@@ -69,10 +69,10 @@ public class ProductsSkuController(IMediator _mediator, ILogger<ProductsSkuContr
     {
         _logger.LogInformation("Creating new product SKU");
 
-        var created = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
         _logger.LogInformation("Created product SKU");
-        return Ok(command.Dto);
+        return Ok(result);
     }
 
     /// <summary>

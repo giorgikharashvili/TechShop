@@ -69,10 +69,10 @@ public class WishlistController(IMediator _mediator, ILogger<WishlistController>
     {
         _logger.LogInformation("Creating new wishlist");
 
-        var created = await _mediator.Send(dto);
+        var result = await _mediator.Send(dto);
 
-        _logger.LogInformation("Created wishlist item with ID: {Id}", created.Id);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        _logger.LogInformation("Created wishlist");
+        return Ok(result);
     }
 
     /// <summary>

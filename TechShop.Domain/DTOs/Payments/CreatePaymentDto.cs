@@ -21,5 +21,7 @@ namespace TechShop.Domain.DTOs.Payments
 
         [Required]
         public OrderStatus Status { get; set; }
+        [Required]
+        public string StripeSessionId { get; set; }
     }
 }

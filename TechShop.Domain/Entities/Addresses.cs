@@ -13,7 +13,7 @@ namespace TechShop.TechShop.Domain.Entities
     public class Addresses
     {
         
-        public int Id { get; init; }
+        public int Id { get; set; }
         public int UserId { get; set; }
         public string AddressLine1  { get; set; }
         public string AddressLine2  { get; set; }

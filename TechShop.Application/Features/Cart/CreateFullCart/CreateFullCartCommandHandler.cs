@@ -1,5 +1,7 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using TechShop.Infrastructure.Repositories.Interfaces;
 
@@ -8,8 +10,7 @@ namespace TechShop.Application.Features.Cart.CreateFullCart;
 public class CreateFullCartCommandHandler(
     ICartRepository _cartRepository,
     IMapper _mapper,
-    ILogger<CreateFullCartCommandHandler> _logger
-    ) : IRequestHandler<CreateFullCartCommand, int>
+    ILogger<CreateFullCartCommandHandler> _logger) : IRequestHandler<CreateFullCartCommand, int>
 {
     public async Task<int> Handle(CreateFullCartCommand request, CancellationToken cancellationToken)
     {

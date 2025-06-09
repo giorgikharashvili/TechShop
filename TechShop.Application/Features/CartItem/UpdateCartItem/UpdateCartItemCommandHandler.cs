@@ -22,7 +22,7 @@ public class UpdateCartCommandHandler(
             return false;
         }
 
-        _mapper.Map(request, cartItem);
+        _mapper.Map(request.Dto, cartItem);
         _logger.LogInformation("Mapped update request to CartItem entity.");
 
         await _repository.UpdateAsync(cartItem);

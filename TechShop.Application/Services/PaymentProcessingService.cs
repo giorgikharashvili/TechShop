@@ -48,11 +48,8 @@ public class PaymentProcessingService(
             if (!product.Metadata.TryGetValue("productId", out var productIdStr))
                 throw new KeyNotFoundException("Metadata key 'productId' not found in product metadata.");
 
-            if (!product.Metadata.TryGetValue("productSkuId", out var productSkuIdStr))
-                throw new KeyNotFoundException("Metadata key 'productSkuId' not found in product metadata.");
 
             int productId = int.Parse(productIdStr);
-            int productSkuId = int.Parse(productSkuIdStr);
             int quantity = (int)(item.Quantity ?? 1);
 
             var orderItem = new OrderItem

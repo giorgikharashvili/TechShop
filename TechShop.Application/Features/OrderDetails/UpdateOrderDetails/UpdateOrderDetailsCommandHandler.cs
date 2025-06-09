@@ -22,7 +22,7 @@ public class UpdateOrderDetailsCommandHandler(
             return false;
         }
 
-        _mapper.Map(request, orderDetails);
+        _mapper.Map(request.Dto, orderDetails);
         _logger.LogInformation("Mapped update request to existing OrderDetails entity.");
 
         orderDetails.ModifiedAt = DateTime.UtcNow;

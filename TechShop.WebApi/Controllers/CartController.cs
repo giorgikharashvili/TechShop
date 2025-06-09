@@ -66,11 +66,10 @@ public class CartController(IMediator _mediator, ILogger<CartController> _logger
     {
         _logger.LogInformation("Creating cart");
 
-        var createdId = await _mediator.Send(command);
-        var createdCart = await _mediator.Send(new GetCartByIdQuery(createdId.Id));
+        var result = await _mediator.Send(command);
 
-        _logger.LogInformation("Created cart with ID: {CartId}", createdCart.Id);
-        return CreatedAtAction(nameof(GetById), new { id = createdCart.Id }, createdCart);
+        _logger.LogInformation("Created a cart");
+        return Ok(result);
     }
 
     /// <summary>

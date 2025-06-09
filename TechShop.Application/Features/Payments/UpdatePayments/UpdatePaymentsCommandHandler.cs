@@ -22,7 +22,7 @@ public class UpdatePaymentsCommandHandler(
             return false;
         }
 
-        _mapper.Map(request, payments);
+        _mapper.Map(request.Dto, payments);
         _logger.LogInformation("Mapped update request to Payment entity.");
 
         payments.ModifiedAt = DateTime.UtcNow;

@@ -68,10 +68,10 @@ public class ProductSkuAttributesController(IMediator _mediator, ILogger<Product
     {
         _logger.LogInformation("Creating new product SKU attribute");
 
-        var created = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
         _logger.LogInformation("Created product SKU");
-        return Ok(command.Dto);
+        return Ok(result);
     }
 
     /// <summary>

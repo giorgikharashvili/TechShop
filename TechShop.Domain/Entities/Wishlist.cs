@@ -10,7 +10,7 @@ namespace TechShop.Domain.Entities
     [DbSchema("cart")]
     public class Wishlist
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public int ProductId { get; set; }
         public string UserId { get; set; } 
         public DateTime CreatedAt { get; set; }
